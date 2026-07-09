@@ -1,2 +1,5 @@
 CLAUDE.md
 .ipynb_checkpoints/
+.claude/
+docs/phase2_latent.md
+__pycache__/

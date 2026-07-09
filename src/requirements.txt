@@ -1,0 +1,9 @@
+gliner2[local]>=1.3.2
+pandas>=3.0.3
+requests>=2.34.2
+tqdm>=4.66
+cython
+pybloomfiltermmap3
+huggingface_hub
+captum
+scikit-learn
