@@ -5,3 +5,4 @@ docs/phase2_latent.md
 docs/further_steps.md
 __pycache__/
 notebook/README.md
+*.sh
