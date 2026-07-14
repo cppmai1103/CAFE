@@ -6,3 +6,8 @@ docs/further_steps.md
 __pycache__/
 notebook/README.md
 *.sh
+try1/
+*.err
+*.out
+data/ner_overlap_conflicts.json
+
