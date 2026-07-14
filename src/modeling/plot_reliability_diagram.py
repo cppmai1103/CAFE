@@ -1,8 +1,9 @@
 """Plot a reliability diagram, a matching Brier score/ECE/MCE/AUROC/E-AURC metrics bar
 chart, an ROC curve, a risk-coverage curve, and a bins_<labels>.csv table: ner_score (raw)
-always included, plus B1 (Platt scaling) and/or B3 (logistic regression) if their score
-files are given. The reliability diagram and bins table are calibration-only (per-bin
-computation from metrics.expected_calibration_error/maximum_calibration_error_from_bins).
+always included, plus B1 (Platt scaling), B3 (logistic regression), and/or the MLP
+baseline (mlp_baseline.py) if their score files are given. The reliability diagram and
+bins table are calibration-only (per-bin computation from
+metrics.expected_calibration_error/maximum_calibration_error_from_bins).
 The ROC curve and risk-coverage curve are discrimination-only (metrics.roc_curve/
 metrics.risk_coverage_curve) -- do higher scores rank reliable candidates above
 unreliable ones, regardless of whether the score value itself is a calibrated
@@ -18,13 +19,11 @@ row describes the exact same set of candidates (build_bins_table). Each score co
 gets a matching delta_<label> = <label> - true: positive means overconfident in that bin,
 negative means underconfident.
 
---platt-scaling-score / --logistic-score each take a path to a CSV with the join keys
-(document_id, sentence_id, start_token_id, end_token_id) plus a column literally named
-calibrated_score (see gliner/label_reliability.py's OUTPUT_COLUMNS shape for the join
-keys). Neither is required:
-    - neither given  -> only ner_score (raw) is drawn.
-    - one given      -> ner_score plus that one baseline.
-    - both given     -> ner_score plus both baselines.
+--platt-scaling-score / --logistic-score / --mlp-score each take a path to a CSV with the
+join keys (document_id, sentence_id, start_token_id, end_token_id) plus a column
+literally named calibrated_score (see gliner/label_reliability.py's OUTPUT_COLUMNS shape
+for the join keys). None are required -- ner_score (raw) plus whichever of the three are
+given get drawn.
 
 --label-reliability (default: label_reliability_type_only.csv, see
 gliner/label_reliability.py) supplies the join keys, the raw score (ner_score), and the
@@ -46,7 +45,7 @@ Usage:
     python src/modeling/plot_reliability_diagram.py                              # raw only
     python src/modeling/plot_reliability_diagram.py --platt-scaling-score data/platt_scaling.csv
     python src/modeling/plot_reliability_diagram.py --logistic-score data/logistic.csv
-    python src/modeling/plot_reliability_diagram.py --platt-scaling-score data/platt_scaling.csv --logistic-score data/logistic_regression.csv
+    python src/modeling/plot_reliability_diagram.py --platt-scaling-score data/platt_scaling.csv --logistic-score data/logistic_regression.csv --mlp-score data/mlp_baseline.csv
 """
 
 from __future__ import annotations
@@ -71,6 +70,7 @@ DEFAULT_FIGURES_DIR = Path(__file__).parent.parent.parent / "figures" / "modelin
 
 CATEGORICAL_RED = "#e34948"
 CATEGORICAL_BLUE = "#2a78d6"
+CATEGORICAL_ORANGE = "#e8871e"
 STATUS_GOOD = "#0ca30c"
 CHART_SURFACE = "#fcfcfb"
 PRIMARY_INK = "#0b0b0b"
@@ -83,11 +83,13 @@ KEY_COLS = ["document_id", "sentence_id", "start_token_id", "end_token_id"]
 RAW_LABEL = "raw"
 PLATT_LABEL = "platt_scaling"
 LOGISTIC_LABEL = "logistic"
+MLP_LABEL = "mlp"
 
 DISPLAY_LABELS = {
     RAW_LABEL: "raw ner_score",
     PLATT_LABEL: "platt-calibrated",
     LOGISTIC_LABEL: "logistic regression",
+    MLP_LABEL: "MLP baseline",
 }
 
 
@@ -226,8 +228,9 @@ def plot_metrics_bar(metrics_df: pd.DataFrame, label_colors: dict[str, str], out
             x + offset, values, width,
             color=label_colors.get(label, MUTED_INK), label=DISPLAY_LABELS.get(label, label), alpha=0.9,
         )
-        ax.bar_label(bars, labels=[f"{v:.4f}" for v in values], fontsize=8, color=MUTED_INK, padding=2)
+        ax.bar_label(bars, labels=[f"{v:.4f}" for v in values], fontsize=6, color=MUTED_INK, padding=2, rotation=90)
 
+    ax.set_ylim(top=ax.get_ylim()[1] * 1.12)  # headroom for the rotated bar-top labels
     ax.set_xticks(x)
     ax.set_xticklabels(metrics)
     ax.set_ylabel("Value (lower is better, except AUROC: higher is better)", color=PRIMARY_INK)
@@ -315,6 +318,10 @@ def main():
         "--logistic-score", default=None, metavar="PATH",
         help="CSV with join keys + a calibrated_score column (B3, logistic regression) -- omit to not draw this line",
     )
+    parser.add_argument(
+        "--mlp-score", default=None, metavar="PATH",
+        help="CSV with join keys + a calibrated_score column (MLP baseline, mlp_baseline.py) -- omit to not draw this line",
+    )
     parser.add_argument("--train-data", default=str(DEFAULT_TRAIN_DATA), help="Token-level train data CSV (for the --split filter)")
     parser.add_argument("--split", default="test", help="Filter to this document-level split before plotting; pass \"\" to use every candidate (default: test)")
     parser.add_argument("--out", default=None, help="Output PNG path (default: figures/reliability_diagram_<labels>.png)")
@@ -326,6 +333,8 @@ def main():
         score_paths[PLATT_LABEL] = Path(args.platt_scaling_score)
     if args.logistic_score:
         score_paths[LOGISTIC_LABEL] = Path(args.logistic_score)
+    if args.mlp_score:
+        score_paths[MLP_LABEL] = Path(args.mlp_score)
 
     print(f"=== Step 1: Load {args.label_reliability} and merge in {list(score_paths)} ===")
     candidates_df, labels_present = load_and_merge(Path(args.label_reliability), score_paths)
@@ -344,7 +353,7 @@ def main():
     labels_arr = candidates_df["reliability_score"].to_numpy().astype(int)
 
     print("=== Step 3: Compute ECE bins and Brier score / ECE / MCE per score ===")
-    label_colors = {RAW_LABEL: CATEGORICAL_RED, PLATT_LABEL: CATEGORICAL_BLUE, LOGISTIC_LABEL: STATUS_GOOD}
+    label_colors = {RAW_LABEL: CATEGORICAL_RED, PLATT_LABEL: CATEGORICAL_BLUE, LOGISTIC_LABEL: STATUS_GOOD, MLP_LABEL: CATEGORICAL_ORANGE}
     score_columns = {RAW_LABEL: "ner_score"}
     score_columns.update({label: f"{label}_calibrated_score" for label in labels_present})
 
@@ -398,7 +407,7 @@ def main():
     plot_risk_coverage_curve(rc_series, rc_out_path)
     print(f"Saved {rc_out_path}")
 
-    print("=== Step 8: Save bins table (bin, true, raw, platt_scaling, logistic) ===")
+    print(f"=== Step 8: Save bins table (bin, true, {', '.join(all_labels)}) ===")
     other_scores = {label: candidates_df[score_columns[label]].to_numpy() for label in labels_present}
     bins_table = build_bins_table(candidates_df[score_columns[RAW_LABEL]].to_numpy(), labels_arr, other_scores)
     print(bins_table.to_string(index=False))

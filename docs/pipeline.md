@@ -57,46 +57,44 @@ All read `hipe2020_train_fr_gliner_token_format_threshold0.5.csv`, output to
 | `feature_extraction/extract_context_features.py` | train data CSV + `deduplicate_ner_features.csv` | `data/context_features.csv` -- context-window OCR evidence |
 | `feature_extraction/prepare_data_logistic.py` | `deduplicate_ner_features.csv` + `ocr_features.csv` + `context_features.csv` + `label_reliability_type_only.csv` | `data/logistic_regression_data.csv` -- one joined row per candidate, `reliability_score` + `split` attached; ready-to-train input for B3 |
 
-## 5. Modeling / calibration (B0/B1/B3)
+## 5. Modeling / calibration (B0/B1/B3/MLP)
 
 | Script | Input | Output |
 |---|---|---|
-| `modeling/platt_scaling.py` | `label_reliability_type_only.csv` | `data/platt_scaling.csv` (B1: `calibrated_score` fit on `calibration` split, scored on every split), `figures/modeling/platt_scaling_fit.png` |
-| `modeling/logistic_regression.py` | `logistic_regression_data.csv` | `data/logistic_regression.csv` (B3: `calibrated_score` fit on `expert_train` split, scored on every split), `figures/modeling/logistic_regression_weights.png` |
-| `modeling/plot_reliability_diagram.py --platt-scaling-score data/platt_scaling.csv --logistic-score data/logistic_regression.csv` | `label_reliability_type_only.csv` + both scores above | see below |
+| `modeling/platt_scaling.py` | `label_reliability_type_only.csv` | `data/platt_scaling.csv` (B1: `calibrated_score` fit on `expert_train`/train, early-stopped on `calibration`/val, scored on every split), `figures/modeling/platt_scaling_fit.png`, `figures/modeling/platt_scaling_track_training.png` |
+| `modeling/logistic_regression.py` | `logistic_regression_data.csv` | `data/logistic_regression.csv` (B3: `calibrated_score` fit on `expert_train`/train, early-stopped on `calibration`/val, scored on every split), `figures/modeling/logistic_regression_weights.png`, `figures/modeling/logistic_regression_track_training.png` |
+| `modeling/mlp_baseline.py` | `logistic_regression_data.csv` | `data/mlp_baseline.csv` (MLP: same B3 feature matrix, `Linear(d,32)->ReLU->Dropout(0.1)->Linear(32,1)` fit on `expert_train`/train, early-stopped on `calibration`/val, scored on every split), `figures/modeling/mlp_baseline_track_training.png` |
+| `modeling/plot_reliability_diagram.py --platt-scaling-score data/platt_scaling.csv --logistic-score data/logistic_regression.csv --mlp-score data/mlp_baseline.csv` | `label_reliability_type_only.csv` + all three scores above | see below |
 
-B0 (raw `ner_score`) is always included; B1/B3 are drawn if their `--platt-scaling-score`/
-`--logistic-score` CSV is given. Default `--split test` (final evaluation only, per
-`docs/phase1_manual.md` SS6.1). Outputs, all in `figures/modeling/`:
+B0 (raw `ner_score`) is always included; B1/B3/MLP are each drawn only if their
+`--platt-scaling-score`/`--logistic-score`/`--mlp-score` CSV is given. Default `--split
+test` (final evaluation only, per `docs/phase1_manual.md` SS6.1). Outputs, all in
+`figures/modeling/`:
 
 - `reliability_diagram_<labels>.png` -- calibration curve (x = mean predicted probability, y = empirical accuracy)
 - `metrics_bar_<labels>.png` -- Brier score / ECE / MCE / AUROC / E-AURC, one bar per score
 - `roc_curve_<labels>.png` -- discrimination (TPR vs FPR)
 - `risk_coverage_<labels>.png` -- discrimination (risk vs coverage)
-- `bins_<labels>.csv` -- per-bin `true`/raw/platt_scaling/logistic + `delta_<label>` columns
+- `bins_<labels>.csv` -- per-bin `true`/raw/platt_scaling/logistic/mlp + `delta_<label>` columns
 
-Fit-split asymmetry is intentional (`docs/phase1_manual.md` SS6.1): B3 needs more data for
-its ~20-parameter model (`expert_train`, 50%), B1 is a 2-parameter fit that saturates with
-less (`calibration`, 10%) -- both are evaluated on the same held-out `test` split.
+B1, B3, and the MLP baseline all fit on `expert_train` and treat `calibration` as a
+validation split (never fit on, only watched). B1/B3 use `training_curve.py`'s
+`fit_logistic_with_curve`, which fakes per-epoch checkpoints for sklearn's
+`LogisticRegression` (`warm_start=True, max_iter=1` called once per loop iteration, since
+sklearn's `fit()` has no real per-iteration callback) so train/val log loss can be
+tracked and early-stopped (default `--patience` 15). `mlp_baseline.py` uses real PyTorch
+epochs instead (genuine backward passes, real `nn.Dropout`) -- both approaches return the
+best epoch's/iteration's parameters rather than the last, and both save a
+`<model>_track_training.png` curve. This deliberately supersedes `docs/phase1_manual.md`
+SS6.1's original fit-split choice (B1 on `calibration`, B3 on `expert_train`) -- B1/B3/MLP
+now all get the same train/val treatment regardless of model class; only `test` stays
+reserved for the final reported number in every case. The MLP baseline needs far more
+epochs to converge than B1/B3's L-BFGS-based fit (full-batch Adam early-stops around
+epoch ~1100-1200 by default vs. B1's ~10 and B3's ~30-50) since gradient descent takes
+many more, much smaller steps than a quasi-Newton solver -- this is expected, not a bug.
 
 Metrics split into two families (see `modeling/metrics.py`'s module docstring):
 **calibration** (Brier/ECE/MCE -- does the score's value match true probability) vs
 **discrimination** (AUROC/AURC/E-AURC -- does the score rank reliable above unreliable,
 independent of its value). Platt scaling is a monotonic transform of `ner_score`, so it
 always has identical AUROC/E-AURC to raw -- only calibration metrics can show its effect.
-
-## Not yet wired into `script.sh`
-
-- `feature_extraction/extract_attribution_features.py`, `other/extract_pressmint_ocrqa.py`
-- `train_b3_logistic_regression.py`/`plot_b3_weights.py`'s older path (loads features
-  directly via `analysis/analyze_ocr_context_features.py` rather than the prepared
-  `logistic_regression_data.csv`) -- superseded by `modeling/logistic_regression.py` for
-  the main pipeline, kept for now, not deleted.
-
-## Known open issue
-
-`analysis/analyze_ocr_context_features.py`'s `DEFAULT_NER_FEATURES` still points at the
-full `ner_features.csv` (530k rows) rather than `deduplicate_ner_features.csv` (112k rows)
--- would break `load_candidates()`'s row-alignment check if the old
-`train_b3_logistic_regression.py`/`plot_b3_weights.py` path above is actually run. Deferred,
-not yet fixed.

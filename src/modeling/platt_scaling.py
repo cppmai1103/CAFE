@@ -1,15 +1,23 @@
-"""Fit Platt scaling (sigmoid calibration) on ner_score, using only the "calibration"
-split (docs/phase1_manual.md SS10: "calibrate ... on the calibration split"), then score
-every candidate (all splits) with the fitted model.
+"""Fit Platt scaling (sigmoid calibration) on ner_score, then score every candidate (all
+splits) with the fitted model.
+
+Split roles (docs/phase1_manual.md SS6.1's four-way document split, reused here as
+train/val/test):
+    expert_train -- train: Platt scaling's 2 parameters (b0, b1) are fit here.
+    calibration  -- val: watched every epoch to catch overfitting and pick the best
+        epoch (early stopping); never used to fit.
+    test         -- test: only used for the final held-out fit-quality plot.
 
 Input: --label-reliability (default: label_reliability_type_only.csv, see
 gliner/label_reliability.py) for ner_score + reliability_score, joined with
---train-data's document-level split assignment (needed to select the calibration split
-for fitting, and the test split for the fit-quality plot below).
+--train-data's document-level split assignment.
 
 Platt scaling is exactly a 1-feature logistic regression of the binary label
 (reliability_score) on the raw score (ner_score): calibrated_score = sigmoid(b0 + b1 *
-ner_score).
+ner_score). Fit iteratively (training_curve.fit_logistic_with_curve) so a train/val loss
+curve can be tracked and early-stopped, even though a 2-parameter model is unlikely to
+overfit in practice -- see that module's docstring for why sklearn needs the warm_start
+trick to expose per-epoch loss at all.
 
 Output:
     platt_scaling.csv -- document_id, sentence_id, start_token_id, end_token_id, split,
@@ -20,7 +28,9 @@ Output:
         file directly.
     platt_scaling_fit.png -- the fitted sigmoid curve, with the test split's empirical
         per-bin accuracy overlaid so the fit's held-out generalization can be checked by
-        eye (fitting happens on calibration, this plot never uses calibration data).
+        eye (fitting happens on expert_train, this plot never uses expert_train data).
+    platt_scaling_track_training.png -- train (expert_train) vs. val (calibration) log
+        loss per epoch, with the best (early-stopped) epoch marked.
 
 Usage:
     python src/modeling/platt_scaling.py
@@ -44,6 +54,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from gliner.label_reliability import default_out_path as default_label_reliability_path
 from preprocessing.preprocessing_data import DEFAULT_OUT as DEFAULT_TRAIN_DATA
 from metrics import expected_calibration_error
+from training_curve import fit_logistic_with_curve, plot_training_curve
 
 DATA_DIR = Path(__file__).parent.parent.parent / "data"
 DEFAULT_LABEL_RELIABILITY = default_label_reliability_path("type_only")
@@ -61,14 +72,24 @@ GRIDLINE = "#e1e0d9"
 KEY_COLS = ["document_id", "sentence_id", "start_token_id", "end_token_id"]
 
 
-def fit_platt_scaling(scores: np.ndarray, labels: np.ndarray) -> tuple[float, float, LogisticRegression]:
+def fit_platt_scaling(
+    train_scores: np.ndarray, train_labels: np.ndarray, val_scores: np.ndarray, val_labels: np.ndarray,
+    max_epochs: int = 200, patience: int = 15,
+) -> tuple[float, float, LogisticRegression, list[float], list[float], int]:
     """Platt scaling is exactly a 1-feature logistic regression of the binary label on the
-    raw score: calibrated = sigmoid(B0 + B1 * score)."""
-    model = LogisticRegression(solver="lbfgs")
-    model.fit(scores.reshape(-1, 1), labels)
+    raw score: calibrated = sigmoid(B0 + B1 * score). Fit on (train_scores, train_labels),
+    early-stopped on (val_scores, val_labels) -- see training_curve.fit_logistic_with_curve."""
+    model = LogisticRegression(solver="lbfgs", warm_start=True, max_iter=1)
+    model, train_losses, val_losses, best_epoch = fit_logistic_with_curve(
+        model,
+        train_scores.reshape(-1, 1), train_labels,
+        val_scores.reshape(-1, 1), val_labels,
+        max_epochs=max_epochs, patience=patience,
+        desc="Fitting Platt scaling (train=expert_train, val=calibration)",
+    )
     b0 = float(model.intercept_[0])
     b1 = float(model.coef_[0][0])
-    return b0, b1, model
+    return b0, b1, model, train_losses, val_losses, best_epoch
 
 
 def plot_sigmoid_fit(b0: float, b1: float, bin_stats: pd.DataFrame, out_path: Path) -> None:
@@ -131,25 +152,32 @@ def main():
     candidates_df["split"] = candidates_df["document_id"].map(doc_to_split)
     print(candidates_df["split"].value_counts().to_string())
 
-    print("=== Step 2: Fit Platt scaling on the calibration split ===")
-    calibration_df = candidates_df[candidates_df["split"] == "expert_train"]
-    calibration_scores = calibration_df["ner_score"].to_numpy()
-    calibration_labels = calibration_df["reliability_score"].to_numpy().astype(int)
-    print(f"{len(calibration_df)} candidates in calibration -- Platt scaling is fit on these only")
-    b0, b1, model = fit_platt_scaling(calibration_scores, calibration_labels)
+    print("=== Step 2: Split expert_train (train) / calibration (val) ===")
+    train_df = candidates_df[candidates_df["split"] == "expert_train"]
+    train_scores = train_df["ner_score"].to_numpy()
+    train_labels = train_df["reliability_score"].to_numpy().astype(int)
+    val_df = candidates_df[candidates_df["split"] == "calibration"]
+    val_scores = val_df["ner_score"].to_numpy()
+    val_labels = val_df["reliability_score"].to_numpy().astype(int)
+    print(f"{len(train_df)} train (expert_train) candidates, {len(val_df)} val (calibration) candidates")
+
+    print("=== Step 3: Fit Platt scaling on train, early-stop on val ===")
+    b0, b1, model, train_losses, val_losses, best_epoch = fit_platt_scaling(
+        train_scores, train_labels, val_scores, val_labels,
+    )
     print(f"calibrated_score = sigmoid({b0:.4f} + {b1:.4f} * ner_score)")
 
-    print("=== Step 3: Score every candidate (all splits) ===")
+    print("=== Step 4: Score every candidate (all splits) ===")
     candidates_df["calibrated_score"] = model.predict_proba(candidates_df[["ner_score"]].to_numpy())[:, 1]
 
-    print("=== Step 4: Save platt_scaling.csv ===")
+    print("=== Step 5: Save platt_scaling.csv ===")
     out_df = candidates_df[KEY_COLS + ["split", "ner_score", "calibrated_score"]]
     out_path = Path(args.out)
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_df.to_csv(out_path, index=False)
     print(f"Saved {out_path}")
 
-    print("=== Step 5: Plot fit vs held-out test-split accuracy ===")
+    print("=== Step 6: Plot fit vs held-out test-split accuracy ===")
     test_df = candidates_df[candidates_df["split"] == "test"]
     test_scores = test_df["ner_score"].to_numpy()
     test_labels = test_df["reliability_score"].to_numpy().astype(int)
@@ -159,6 +187,14 @@ def main():
     fit_out_path = figures_dir / "platt_scaling_fit.png"
     plot_sigmoid_fit(b0, b1, test_bins, fit_out_path)
     print(f"Saved {fit_out_path}")
+
+    print("=== Step 7: Plot train/val training curve ===")
+    curve_out_path = figures_dir / "platt_scaling_track_training.png"
+    plot_training_curve(
+        train_losses, val_losses, best_epoch,
+        "Platt scaling: train (expert_train) vs val (calibration) loss", curve_out_path,
+    )
+    print(f"Saved {curve_out_path}")
 
     print("=== Done ===")
 

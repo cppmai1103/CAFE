@@ -1,8 +1,7 @@
 CLAUDE.md
 .ipynb_checkpoints/
 .claude/
-docs/phase2_latent.md
-docs/further_steps.md
+docs/
 __pycache__/
 notebook/README.md
 *.sh
