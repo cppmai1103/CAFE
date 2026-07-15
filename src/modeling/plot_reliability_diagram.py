@@ -1,8 +1,12 @@
 """Plot a reliability diagram, a matching Brier score/ECE/MCE/AUROC/E-AURC metrics bar
-chart, an ROC curve, a risk-coverage curve, and a bins_<labels>.csv table: ner_score (raw)
-always included, plus B1 (Platt scaling), B3 (logistic regression), and/or the MLP
-baseline (mlp_baseline.py) if their score files are given. The reliability diagram and
-bins table are calibration-only (per-bin computation from
+chart, an ROC curve, a risk-coverage curve, and a bins_<labels>.csv table: ner_score (raw,
+--raw-score), B1 (Platt scaling), B3 (logistic regression), the MLP baseline
+(mlp_baseline.py), and/or the Phase 2 model (frozen CamemBERT + MLP head,
+checkpoints_phase2/camembert_mlp.pt, scored via phase2/evaluate.py) are each drawn only if
+explicitly requested -- raw is no longer included by default; pass --raw-score to add it,
+same as every other score needs its own flag. At least one of --raw-score / the four
+--*-score flags / --extra-score must be given, or there's nothing to plot. The reliability
+diagram and bins table are calibration-only (per-bin computation from
 metrics.expected_calibration_error/maximum_calibration_error_from_bins).
 The ROC curve and risk-coverage curve are discrimination-only (metrics.roc_curve/
 metrics.risk_coverage_curve) -- do higher scores rank reliable candidates above
@@ -12,18 +16,23 @@ metrics bar chart alongside Brier/ECE/MCE. See metrics.py's module docstring for
 calibration-vs-discrimination distinction.
 
 bins_<labels>.csv columns: bin (the score range, e.g. "0.7-0.8"), true (empirical
-reliability rate among that bin's candidates), raw (raw score's own average there), and
-platt_scaling/logistic (that same group of candidates' average under each other score, if
-given) -- candidates are grouped into bins by the RAW score only, so every column in a
-row describes the exact same set of candidates (build_bins_table). Each score column also
-gets a matching delta_<label> = <label> - true: positive means overconfident in that bin,
-negative means underconfident.
+reliability rate among that bin's candidates), raw (raw score's own average there, always
+present regardless of --raw-score -- see below), and platt_scaling/logistic (that same
+group of candidates' average under each other score, if given) -- candidates are grouped
+into bins by the RAW score only, so every column in a row describes the exact same set of
+candidates (build_bins_table). Each score column also gets a matching delta_<label> =
+<label> - true: positive means overconfident in that bin, negative means underconfident.
+Binning is always anchored to ner_score even when --raw-score isn't passed (raw just
+won't appear as its own plotted line/legend entry in that case) -- build_bins_table's
+whole methodology depends on a fixed reference score to bin by.
 
---platt-scaling-score / --logistic-score / --mlp-score each take a path to a CSV with the
-join keys (document_id, sentence_id, start_token_id, end_token_id) plus a column
-literally named calibrated_score (see gliner/label_reliability.py's OUTPUT_COLUMNS shape
-for the join keys). None are required -- ner_score (raw) plus whichever of the three are
-given get drawn.
+--platt-scaling-score / --logistic-score / --mlp-score / --camembert-mlp-score each take a
+path to a CSV with the join keys (document_id, sentence_id, start_token_id, end_token_id) plus
+a column literally named calibrated_score (see gliner/label_reliability.py's
+OUTPUT_COLUMNS shape for the join keys). --extra-score LABEL=PATH (repeatable) adds any
+number of further named series in the same shape, cycling through EXTRA_COLOR_PALETTE for
+color -- meant for comparing phase2/train.py's --no-* ablation variants side by side,
+which don't each get their own fixed flag.
 
 --label-reliability (default: label_reliability_type_only.csv, see
 gliner/label_reliability.py) supplies the join keys, the raw score (ner_score), and the
@@ -42,10 +51,11 @@ split via the document-level split train_data.csv carries; pass --split "" to sk
 filtering and use every candidate.
 
 Usage:
-    python src/modeling/plot_reliability_diagram.py                              # raw only
-    python src/modeling/plot_reliability_diagram.py --platt-scaling-score data/platt_scaling.csv
-    python src/modeling/plot_reliability_diagram.py --logistic-score data/logistic.csv
-    python src/modeling/plot_reliability_diagram.py --platt-scaling-score data/platt_scaling.csv --logistic-score data/logistic_regression.csv --mlp-score data/mlp_baseline.csv
+    python src/modeling/plot_reliability_diagram.py --raw-score                  # raw only
+    python src/modeling/plot_reliability_diagram.py --raw-score --platt-scaling-score data/platt_scaling.csv
+    python src/modeling/plot_reliability_diagram.py --logistic-score data/logistic.csv   # raw omitted on purpose
+    python src/modeling/plot_reliability_diagram.py --raw-score --platt-scaling-score data/platt_scaling.csv --logistic-score data/logistic_regression.csv --mlp-score data/mlp_baseline.csv --camembert-mlp-score data_phase2/phase2_scores.csv
+    python src/modeling/plot_reliability_diagram.py --camembert-mlp-score data_phase2/camembert_mlp_scores.csv --extra-score without_ner_score=data_phase2/camembert_mlp_without_ner_score_scores.csv --extra-score without_type=data_phase2/camembert_mlp_without_type_scores.csv --figures-dir figures/ablation
 """
 
 from __future__ import annotations
@@ -71,7 +81,12 @@ DEFAULT_FIGURES_DIR = Path(__file__).parent.parent.parent / "figures" / "modelin
 CATEGORICAL_RED = "#e34948"
 CATEGORICAL_BLUE = "#2a78d6"
 CATEGORICAL_ORANGE = "#e8871e"
+CATEGORICAL_PURPLE = "#8e5cd9"
 STATUS_GOOD = "#0ca30c"
+
+# Rotating palette for --extra-score series (e.g. ablation variants) that don't have
+# their own fixed color -- distinct from the 5 fixed colors above.
+EXTRA_COLOR_PALETTE = ["#1a9e96", "#a56a3a", "#d64d9a", "#5b6b73", "#8a8a2f", "#3f5fbf"]
 CHART_SURFACE = "#fcfcfb"
 PRIMARY_INK = "#0b0b0b"
 MUTED_INK = "#898781"
@@ -84,12 +99,22 @@ RAW_LABEL = "raw"
 PLATT_LABEL = "platt_scaling"
 LOGISTIC_LABEL = "logistic"
 MLP_LABEL = "mlp"
+CAMEMBERT_MLP_LABEL = "camembert_mlp"
 
 DISPLAY_LABELS = {
     RAW_LABEL: "raw ner_score",
     PLATT_LABEL: "platt-calibrated",
     LOGISTIC_LABEL: "logistic regression",
     MLP_LABEL: "MLP baseline",
+    CAMEMBERT_MLP_LABEL: "CamemBERT + MLP",
+    # Cross-encoder comparison (--extra-score labels used in script.sh) -- not tied to a
+    # dedicated CLI flag like the ones above, just nicer legend text for these labels.
+    "mbert": "mBERT + MLP",
+    "mdeberta_v3": "mDeBERTa-v3 + MLP",
+    "multilingual_e5": "multilingual-E5 + MLP",
+    "xlm_roberta": "XLM-RoBERTa + MLP",
+    "camembert_simple_mlp": "CamemBERT + MLP (simple/marker-prompt)",
+    "camembert_mlp_without_dict_flag": "CamemBERT + MLP (no dict flag)",
 }
 
 
@@ -97,7 +122,12 @@ def load_and_merge(label_reliability_path: Path, score_paths: dict[str, Path]) -
     """Join the base raw-score/label file with whichever of score_paths (label -> CSV
     path) were actually given. Returns (merged_df, labels_present) -- labels_present is
     the subset of score_paths' keys that were merged in, giving the column
-    "<label>_calibrated_score" in merged_df for each."""
+    "<label>_calibrated_score" in merged_df for each. A left merge, deliberately NOT
+    validated for completeness here -- a score file covering only one split (e.g.
+    phase2/evaluate.py, which only scores --split test by default, since scoring every
+    candidate through a transformer is far more expensive than the sklearn/tabular
+    baselines) is expected to leave NaNs for every other split's candidates. Call
+    validate_scores_present AFTER filtering to the split actually being plotted."""
     base_df = pd.read_csv(label_reliability_path)
 
     labels_present = []
@@ -108,12 +138,24 @@ def load_and_merge(label_reliability_path: Path, score_paths: dict[str, Path]) -
         )
         before = len(base_df)
         base_df = base_df.merge(score_df, on=KEY_COLS, how="left")
-        if base_df[f"{label}_calibrated_score"].isna().any():
-            n_missing = int(base_df[f"{label}_calibrated_score"].isna().sum())
-            raise ValueError(f"{n_missing} candidate(s) had no matching row in {path} -- is it stale relative to --label-reliability?")
         assert len(base_df) == before, f"merge with {path} changed row count -- it isn't uniquely keyed by {KEY_COLS}"
 
     return base_df, labels_present
+
+
+def validate_scores_present(df: pd.DataFrame, labels_present: list[str], score_paths: dict[str, Path]) -> None:
+    """Raises if any candidate actually being plotted (i.e. already filtered to the
+    requested --split) is missing a score for one of labels_present -- run this AFTER
+    the --split filter, not before, so a score file that only covers one split (see
+    load_and_merge) isn't penalized for splits that were filtered out anyway."""
+    for label in labels_present:
+        col = f"{label}_calibrated_score"
+        if df[col].isna().any():
+            n_missing = int(df[col].isna().sum())
+            raise ValueError(
+                f"{n_missing} candidate(s) being plotted have no matching row in {score_paths[label]} -- "
+                f"is it stale, or does it only cover a different --split?"
+            )
 
 
 def default_out_path(figures_dir: Path, labels: list[str]) -> Path:
@@ -311,6 +353,10 @@ def main():
         help="CSV with join keys + ner_score (raw) + reliability_score (see gliner/label_reliability.py)",
     )
     parser.add_argument(
+        "--raw-score", action="store_true",
+        help="Include raw ner_score as a plotted baseline -- previously always included by default, now opt-in like every other score",
+    )
+    parser.add_argument(
         "--platt-scaling-score", default=None, metavar="PATH",
         help="CSV with join keys + a calibrated_score column (B1, Platt scaling) -- omit to not draw this line",
     )
@@ -321,6 +367,15 @@ def main():
     parser.add_argument(
         "--mlp-score", default=None, metavar="PATH",
         help="CSV with join keys + a calibrated_score column (MLP baseline, mlp_baseline.py) -- omit to not draw this line",
+    )
+    parser.add_argument(
+        "--camembert-mlp-score", default=None, metavar="PATH",
+        help="CSV with join keys + a calibrated_score column (CamemBERT + MLP, phase2/evaluate.py) -- omit to not draw this line",
+    )
+    parser.add_argument(
+        "--extra-score", action="append", default=None, metavar="LABEL=PATH",
+        help="Additional named score CSV, repeatable -- e.g. --extra-score without_ner_score=data_phase2/camembert_mlp_without_ner_score_scores.csv. "
+        "For comparing ablation variants (phase2/train.py --no-*) that don't have their own fixed flag.",
     )
     parser.add_argument("--train-data", default=str(DEFAULT_TRAIN_DATA), help="Token-level train data CSV (for the --split filter)")
     parser.add_argument("--split", default="test", help="Filter to this document-level split before plotting; pass \"\" to use every candidate (default: test)")
@@ -335,10 +390,23 @@ def main():
         score_paths[LOGISTIC_LABEL] = Path(args.logistic_score)
     if args.mlp_score:
         score_paths[MLP_LABEL] = Path(args.mlp_score)
+    if args.camembert_mlp_score:
+        score_paths[CAMEMBERT_MLP_LABEL] = Path(args.camembert_mlp_score)
+    extra_labels = []
+    for item in args.extra_score or []:
+        label, sep, path = item.partition("=")
+        if not sep:
+            parser.error(f"--extra-score must be LABEL=PATH, got {item!r}")
+        score_paths[label] = Path(path)
+        extra_labels.append(label)
+
+    if not args.raw_score and not score_paths:
+        parser.error("nothing to plot -- pass --raw-score and/or one of --platt-scaling-score/--logistic-score/--mlp-score/--camembert-mlp-score/--extra-score")
 
     print(f"=== Step 1: Load {args.label_reliability} and merge in {list(score_paths)} ===")
     candidates_df, labels_present = load_and_merge(Path(args.label_reliability), score_paths)
-    print(f"{len(candidates_df)} candidates joined; scores present: {[RAW_LABEL] + labels_present}")
+    included = ([RAW_LABEL] if args.raw_score else []) + labels_present
+    print(f"{len(candidates_df)} candidates joined; scores present: {included}")
 
     if args.split:
         print(f"=== Step 2: Filter to split={args.split!r} ===")
@@ -350,11 +418,18 @@ def main():
     else:
         print("=== Step 2: No --split given, using every candidate ===")
 
+    validate_scores_present(candidates_df, labels_present, score_paths)
+
     labels_arr = candidates_df["reliability_score"].to_numpy().astype(int)
 
     print("=== Step 3: Compute ECE bins and Brier score / ECE / MCE per score ===")
-    label_colors = {RAW_LABEL: CATEGORICAL_RED, PLATT_LABEL: CATEGORICAL_BLUE, LOGISTIC_LABEL: STATUS_GOOD, MLP_LABEL: CATEGORICAL_ORANGE}
-    score_columns = {RAW_LABEL: "ner_score"}
+    label_colors = {
+        RAW_LABEL: CATEGORICAL_RED, PLATT_LABEL: CATEGORICAL_BLUE, LOGISTIC_LABEL: STATUS_GOOD,
+        MLP_LABEL: CATEGORICAL_ORANGE, CAMEMBERT_MLP_LABEL: CATEGORICAL_PURPLE,
+    }
+    for i, label in enumerate(extra_labels):
+        label_colors[label] = EXTRA_COLOR_PALETTE[i % len(EXTRA_COLOR_PALETTE)]
+    score_columns = {RAW_LABEL: "ner_score"} if args.raw_score else {}
     score_columns.update({label: f"{label}_calibrated_score" for label in labels_present})
 
     series = []
@@ -409,7 +484,10 @@ def main():
 
     print(f"=== Step 8: Save bins table (bin, true, {', '.join(all_labels)}) ===")
     other_scores = {label: candidates_df[score_columns[label]].to_numpy() for label in labels_present}
-    bins_table = build_bins_table(candidates_df[score_columns[RAW_LABEL]].to_numpy(), labels_arr, other_scores)
+    # Bins are always anchored to raw ner_score (build_bins_table's own methodology --
+    # "candidates are grouped into bins by the RAW score only", see its docstring), even
+    # if --raw-score wasn't passed and raw isn't itself one of the plotted series above.
+    bins_table = build_bins_table(candidates_df["ner_score"].to_numpy(), labels_arr, other_scores)
     print(bins_table.to_string(index=False))
     bins_table_out_path = default_bins_table_out_path(figures_dir, all_labels)
     bins_table.to_csv(bins_table_out_path, index=False)

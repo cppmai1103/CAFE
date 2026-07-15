@@ -1,0 +1,64 @@
+digraph Phase2Pipeline {
+    rankdir=TB;
+    bgcolor="#fcfcfb";
+    fontname="Helvetica";
+    node [fontname="Helvetica", fontsize=11, style="filled,rounded", shape=box, penwidth=1.2];
+    edge [fontname="Helvetica", fontsize=9, color="#898781", fontcolor="#52514e"];
+
+    labelloc="t";
+    label="Phase 2 pipeline (src/phase2/)";
+    fontsize=18;
+    fontcolor="#0b0b0b";
+
+    node [shape=note, fillcolor="#fcfcfb", color="#898781"];
+    train_data [label="data/\nhipe2020_train_fr_train_data.csv\n(doc tokens, dictionary_score, split)"];
+    label_rel [label="data/\nlabel_reliability_type_only.csv\n(entities, ner_score, reliability_score)"];
+
+    node [shape=box, style="filled,rounded", fillcolor="#2a78d6", fontcolor="white", color="#2a78d6"];
+    build_windows [label="build_candidate_windows.py\nSS0-6: ±16-word window per candidate,\ndict_flag (GOOD/BAD/PUNCT)"];
+
+    node [shape=note, fillcolor="#fcfcfb", fontcolor="#0b0b0b", color="#898781"];
+    windows_jsonl [label="data_phase2/\nphase2_candidate_windows.jsonl\n(111,965 candidates)"];
+
+    node [shape=box, style="filled,rounded", fillcolor="#8e5cd9", fontcolor="white", color="#8e5cd9"];
+    tokenize_windows [label="tokenize_windows.py\nSS9-10: subword align + truncation\n(verification pass, optional)"];
+    dataset [label="dataset.py\nPhase2WindowDataset\ntokenizes on the fly, collate() pads per-batch"];
+
+    node [shape=box, style="filled,rounded", fillcolor="#e8871e", fontcolor="white", color="#e8871e"];
+    train [label="train.py\ntrain=expert_train + gate_train\nearly-stop on val=calibration"];
+
+    node [shape=component, style="filled", fillcolor="#fdf1e2", fontcolor="#0b0b0b", color="#e8871e"];
+    model_py [label="model.py\nPhase2Model architecture\n(see model_architecture.png)"];
+
+    node [shape=note, fillcolor="#fcfcfb", fontcolor="#0b0b0b", color="#898781"];
+    checkpoint [label="checkpoints_phase2/\ncamembert_mlp.pt\n(trainable params only, ~6.5MB)"];
+    curve_png [label="figures/modeling/\nphase2_track_training.png"];
+
+    node [shape=box, style="filled,rounded", fillcolor="#0ca30c", fontcolor="white", color="#0ca30c"];
+    evaluate [label="evaluate.py\nscores one split (default: test)"];
+
+    node [shape=note, fillcolor="#fcfcfb", fontcolor="#0b0b0b", color="#898781"];
+    scores_csv [label="data_phase2/\nphase2_scores.csv\n(document_id, ..., calibrated_score)"];
+
+    node [shape=box, style="filled,rounded", fillcolor="#e34948", fontcolor="white", color="#e34948"];
+    plot [label="plot_reliability_diagram.py\n--camembert-mlp-score ...\n(shared across B0/B1/B3/MLP/Phase2)"];
+
+    node [shape=note, fillcolor="#fcfcfb", fontcolor="#0b0b0b", color="#898781"];
+    final_plots [label="figures/modeling/\nreliability_diagram_*.png\nmetrics_bar_*.png, roc_curve_*.png,\nrisk_coverage_*.png, bins_*.csv"];
+
+    train_data -> build_windows;
+    label_rel -> build_windows;
+    build_windows -> windows_jsonl;
+    windows_jsonl -> tokenize_windows [style=dashed, label="optional check"];
+    windows_jsonl -> dataset;
+    dataset -> train [label="train split\n(batched)"];
+    dataset -> evaluate [label="test split\n(batched)", style=dashed];
+    model_py -> train [style=dotted, dir=none, label="architecture"];
+    model_py -> evaluate [style=dotted, dir=none, label="load_model()"];
+    train -> checkpoint;
+    train -> curve_png;
+    checkpoint -> evaluate;
+    evaluate -> scores_csv;
+    scores_csv -> plot;
+    plot -> final_plots;
+}

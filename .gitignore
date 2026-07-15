@@ -9,4 +9,8 @@ try1/
 *.err
 *.out
 data/ner_overlap_conflicts.json
+src/phase2_simple 
+checkpoints_phase2_simple
+figures/phase2_simple/
+
 

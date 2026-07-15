@@ -7,3 +7,5 @@ pybloomfiltermmap3
 huggingface_hub
 captum
 scikit-learn
+sentencepiece
+protobuf
