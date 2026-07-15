@@ -1,7 +1,7 @@
 # Pipeline
 
 Current end-to-end run order, matching `script.sh`. Each stage lists the scripts, their
-inputs/outputs, and where they live in `src/`. See `docs/phase1_manual.md` for the
+inputs/outputs, and where they live in `src/`. See `docs/phase1_manual_features.md` for the
 methodology behind splits/features/metrics; this doc just tracks what actually runs and
 in what order.
 
@@ -18,8 +18,8 @@ torch/cu124) and runs everything below via `sbatch` on the cluster.
 | `analysis/analyze_data_splits.py` | train data CSV | `figures/data_analysis/documents_per_split.png`, `entity_type_breakdown_per_split.png` |
 | `analysis/plot_ocr_quality_distributions.py` | train data CSV | `figures/data_analysis/dictionary_score_counts.png`, `document_ocr_mean_distribution.png`, `sentence_ocr_mean_distribution.png` |
 
-Splitting (`docs/phase1_manual.md` SS6.1) is per-document: `expert_train` 50%, `gate_train`
-20%, `calibration` 10%, `test` 20% -- so no document's context leaks across splits.
+Splitting (`docs/phase1_manual_features.md` SS6.1) is per-document: `train` 70%, `val` 10%, `test`
+20% -- so no document's context leaks across splits.
 `preprocessing/ocr_dictionary_check.py` is the bloom-filter dictionary-membership check
 `preprocessing_data.py` calls into (not run standalone).
 
@@ -61,14 +61,14 @@ All read `hipe2020_train_fr_gliner_token_format_threshold0.5.csv`, output to
 
 | Script | Input | Output |
 |---|---|---|
-| `modeling/platt_scaling.py` | `label_reliability_type_only.csv` | `data/platt_scaling.csv` (B1: `calibrated_score` fit on `expert_train`/train, early-stopped on `calibration`/val, scored on every split), `figures/modeling/platt_scaling_fit.png`, `figures/modeling/platt_scaling_track_training.png` |
-| `modeling/logistic_regression.py` | `logistic_regression_data.csv` | `data/logistic_regression.csv` (B3: `calibrated_score` fit on `expert_train`/train, early-stopped on `calibration`/val, scored on every split), `figures/modeling/logistic_regression_weights.png`, `figures/modeling/logistic_regression_track_training.png` |
-| `modeling/mlp_baseline.py` | `logistic_regression_data.csv` | `data/mlp_baseline.csv` (MLP: same B3 feature matrix, `Linear(d,32)->ReLU->Dropout(0.1)->Linear(32,1)` fit on `expert_train`/train, early-stopped on `calibration`/val, scored on every split), `figures/modeling/mlp_baseline_track_training.png` |
+| `modeling/platt_scaling.py` | `label_reliability_type_only.csv` | `data/platt_scaling.csv` (B1: `calibrated_score` fit on `train`, early-stopped on `val`, scored on every split), `figures/modeling/platt_scaling_fit.png`, `figures/modeling/platt_scaling_track_training.png` |
+| `modeling/logistic_regression.py` | `logistic_regression_data.csv` | `data/logistic_regression.csv` (B3: `calibrated_score` fit on `train`, early-stopped on `val`, scored on every split), `figures/modeling/logistic_regression_weights.png`, `figures/modeling/logistic_regression_track_training.png` |
+| `modeling/mlp_baseline.py` | `logistic_regression_data.csv` | `data/mlp_baseline.csv` (MLP: same B3 feature matrix, `Linear(d,32)->ReLU->Dropout(0.1)->Linear(32,1)` fit on `train`, early-stopped on `val`, scored on every split), `figures/modeling/mlp_baseline_track_training.png` |
 | `modeling/plot_reliability_diagram.py --platt-scaling-score data/platt_scaling.csv --logistic-score data/logistic_regression.csv --mlp-score data/mlp_baseline.csv` | `label_reliability_type_only.csv` + all three scores above | see below |
 
 B0 (raw `ner_score`) is always included; B1/B3/MLP are each drawn only if their
 `--platt-scaling-score`/`--logistic-score`/`--mlp-score` CSV is given. Default `--split
-test` (final evaluation only, per `docs/phase1_manual.md` SS6.1). Outputs, all in
+test` (final evaluation only, per `docs/phase1_manual_features.md` SS6.1). Outputs, all in
 `figures/modeling/`:
 
 - `reliability_diagram_<labels>.png` -- calibration curve (x = mean predicted probability, y = empirical accuracy)
@@ -77,21 +77,19 @@ test` (final evaluation only, per `docs/phase1_manual.md` SS6.1). Outputs, all i
 - `risk_coverage_<labels>.png` -- discrimination (risk vs coverage)
 - `bins_<labels>.csv` -- per-bin `true`/raw/platt_scaling/logistic/mlp + `delta_<label>` columns
 
-B1, B3, and the MLP baseline all fit on `expert_train` and treat `calibration` as a
-validation split (never fit on, only watched). B1/B3 use `training_curve.py`'s
-`fit_logistic_with_curve`, which fakes per-epoch checkpoints for sklearn's
-`LogisticRegression` (`warm_start=True, max_iter=1` called once per loop iteration, since
-sklearn's `fit()` has no real per-iteration callback) so train/val log loss can be
-tracked and early-stopped (default `--patience` 15). `mlp_baseline.py` uses real PyTorch
-epochs instead (genuine backward passes, real `nn.Dropout`) -- both approaches return the
-best epoch's/iteration's parameters rather than the last, and both save a
-`<model>_track_training.png` curve. This deliberately supersedes `docs/phase1_manual.md`
-SS6.1's original fit-split choice (B1 on `calibration`, B3 on `expert_train`) -- B1/B3/MLP
-now all get the same train/val treatment regardless of model class; only `test` stays
-reserved for the final reported number in every case. The MLP baseline needs far more
-epochs to converge than B1/B3's L-BFGS-based fit (full-batch Adam early-stops around
-epoch ~1100-1200 by default vs. B1's ~10 and B3's ~30-50) since gradient descent takes
-many more, much smaller steps than a quasi-Newton solver -- this is expected, not a bug.
+B1, B3, and the MLP baseline all fit on `train` and treat `val` as a validation split
+(never fit on, only watched) -- the same train/val treatment regardless of model class;
+only `test` stays reserved for the final reported number in every case. B1/B3 use
+`training_curve.py`'s `fit_logistic_with_curve`, which fakes per-epoch checkpoints for
+sklearn's `LogisticRegression` (`warm_start=True, max_iter=1` called once per loop
+iteration, since sklearn's `fit()` has no real per-iteration callback) so train/val log
+loss can be tracked and early-stopped (default `--patience` 15). `mlp_baseline.py` uses
+real PyTorch epochs instead (genuine backward passes, real `nn.Dropout`) -- both
+approaches return the best epoch's/iteration's parameters rather than the last, and both
+save a `<model>_track_training.png` curve. The MLP baseline needs far more epochs to
+converge than B1/B3's L-BFGS-based fit (full-batch Adam early-stops around epoch
+~1100-1200 by default vs. B1's ~10 and B3's ~30-50) since gradient descent takes many
+more, much smaller steps than a quasi-Newton solver -- this is expected, not a bug.
 
 Metrics split into two families (see `modeling/metrics.py`'s module docstring):
 **calibration** (Brier/ECE/MCE -- does the score's value match true probability) vs

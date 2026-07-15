@@ -26,7 +26,7 @@ right_* columns are None when the candidate's span didn't resolve to any train-d
 (shouldn't happen in practice; see gliner/extract_ner_features.py) or when no context
 token on that side was scoreable.
 
-Features (docs/phase1_manual.md SS4.3):
+Features (docs/phase1_manual_features.md SS4.3):
     left_context_ocr_mean_10            -- known-word rate over up to 10 tokens before the span
     right_context_ocr_mean_10           -- known-word rate over up to 10 tokens after the span
     context_ocr_min_10                  -- min known-word flag across both sides combined
@@ -58,10 +58,10 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from preprocessing.preprocessing_data import DEFAULT_OUT as DEFAULT_TRAIN_DATA
 from gliner.deduplicate_ner_features import DEFAULT_OUT as DEFAULT_NER_FEATURES
 
-DATA_DIR = Path(__file__).parent.parent.parent / "data"
+DATA_DIR = Path(__file__).parent.parent.parent / "data" / "data_baseline"
 DEFAULT_OUT = DATA_DIR / "context_features.csv"
 
-CONTEXT_WINDOW = 10  # tokens each side, per docs/phase1_manual.md SS4.3
+CONTEXT_WINDOW = 10  # tokens each side, per docs/phase1_manual_features.md SS4.3
 
 
 def compute_context_features(ner_df: pd.DataFrame, tokens_df: pd.DataFrame) -> pd.DataFrame:

@@ -22,7 +22,7 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import pandas as pd
 
-DATA_DIR = Path(__file__).parent.parent.parent / "data"
+DATA_DIR = Path(__file__).parent.parent.parent / "data" / "data_baseline"
 DEFAULT_TRAIN_DATA = DATA_DIR / "hipe2020_train_fr_train_data.csv"
 DEFAULT_FIGURES_DIR = Path(__file__).parent.parent.parent / "figures" / "data_analysis"
 

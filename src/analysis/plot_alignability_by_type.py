@@ -40,7 +40,7 @@ from analyze_gliner_mismatches import (
     load_and_normalize,
 )
 
-DATA_DIR = Path(__file__).parent.parent.parent / "data"
+DATA_DIR = Path(__file__).parent.parent.parent / "data" / "data_baseline"
 DEFAULT_FIGURES_DIR = Path(__file__).parent.parent.parent / "figures" / "ner_analysis"
 DEFAULT_THRESHOLD = 0.5
 

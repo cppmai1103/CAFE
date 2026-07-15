@@ -29,7 +29,7 @@ from matplotlib.colors import LinearSegmentedColormap
 from sklearn.metrics import precision_recall_fscore_support
 from tqdm import tqdm
 
-DATA_DIR = Path(__file__).parent.parent.parent / "data"
+DATA_DIR = Path(__file__).parent.parent.parent / "data" / "data_baseline"
 DEFAULT_TOKEN_FORMAT = DATA_DIR / "hipe2020_train_fr_gliner_token_format_threshold0.5.csv"
 DEFAULT_FIGURES_DIR = Path(__file__).parent.parent.parent / "figures" / "ner_analysis"
 

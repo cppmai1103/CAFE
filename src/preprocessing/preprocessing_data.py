@@ -5,10 +5,9 @@ Output columns:
 - the source file's own columns (TOKEN, NE-COARSE-LIT, ..., MISC)
 - document_id prepended and sentence_id, token_id, split, dictionary_score, sentence_ocr_mean, document_ocr_mean appended
 
-Split (docs/phase1_manual.md SS6.1): 
-- expert_train (50%)
-- gate_train (20%)
-- calibration (10%)
+Split:
+- train (70%)
+- val (10%)
 - test (20%)
 Splitting is done:
 - per document (every token/sentence of a document gets the same split), not per token/candidate
@@ -59,11 +58,11 @@ HIPE_URL = (
 )
 DOC_ID_RE = re.compile(r"^#\s*hipe2022:document_id\s*=\s*(.+)$")
 
-DATA_DIR = Path(__file__).parent.parent.parent / "data"
+DATA_DIR = Path(__file__).parent.parent.parent / "data" / "data_baseline"
 DEFAULT_OUT = DATA_DIR / "hipe2020_train_fr_train_data.csv"
 
-# Phase 1 data split proportions (docs/phase1_manual.md SS6.1).
-SPLIT_PROPORTIONS = {"expert_train": 0.5, "gate_train": 0.2, "calibration": 0.1, "test": 0.2}
+# Data split proportions, document-level.
+SPLIT_PROPORTIONS = {"train": 0.7, "val": 0.1, "test": 0.2}
 DEFAULT_SPLIT_SEED = 42
 
 
@@ -122,20 +121,19 @@ def assign_token_ids(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def assign_splits(document_ids, seed: int = DEFAULT_SPLIT_SEED) -> dict:
-    """Assign each document to one of Phase 1's four splits (docs/phase1_manual.md SS6.1:
-    expert_train 50%, gate_train 20%, calibration 10%, test 20%). Splitting is done by
-    document, not by individual token/candidate, so that no document's sentences leak
-    across splits. Deterministic given `seed`."""
+    """Assign each document to train (70%) / val (10%) / test (20%) -- see
+    SPLIT_PROPORTIONS. Splitting is done by document, not by individual token/candidate,
+    so that no document's sentences leak across splits. Deterministic given `seed`."""
     unique_ids = sorted(set(document_ids))
     shuffled = np.random.RandomState(seed).permutation(unique_ids)
 
     n = len(shuffled)
     counts = {name: round(n * frac) for name, frac in SPLIT_PROPORTIONS.items()}
-    counts["expert_train"] += n - sum(counts.values())  # absorb any rounding remainder
+    counts["train"] += n - sum(counts.values())  # absorb any rounding remainder
 
     split_of = {}
     cursor = 0
-    for name in ["expert_train", "gate_train", "calibration", "test"]:
+    for name in ["train", "val", "test"]:
         for doc_id in shuffled[cursor : cursor + counts[name]]:
             split_of[doc_id] = name
         cursor += counts[name]

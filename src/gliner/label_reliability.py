@@ -1,5 +1,5 @@
 """Compute label_reliable, the ground-truth target for Phase 1 baselines B0/B1/B3: per
-docs/phase1_manual.md SS3, a candidate (a predicted span + type from ner_features.csv) is
+docs/phase1_manual_features.md SS3, a candidate (a predicted span + type from ner_features.csv) is
 "reliable" (label_reliable = 1) iff it matches a gold entity's type. Two modes for what
 "matches" means (--mode):
 
@@ -51,7 +51,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from gliner.deduplicate_ner_features import DEFAULT_OUT as DEFAULT_NER_FEATURES
 from preprocessing.preprocessing_data import DEFAULT_OUT as DEFAULT_TRAIN_DATA
 
-DATA_DIR = Path(__file__).parent.parent.parent / "data"
+DATA_DIR = Path(__file__).parent.parent.parent / "data" / "data_baseline"
 
 
 def default_out_path(mode: str) -> Path:

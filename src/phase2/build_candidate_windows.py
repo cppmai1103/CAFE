@@ -1,4 +1,4 @@
-"""Phase 2 Stage 0 (docs/new_phase2.md SS33 checklist items 1-4): build one
+"""Phase 2 Stage 0 (docs/phase2_learned_features.md SS33 checklist items 1-4): build one
 candidate-specific context window per NER candidate, word-level (no subword tokenization
 yet -- that's tokenize_windows.py, SS9-10).
 
@@ -11,7 +11,7 @@ candidate generation, no new labeling):
         gliner/label_reliability.py -- no separate ner_features.csv load needed here.
 
 start_token_id/end_token_id are INCLUSIVE (first/last overlapping token), unlike
-docs/new_phase2.md SS2's target_end_doc, which is EXCLUSIVE
+docs/phase2_learned_features.md SS2's target_end_doc, which is EXCLUSIVE
 (doc_tokens[target_start_doc:target_end_doc]) -- converted once here
 (target_end_doc = end_token_id + 1) so every downstream Phase 2 script can use plain
 Python slicing.
@@ -58,7 +58,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from gliner.label_reliability import default_out_path as default_label_reliability_path
 from preprocessing.preprocessing_data import DEFAULT_OUT as DEFAULT_TRAIN_DATA
 
-PHASE2_DATA_DIR = Path(__file__).parent.parent.parent / "data_phase2"
+PHASE2_DATA_DIR = Path(__file__).parent.parent.parent / "data" / "data_phase2"
 DEFAULT_LABEL_RELIABILITY = default_label_reliability_path("type_only")
 DEFAULT_OUT = PHASE2_DATA_DIR / "phase2_candidate_windows.jsonl"
 
@@ -96,7 +96,7 @@ def build_window(
     start_token_id: int, end_token_id: int,
     window_left: int, window_right: int,
 ) -> tuple[list[str], list[str], int, int]:
-    """docs/new_phase2.md SS3: word-level candidate window centered on the target span.
+    """docs/phase2_learned_features.md SS3: word-level candidate window centered on the target span.
     start_token_id/end_token_id are INCLUSIVE (Phase 1 convention); converted to an
     EXCLUSIVE end here so the rest of this function is plain Python slicing."""
     s = int(start_token_id)
@@ -120,8 +120,8 @@ def main():
         help="label_reliability_*.csv (see gliner/label_reliability.py) -- candidates, entity_text, predicted_type, ner_score, and reliability_score all come from this one file",
     )
     parser.add_argument("--out", default=str(DEFAULT_OUT), help="Output JSONL path")
-    parser.add_argument("--window-left", type=int, default=DEFAULT_WINDOW_LEFT, help="Word tokens of left context (docs/new_phase2.md SS3 default: 64)")
-    parser.add_argument("--window-right", type=int, default=DEFAULT_WINDOW_RIGHT, help="Word tokens of right context (docs/new_phase2.md SS3 default: 64)")
+    parser.add_argument("--window-left", type=int, default=DEFAULT_WINDOW_LEFT, help="Word tokens of left context (docs/phase2_learned_features.md SS3 default: 64)")
+    parser.add_argument("--window-right", type=int, default=DEFAULT_WINDOW_RIGHT, help="Word tokens of right context (docs/phase2_learned_features.md SS3 default: 64)")
     parser.add_argument("--limit", type=int, default=None, help="Only process the first N candidates (smoke test)")
     parser.add_argument("--print-examples", type=int, default=20, help="Print this many random examples for the SS33 sanity check (0 to skip)")
     parser.add_argument("--seed", type=int, default=42, help="Random seed for --print-examples sampling")

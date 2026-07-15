@@ -2,19 +2,19 @@
 simple pooling + type/score embeddings + MLP head) -- the "minimal first model" from
 SS34, no target-aware attention, no latent MoE (those are later additions, SS22/SS25).
 
-Split roles match dataset.py's SPLITS: train = expert_train union gate_train (70%),
-val = calibration (10%) -- early-stopped on, never backpropagated through. test (20%) is
-untouched here; evaluate.py scores it separately once a checkpoint exists.
+Split roles match dataset.py's SPLITS: train (70%), val (10%) -- early-stopped on, never
+backpropagated through, test (20%) is untouched here; evaluate.py scores it separately
+once a checkpoint exists.
 
 Unlike src/modeling/mlp_baseline.py's full-batch fit (small tabular model, ~80 features),
 this is mini-batch SGD over a large frozen-encoder model -- one gradient step per batch,
-not per epoch. Per docs/new_phase2.md SS29: batch size 16-32, lr 1e-3 (3e-4 fallback if
+not per epoch. Per docs/phase2_learned_features.md SS29: batch size 16-32, lr 1e-3 (3e-4 fallback if
 unstable), 10-30 epochs. Training-forward passes run WITHOUT torch.no_grad() (SS11:
 gradients must reach the side embeddings through the frozen encoder); validation-forward
 passes run WITH torch.no_grad() (pure inference, no backward pass planned, so there's no
 reason to build the graph at all).
 
-Ablations (docs/new_phase2.md SS31): --no-ner-score / --no-type / --no-dict-flag /
+Ablations (docs/phase2_learned_features.md SS31): --no-ner-score / --no-type / --no-dict-flag /
 --no-target-flag each drop exactly one component from the full model -- see model.py's
 module docstring for exactly what each one removes. --score-features {full,logit_only,
 p_only} is a second, independent ablation dimension -- it doesn't remove NER-score
@@ -31,17 +31,19 @@ the full model's output:
 
 Output (paths default to <variant>.pt / <variant>_track_training.png unless --out /
 --figures-dir override them):
-    checkpoints_phase2/<variant>.pt -- best-val-loss epoch's weights + architecture
+    checkpoints/phase2/<variant>.pt -- best-val-loss epoch's weights + architecture
         config (model.save_checkpoint), loadable by evaluate.py via model.load_model.
-    figures/modeling/<variant>_track_training.png -- train/val loss curve (reuses
-        modeling/training_curve.py's plot_training_curve for visual consistency with
-        B1/B3/the MLP baseline's own track_training.png plots).
+    figures/modeling/train_tracking/<variant>_track_training.png -- train/val loss curve
+        (reuses modeling/training_curve.py's plot_training_curve for visual consistency
+        with B1/B3/the MLP baseline's own track_training.png plots; ablation/cross-encoder
+        script.sh calls override --figures-dir to keep each group's curves alongside its
+        own comparison plot, e.g. figures/ablation/embeddings/train_tracking/).
 
 Usage:
     python src/phase2/train.py
     python src/phase2/train.py --batch-size 32 --lr 3e-4 --max-epochs 30
     python src/phase2/train.py --limit 40 --max-epochs 2 --batch-size 4  # smoke test
-    python src/phase2/train.py --no-ner-score   # ablation: saves checkpoints_phase2/camembert_mlp_without_ner_score.pt
+    python src/phase2/train.py --no-ner-score   # ablation: saves checkpoints/phase2/camembert_mlp_without_ner_score.pt
 """
 
 from __future__ import annotations
@@ -68,9 +70,9 @@ from phase2.model import (
 )
 from phase2.tokenize_windows import DEFAULT_MAX_LENGTH
 
-CHECKPOINTS_DIR = Path(__file__).parent.parent.parent / "checkpoints_phase2"
+CHECKPOINTS_DIR = Path(__file__).parent.parent.parent / "checkpoints" / "phase2"
 DEFAULT_CHECKPOINT_OUT = CHECKPOINTS_DIR / "camembert_mlp.pt"
-DEFAULT_FIGURES_DIR = Path(__file__).parent.parent.parent / "figures" / "modeling"
+DEFAULT_FIGURES_DIR = Path(__file__).parent.parent.parent / "figures" / "modeling" / "train_tracking"
 
 
 def run_epoch(model: Phase2Model, loader: DataLoader, loss_fn, optimizer, device: str, train: bool, desc: str) -> float:
@@ -104,7 +106,7 @@ def run_epoch(model: Phase2Model, loader: DataLoader, loss_fn, optimizer, device
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--windows", default=str(DEFAULT_WINDOWS), help="phase2_candidate_windows.jsonl (see build_candidate_windows.py)")
-    parser.add_argument("--encoder-name", default=DEFAULT_ENCODER_NAME, help="Frozen encoder (docs/new_phase2.md SS11: CamemBERT or XLM-R)")
+    parser.add_argument("--encoder-name", default=DEFAULT_ENCODER_NAME, help="Frozen encoder (docs/phase2_learned_features.md SS11: CamemBERT or XLM-R)")
     parser.add_argument("--max-length", type=int, default=DEFAULT_MAX_LENGTH, help="Max subword length per candidate")
     parser.add_argument("--d-type", type=int, default=DEFAULT_D_TYPE, help="Entity-type embedding dim (SS19: 32 or 64)")
     parser.add_argument("--d-score", type=int, default=DEFAULT_D_SCORE, help="NER-score embedding dim (SS19: 32 or 64)")
@@ -122,7 +124,7 @@ def main():
     parser.add_argument("--patience", type=int, default=3, help="Stop early after this many epochs with no val-loss improvement")
     parser.add_argument("--limit", type=int, default=None, help="Only use the first N train / N val candidates (smoke test)")
     parser.add_argument("--seed", type=int, default=42, help="torch/DataLoader shuffle seed")
-    parser.add_argument("--out", default=None, help="Checkpoint output path (default: checkpoints_phase2/<variant>.pt, derived from the ablation flags)")
+    parser.add_argument("--out", default=None, help="Checkpoint output path (default: checkpoints/phase2/<variant>.pt, derived from the ablation flags)")
     parser.add_argument("--figures-dir", default=str(DEFAULT_FIGURES_DIR), help="Directory to save the training-curve plot into")
     args = parser.parse_args()
 
@@ -146,7 +148,7 @@ def main():
     if args.limit is not None:
         train_dataset.records = train_dataset.records[: args.limit]
         val_dataset.records = val_dataset.records[: args.limit]
-    print(f"{len(train_dataset)} train (expert_train+gate_train) candidates, {len(val_dataset)} val (calibration) candidates")
+    print(f"{len(train_dataset)} train candidates, {len(val_dataset)} val candidates")
 
     generator = torch.Generator().manual_seed(args.seed)
     train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True, collate_fn=train_dataset.collate, generator=generator)
@@ -165,7 +167,7 @@ def main():
     optimizer = torch.optim.Adam(model.trainable_parameters(), lr=args.lr, weight_decay=args.weight_decay)
     loss_fn = torch.nn.BCEWithLogitsLoss()
 
-    print("=== Step 3: Train (train=expert_train+gate_train), early-stop on val (calibration) ===")
+    print("=== Step 3: Train (train), early-stop on val ===")
     train_losses, val_losses = [], []
     best_val_loss = float("inf")
     best_epoch = 0
@@ -207,7 +209,7 @@ def main():
     figures_dir = Path(args.figures_dir)
     figures_dir.mkdir(parents=True, exist_ok=True)
     curve_out_path = figures_dir / f"{variant}_track_training.png"
-    plot_training_curve(train_losses, val_losses, best_epoch, f"{variant}: train (expert_train+gate_train) vs val (calibration) loss", curve_out_path)
+    plot_training_curve(train_losses, val_losses, best_epoch, f"{variant}: train vs val loss", curve_out_path)
     print(f"Saved {curve_out_path}")
 
     print("=== Done ===")

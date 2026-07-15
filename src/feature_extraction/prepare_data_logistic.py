@@ -1,6 +1,6 @@
 """Combine deduplicate_ner_features.csv, ocr_features.csv, context_features.csv, and
 reliability_score (from gliner/label_reliability.py's output) into one row-per-candidate
-table, with split (expert_train/gate_train/calibration/test) attached -- this is the
+table, with split (train/val/test) attached -- this is the
 ready-to-use input for training and evaluating the B3 logistic regression model
 (train_b3_logistic_regression.py / calibrate_ner_confidence.py), so those scripts don't
 each have to re-join the feature files and re-derive the label themselves.
@@ -40,7 +40,7 @@ from gliner.label_reliability import default_out_path as default_label_reliabili
 from feature_extraction.extract_ocr_features import DEFAULT_OUT as DEFAULT_OCR_FEATURES
 from feature_extraction.extract_context_features import DEFAULT_OUT as DEFAULT_CONTEXT_FEATURES
 
-DATA_DIR = Path(__file__).parent.parent.parent / "data"
+DATA_DIR = Path(__file__).parent.parent.parent / "data" / "data_baseline"
 DEFAULT_LABEL_RELIABILITY = default_label_reliability_path("type_only")
 DEFAULT_OUT = DATA_DIR / "logistic_regression_data.csv"
 

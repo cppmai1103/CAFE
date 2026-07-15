@@ -9,7 +9,7 @@ model:
 
     Linear(d, hidden_dim) -> ReLU -> Dropout(dropout) -> Linear(hidden_dim, 1)
 
-(the same expert-MLP shape spec'd in docs/phase1_manual.md's shared expert-gate formula,
+(the same expert-MLP shape spec'd in docs/phase1_manual_features.md's shared expert-gate formula,
 applied here over the full concatenated feature vector rather than one evidence group).
 
 Why PyTorch and not sklearn's MLPClassifier: sklearn has no dropout support at all, and
@@ -21,14 +21,14 @@ during the training forward pass, off during eval) matter more here, not less --
 gives both natively. torch is already provisioned by script.sh (installed for GLiNER2),
 so this adds no new dependency.
 
-Split roles (same as B1/B3 -- docs/phase1_manual.md SS6.1's four-way document split,
-reused as train/val/test):
-    expert_train -- train: the MLP's weights are fit here (StandardScaler and the
-        feature matrix's imputation medians/missing-indicator set are also derived from
-        expert_train only, then reused as-is on every other split).
-    calibration  -- val: real forward passes (dropout off) every epoch, used only for
-        early stopping; never backpropagated through.
-    test         -- test: not touched until the final scoring pass.
+Split roles (same as B1/B3 -- document-level train/val/test, see
+preprocessing/preprocessing_data.py):
+    train -- the MLP's weights are fit here (StandardScaler and the feature matrix's
+        imputation medians/missing-indicator set are also derived from train only, then
+        reused as-is on every other split).
+    val   -- real forward passes (dropout off) every epoch, used only for early stopping;
+        never backpropagated through.
+    test  -- not touched until the final scoring pass.
 
 Training loss (used for the gradient step) is computed in train mode (dropout active);
 the train_loss logged and plotted is a separate eval-mode (dropout off) forward pass over
@@ -43,8 +43,8 @@ Output:
         ner_score, calibrated_score (one row per candidate, every split) -- same shape as
         platt_scaling.csv/logistic_regression.csv; ready for
         plot_reliability_diagram.py's --mlp-score.
-    mlp_baseline_track_training.png -- train (expert_train) vs. val (calibration) log
-        loss per epoch, with the best (early-stopped) epoch marked.
+    mlp_baseline_track_training.png -- train vs. val log loss per epoch, with the best
+        (early-stopped) epoch marked.
 
 Usage:
     python src/modeling/mlp_baseline.py
@@ -70,9 +70,9 @@ from feature_extraction.prepare_data_logistic import DEFAULT_OUT as DEFAULT_DATA
 from logistic_regression import build_feature_matrix
 from training_curve import plot_training_curve
 
-DATA_DIR = Path(__file__).parent.parent.parent / "data"
+DATA_DIR = Path(__file__).parent.parent.parent / "data" / "data_baseline"
 DEFAULT_OUT = DATA_DIR / "mlp_baseline.csv"
-DEFAULT_FIGURES_DIR = Path(__file__).parent.parent.parent / "figures" / "modeling"
+DEFAULT_FIGURES_DIR = Path(__file__).parent.parent.parent / "figures" / "modeling" / "train_tracking"
 
 KEY_COLS = ["document_id", "sentence_id", "start_token_id", "end_token_id"]
 
@@ -118,7 +118,7 @@ def fit_mlp_with_curve(
     best_state: dict | None = None
     epochs_without_improvement = 0
 
-    progress = tqdm(range(1, max_epochs + 1), desc="Fitting MLP baseline (train=expert_train, val=calibration)", unit="epoch")
+    progress = tqdm(range(1, max_epochs + 1), desc="Fitting MLP baseline (train/val)", unit="epoch")
     for epoch in progress:
         model.train()
         optimizer.zero_grad()
@@ -178,14 +178,14 @@ def main():
     print(f"{len(candidates_df)} candidates")
     print(candidates_df["split"].value_counts().to_string())
 
-    print("=== Step 2: Build feature matrix (expert_train medians + missing-indicator set) ===")
-    train_mask = candidates_df["split"] == "expert_train"
-    val_mask = candidates_df["split"] == "calibration"
+    print("=== Step 2: Build feature matrix (train medians + missing-indicator set) ===")
+    train_mask = candidates_df["split"] == "train"
+    val_mask = candidates_df["split"] == "val"
     X_train_df, fit_stats = build_feature_matrix(candidates_df[train_mask])
     y_train = candidates_df.loc[train_mask, "reliability_score"].astype(int)
     X_val_df, _ = build_feature_matrix(candidates_df[val_mask], fit_stats=fit_stats)
     y_val = candidates_df.loc[val_mask, "reliability_score"].astype(int)
-    print(f"{X_train_df.shape[1]} features, {len(X_train_df)} train (expert_train) candidates, {len(X_val_df)} val (calibration) candidates")
+    print(f"{X_train_df.shape[1]} features, {len(X_train_df)} train candidates, {len(X_val_df)} val candidates")
 
     print("=== Step 3: Standardize features (fit on train only) ===")
     scaler = StandardScaler()
@@ -222,7 +222,7 @@ def main():
     curve_out_path = figures_dir / "mlp_baseline_track_training.png"
     plot_training_curve(
         train_losses, val_losses, best_epoch,
-        "MLP baseline: train (expert_train) vs val (calibration) loss", curve_out_path,
+        "MLP baseline: train vs val loss", curve_out_path,
     )
     print(f"Saved {curve_out_path}")
 

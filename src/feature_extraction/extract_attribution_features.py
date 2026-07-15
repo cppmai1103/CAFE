@@ -101,7 +101,7 @@ from gliner.extract_ner_features import (
     build_sentence_texts,
 )
 
-DATA_DIR = Path(__file__).parent.parent.parent / "data"
+DATA_DIR = Path(__file__).parent.parent.parent / "data" / "data_baseline"
 DEFAULT_OUT = DATA_DIR / "hipe2020_train_fr_attribution_features.csv"
 
 METHODS = ["ig", "lime"]

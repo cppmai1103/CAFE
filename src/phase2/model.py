@@ -1,4 +1,4 @@
-"""Phase 2's first model (docs/new_phase2.md SS34 "Minimal first model" / SS35 "Final
+"""Phase 2's first model (docs/phase2_learned_features.md SS34 "Minimal first model" / SS35 "Final
 Phase 2 formula", simple-pooling + MLP-head variant only -- no target-aware attention,
 no latent MoE, both later additions per SS22/SS25):
 
@@ -18,7 +18,7 @@ frozen weights themselves never accumulate .grad (saving memory, and the optimiz
 ever sees trainable_parameters()), but the graph connecting inputs_embeds -> outputs is
 still fully differentiable.
 
-Ablations (docs/new_phase2.md SS31: "remove NER score / remove dictionary flags / remove
+Ablations (docs/phase2_learned_features.md SS31: "remove NER score / remove dictionary flags / remove
 target flag embeddings"; entity type is the same kind of span-level metadata as NER score,
 so it gets the same treatment): use_ner_score/use_type/use_dict_flag/use_target_flag each
 default True (the full model). Setting one False drops exactly that component:
@@ -33,13 +33,19 @@ default True (the full model). Setting one False drops exactly that component:
 A second, independent ablation dimension -- score_features -- doesn't remove the NER-score
 component, it simplifies what ScoreMLP sees (only meaningful when use_ner_score=True):
     "full" (default)  -- ScoreMLP input is [p, logit(p), 1-p], a Linear(3, d_score) first layer
+    "p_logit_only"     -- ScoreMLP input is [p, logit(p)], a Linear(2, d_score) first layer
     "logit_only"       -- ScoreMLP input is [logit(p)] only, Linear(1, d_score)
     "p_only"           -- ScoreMLP input is [p] only, Linear(1, d_score)
 p and 1-p are linearly redundant with each other for a first Linear layer (1-p = -p + 1,
 a fixed affine reparameterization), so "full"'s only genuinely new information over
-"p_only" is logit(p) -- included as its own variant to see whether the raw probability
-alone forces the (small, 32-unit) first layer to relearn that nonlinear near-0/near-1
-stretch from data instead of getting it for free.
+"p_only" is logit(p) -- "p_logit_only" drops just the redundant 1-p term and should, in
+theory, carry exactly the same information as "full" (nothing a linear layer can't
+already reconstruct from [p, logit(p)] alone); comparing it against "full" empirically
+checks whether that redundancy is actually harmless in practice, or whether having 1-p
+spelled out explicitly makes optimization measurably easier despite carrying no new
+information. "p_only" is included separately to see whether the raw probability alone
+forces the (small, 32-unit) first layer to relearn that nonlinear near-0/near-1 stretch
+from data instead of getting it for free from logit(p).
 
 variant_name() below turns whichever combination is active into the checkpoint/CSV naming
 convention train.py/evaluate.py use by default -- e.g. "camembert_mlp_ner_logit_only" or
@@ -71,7 +77,14 @@ DEFAULT_D_SCORE = 32
 DEFAULT_HEAD_HIDDEN = 512
 DEFAULT_HEAD_DROPOUT = 0.1
 DEFAULT_SCORE_FEATURES = "full"
-SCORE_FEATURES_CHOICES = ("full", "logit_only", "p_only")
+SCORE_FEATURES_CHOICES = ("full", "p_logit_only", "logit_only", "p_only")
+
+
+def score_input_dim_of(score_features: str) -> int:
+    """ScoreMLP's first-layer input width for a given score_features choice -- shared by
+    __init__ (building the layer) and parameter_breakdown (reporting its shape), so the
+    two can never drift apart."""
+    return {"full": 3, "p_logit_only": 2, "logit_only": 1, "p_only": 1}[score_features]
 
 
 def encoder_short_name(encoder_name: str) -> str:
@@ -165,7 +178,7 @@ class Phase2Model(nn.Module):
         if self.use_type:
             self.type_embedding = nn.Embedding(len(ENTITY_TYPE_VOCAB), d_type)
         if self.use_ner_score:
-            score_input_dim = 1 if self.score_features in ("logit_only", "p_only") else 3
+            score_input_dim = score_input_dim_of(self.score_features)
             self.score_mlp = nn.Sequential(
                 nn.Linear(score_input_dim, d_score),
                 nn.ReLU(),
@@ -224,7 +237,7 @@ class Phase2Model(nn.Module):
         if self.use_type:
             rows.append(("type_embedding (TypeEmb)", f"Embedding{tuple(self.type_embedding.weight.shape)}", True, n(self.type_embedding)))
         if self.use_ner_score:
-            score_input_dim = 1 if self.score_features in ("logit_only", "p_only") else 3
+            score_input_dim = score_input_dim_of(self.score_features)
             rows.append((f"score_mlp (ScoreMLP, score_features={self.score_features})", f"Linear({score_input_dim},{self.d_score})->ReLU->Linear({self.d_score},{self.d_score})", True, n(self.score_mlp)))
         v_dim = 4 * hidden_size + (self.d_type if self.use_type else 0) + (self.d_score if self.use_ner_score else 0)
         rows.append(("classifier (MLP head)", f"Linear({v_dim},{self.head_hidden})->ReLU->Dropout->Linear({self.head_hidden},1)", True, n(self.classifier)))
@@ -277,6 +290,8 @@ class Phase2Model(nn.Module):
                 score_input = logit_p.unsqueeze(-1)
             elif self.score_features == "p_only":
                 score_input = p.unsqueeze(-1)
+            elif self.score_features == "p_logit_only":
+                score_input = torch.stack([p, logit_p], dim=-1)
             else:  # "full"
                 score_input = torch.stack([p, logit_p, 1 - p], dim=-1)
             v_parts.append(self.score_mlp(score_input))

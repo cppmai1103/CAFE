@@ -2,7 +2,7 @@
 chart, an ROC curve, a risk-coverage curve, and a bins_<labels>.csv table: ner_score (raw,
 --raw-score), B1 (Platt scaling), B3 (logistic regression), the MLP baseline
 (mlp_baseline.py), and/or the Phase 2 model (frozen CamemBERT + MLP head,
-checkpoints_phase2/camembert_mlp.pt, scored via phase2/evaluate.py) are each drawn only if
+checkpoints/phase2/camembert_mlp.pt, scored via phase2/evaluate.py) are each drawn only if
 explicitly requested -- raw is no longer included by default; pass --raw-score to add it,
 same as every other score needs its own flag. At least one of --raw-score / the four
 --*-score flags / --extra-score must be given, or there's nothing to plot. The reliability
@@ -44,9 +44,9 @@ reliable -- against its mean predicted confidence (y). Perfect calibration is th
 diagonal; a curve above it means the score is underconfident in that range, below means
 overconfident.
 
-Splitting by train/calibration/test: label_reliability_type_only.csv has no split column
+Splitting by train/val/test: label_reliability_type_only.csv has no split column
 of its own (it's computed over every candidate) -- pass --train-data + --split (default:
-test, per docs/phase1_manual.md SS6.1's "test: final evaluation only") to filter to one
+test, per docs/phase1_manual_features.md's "test: final evaluation only") to filter to one
 split via the document-level split train_data.csv carries; pass --split "" to skip
 filtering and use every candidate.
 
@@ -74,7 +74,7 @@ from gliner.label_reliability import default_out_path as default_label_reliabili
 from preprocessing.preprocessing_data import DEFAULT_OUT as DEFAULT_TRAIN_DATA
 from metrics import auroc, brier_score_loss, excess_aurc, expected_calibration_error, maximum_calibration_error_from_bins, risk_coverage_curve, roc_curve
 
-DATA_DIR = Path(__file__).parent.parent.parent / "data"
+DATA_DIR = Path(__file__).parent.parent.parent / "data" / "data_baseline"
 DEFAULT_LABEL_RELIABILITY = default_label_reliability_path("type_only")
 DEFAULT_FIGURES_DIR = Path(__file__).parent.parent.parent / "figures" / "modeling"
 
@@ -113,7 +113,8 @@ DISPLAY_LABELS = {
     "mdeberta_v3": "mDeBERTa-v3 + MLP",
     "multilingual_e5": "multilingual-E5 + MLP",
     "xlm_roberta": "XLM-RoBERTa + MLP",
-    "camembert_simple_mlp": "CamemBERT + MLP (simple/marker-prompt)",
+    "camembert_simple_mlp": "CamemBERT + MLP (simple/marker-prompt, pool=one)",
+    "camembert_simple_mlp_average": "CamemBERT + MLP (simple/marker-prompt, pool=average)",
     "camembert_mlp_without_dict_flag": "CamemBERT + MLP (no dict flag)",
 }
 

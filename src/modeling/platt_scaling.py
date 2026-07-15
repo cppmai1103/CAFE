@@ -1,12 +1,11 @@
 """Fit Platt scaling (sigmoid calibration) on ner_score, then score every candidate (all
 splits) with the fitted model.
 
-Split roles (docs/phase1_manual.md SS6.1's four-way document split, reused here as
-train/val/test):
-    expert_train -- train: Platt scaling's 2 parameters (b0, b1) are fit here.
-    calibration  -- val: watched every epoch to catch overfitting and pick the best
-        epoch (early stopping); never used to fit.
-    test         -- test: only used for the final held-out fit-quality plot.
+Split roles (document-level train/val/test, see preprocessing/preprocessing_data.py):
+    train -- Platt scaling's 2 parameters (b0, b1) are fit here.
+    val   -- watched every epoch to catch overfitting and pick the best epoch (early
+        stopping); never used to fit.
+    test  -- only used for the final held-out fit-quality plot.
 
 Input: --label-reliability (default: label_reliability_type_only.csv, see
 gliner/label_reliability.py) for ner_score + reliability_score, joined with
@@ -28,13 +27,13 @@ Output:
         file directly.
     platt_scaling_fit.png -- the fitted sigmoid curve, with the test split's empirical
         per-bin accuracy overlaid so the fit's held-out generalization can be checked by
-        eye (fitting happens on expert_train, this plot never uses expert_train data).
-    platt_scaling_track_training.png -- train (expert_train) vs. val (calibration) log
-        loss per epoch, with the best (early-stopped) epoch marked.
+        eye (fitting happens on train, this plot never uses train data).
+    platt_scaling_track_training.png -- train vs. val log loss per epoch, with the best
+        (early-stopped) epoch marked.
 
 Usage:
     python src/modeling/platt_scaling.py
-    python src/modeling/platt_scaling.py --out data/platt_scaling.csv --figures-dir figures/modeling
+    python src/modeling/platt_scaling.py --out data/data_baseline/platt_scaling.csv --figures-dir figures/modeling/train_tracking
 """
 
 from __future__ import annotations
@@ -56,10 +55,10 @@ from preprocessing.preprocessing_data import DEFAULT_OUT as DEFAULT_TRAIN_DATA
 from metrics import expected_calibration_error
 from training_curve import fit_logistic_with_curve, plot_training_curve
 
-DATA_DIR = Path(__file__).parent.parent.parent / "data"
+DATA_DIR = Path(__file__).parent.parent.parent / "data" / "data_baseline"
 DEFAULT_LABEL_RELIABILITY = default_label_reliability_path("type_only")
 DEFAULT_OUT = DATA_DIR / "platt_scaling.csv"
-DEFAULT_FIGURES_DIR = Path(__file__).parent.parent.parent / "figures" / "modeling"
+DEFAULT_FIGURES_DIR = Path(__file__).parent.parent.parent / "figures" / "modeling" / "train_tracking"
 
 CATEGORICAL_BLUE = "#2a78d6"
 CATEGORICAL_RED = "#e34948"
@@ -85,7 +84,7 @@ def fit_platt_scaling(
         train_scores.reshape(-1, 1), train_labels,
         val_scores.reshape(-1, 1), val_labels,
         max_epochs=max_epochs, patience=patience,
-        desc="Fitting Platt scaling (train=expert_train, val=calibration)",
+        desc="Fitting Platt scaling (train/val)",
     )
     b0 = float(model.intercept_[0])
     b1 = float(model.coef_[0][0])
@@ -152,14 +151,14 @@ def main():
     candidates_df["split"] = candidates_df["document_id"].map(doc_to_split)
     print(candidates_df["split"].value_counts().to_string())
 
-    print("=== Step 2: Split expert_train (train) / calibration (val) ===")
-    train_df = candidates_df[candidates_df["split"] == "expert_train"]
+    print("=== Step 2: Split train / val ===")
+    train_df = candidates_df[candidates_df["split"] == "train"]
     train_scores = train_df["ner_score"].to_numpy()
     train_labels = train_df["reliability_score"].to_numpy().astype(int)
-    val_df = candidates_df[candidates_df["split"] == "calibration"]
+    val_df = candidates_df[candidates_df["split"] == "val"]
     val_scores = val_df["ner_score"].to_numpy()
     val_labels = val_df["reliability_score"].to_numpy().astype(int)
-    print(f"{len(train_df)} train (expert_train) candidates, {len(val_df)} val (calibration) candidates")
+    print(f"{len(train_df)} train candidates, {len(val_df)} val candidates")
 
     print("=== Step 3: Fit Platt scaling on train, early-stop on val ===")
     b0, b1, model, train_losses, val_losses, best_epoch = fit_platt_scaling(
@@ -192,7 +191,7 @@ def main():
     curve_out_path = figures_dir / "platt_scaling_track_training.png"
     plot_training_curve(
         train_losses, val_losses, best_epoch,
-        "Platt scaling: train (expert_train) vs val (calibration) loss", curve_out_path,
+        "Platt scaling: train vs val loss", curve_out_path,
     )
     print(f"Saved {curve_out_path}")
 

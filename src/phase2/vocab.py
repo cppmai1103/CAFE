@@ -1,4 +1,4 @@
-"""Integer vocabularies for Phase 2's side-channel embeddings (docs/new_phase2.md SS6).
+"""Integer vocabularies for Phase 2's side-channel embeddings (docs/phase2_learned_features.md SS6).
 Embedding layers need integer ids, never None -- every flag/type value used anywhere in
 Phase 2 must resolve to one of these.
 

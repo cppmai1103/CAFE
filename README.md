@@ -1,325 +1,178 @@
-# CAFE Project Overview and Two-Phase Experimental Plan
+# CAFE-TEI: Confidence-Aware NER Reliability Scoring
 
 ## 1. Project goal
 
-The goal of CAFE is to estimate a reliable confidence score for each named-entity candidate produced by an off-the-shelf NER model on OCR-derived historical newspapers.
-
-For each candidate entity `c`, the system outputs is :
+CAFE-TEI estimates a per-candidate reliability score for named-entity candidates produced
+by an off-the-shelf NER model (GLiNER2) over OCR-derived historical newspapers
+(HIPE-2022, French). Raw NER confidence is not enough on noisy OCR text -- a model can be
+confident about a wrong candidate when OCR noise, broken lines, or historical spelling
+variation mislead it. The project trains a second-stage model:
 
 ```text
-r(c) in [0, 1]
+NER candidate + context + OCR evidence -> reliability score r(c) in [0, 1]
 ```
 
-The output is candidate-level, not sentence-level or document-level. A sentence may contain several entities, and each entity receives its own score.
-
-Example:
+The prediction unit is one NER candidate (span + predicted type + NER confidence + source
+context), not a sentence or document. Example:
 
 ```json
 {
   "candidate_id": "issue_1908_04_17_page_3_cand_0021",
-  "context": "Le president Raymond Poincar6 arriva a Geneve.",
   "span_text": "Raymond Poincar6",
   "predicted_type": "PERSON",
   "ner_score": 0.94,
-  "reliability_score": 0.72
+  "calibrated_score": 0.72
 }
 ```
 
-Interpretation:
+Interpretation: the original NER model is confident, but because the OCR form is
+suspicious, the reliability model estimates only 0.72 reliability.
 
-```text
-The original NER model is confident, but because the OCR form is suspicious, the reliability verifier estimates only 0.72 reliability.
-```
+## 2. Two-phase design
 
-## 2. Main research question
-
-Historical newspaper digitization often provides OCR text, page layout, word-level OCR confidence, and facsimile links, but it does not necessarily provide named entities. The project asks:
-
-```text
-How can we enrich OCR-derived historical newspapers with named entities while estimating whether each automatic annotation is reliable?
-```
-
-The central problem is that raw NER confidence is not enough. A model can output a high score for a wrong candidate when OCR noise, layout artifacts, broken lines, or historical spelling variation mislead the model.
-
-The project therefore learns a second-stage reliability model:
-
-```text
-NER candidate + context + OCR evidence -> reliability score
-```
-
-## 3. Prediction unit and input unit
-
-The prediction unit is one NER candidate:
-
-```text
-candidate = span + predicted entity type + original NER confidence score + source context
-```
-
-The text input can be a sentence or a local window. The target candidate is marked explicitly inside the context.
-
-
-## 4. Shared candidate dataset for both phases
-
-Both Phase 1 and Phase 2 should use the same candidate dataset and evaluation protocol. This makes the comparison fair.
-
-### 4.1 Candidate generation
-
-Run one or more NER systems over the OCR-derived text.
-
-Possible candidate sources:
-
-```text
-GLiNER2
-French NER model
-MELHISSA or another historical entity-linking system
-Gazetteer-based candidate generation
-Optional LLM-based candidate generation for a small subset
-```
-
-For each predicted candidate, store:
-
-```text
-candidate_id
-source_document_id
-raw context text
-candidate span start/end offsets
-candidate surface string
-predicted entity type
-NER confidence score
-```
-
-### 4.2 Extract OCR quality in word-level 
-
-Store:
-
-```text
-word-level OCR confidence values
-```
-
-### 4.3 Context construction
-
-Recommended default:
-
-```text
-64 tokens before candidate + candidate span + 64 tokens after candidate
-```
-
-Alternative context units to compare:
-
-```text
-sentence containing the candidate
-fixed token window, such as +/- 64 or +/- 128 tokens
-```
-
-For historical OCR, a fixed local window is often safer than relying only on sentence segmentation.
-
-### 4.4 Annotation target
-
-Compare label predicted by model and grountruth label:
-
-```text
-label_reliable = 1 if the candidate is match with groundtruth
-label_reliable = 0 otherwise
-```
-
-## 4. Shared splits
-
-Use separate splits for experts, gates, calibration, and final testing.
-
-For Phase 1, use:
-
-```text
-expert_train: 50 percent
-gate_train: 20 percent
-calibration: 10 percent
-test: 20 percent
-```
-
-For Phase 2, use:
-
-```text
-train: 70 percent
-calibration: 10 percent
-test: 20 percent
-```
-
-For early stopping, split `train` into `train` and `dev`, or use cross-validation if data is limited.
-
-The train, calibration, and test set should be the same in two phases. 
-
-## 5. Two-phase research design
-
-The project is divided into two phases.
-
-### Phase 1: Manual experts plus learned gate
-
-Phase 1 is interpretable and controlled.
-
-Pipeline:
-
-```text
-manual feature extraction
--> human-defined evidence experts
--> train experts separately
--> freeze experts
--> compute expert logits
--> train adaptive gate
--> calibrated reliability score
-```
-
-Main purpose:
-
-```text
-Show which evidence families matter: NER confidence, OCR quality, context, correction stability.
-```
-
-Expected contribution:
-
-```text
-A transparent reliability model that learns adaptive weights instead of using fixed hand-written weights.
-```
-
-### Phase 2: Latent extraction plus jointly trained experts and gate
-
-Phase 2 reduces manual feature engineering.
-
-Pipeline:
-
-```text
-context with marked entity span
-+ token-level OCR confidence embeddings
-+ NER score/type embeddings
--> language model encoder
--> latent experts
--> gate
--> calibrated reliability score
-```
-
-Main purpose:
-
-```text
-Let the model learn useful evidence representations from hidden states instead of manually defining every feature and every expert.
-```
-
-Expected contribution:
-
-```text
-A neural OCR-aware span-targeted verifier with latent mixture-of-experts reliability scoring.
-```
-
-### Shared expert-gate formula:  
-
-For the first set of experiments, both phases use the same high-level reliability-scoring architecture. The difference between the two phases is not the final scoring mechanism, but how the evidence representation is obtained. Two phases should have the same number of experts. 
-
-A generic architecture has the following structure:
-
-Expert_j:
-
-| Step | Phase 1 | Phase 2 |
+| | Phase 1 | Phase 2 |
 |---|---|---|
-| Input | Manual feature group `X_j` | Candidate representation `h_c` |
-| Layer 1 | `Linear(d_j, 32)` | `Linear(hidden_dim, 256)` |
-| Activation | `ReLU` | `ReLU` |
-| Regularization | `Dropout(0.1)` | `Dropout(0.1)` |
-| Layer 2 | `Linear(32, 1)` | `Linear(256, 1)` |
-| Output | `z_j` | `z_j` | 
+| Features | Manually engineered (OCR/dictionary evidence, context windows) | Learned from a frozen LM encoder's hidden states + raw metadata |
+| Input | Aggregated per-candidate feature vector | Candidate-specific context window, target span marked |
+| Models | B0 raw score, B1 Platt scaling, B3 logistic regression, MLP baseline | Frozen-encoder + MLP head (`phase2`), latent mixture-of-experts head (`phase2_expert`), text-marker alternative (`phase2_simple`) |
+| Status | **Implemented** | **Implemented** (base model, MoE variant, ablations, cross-encoder comparison) |
 
-Gate: 
+Both phases share the same document-level 70/10/20 train/val/test split (fixed seed,
+`preprocessing/preprocessing_data.py`) and the same evaluation metrics, so results are
+directly comparable. `val` is used for early stopping only (never fit on) by every model
+in both phases; `test` is reserved for final reported numbers.
 
-| Step | Phase 1 | Phase 2 |
+Deep-dive docs:
+- `docs/pipeline.md` -- authoritative, up-to-date map of every stage/script/IO in run order (Phase 1)
+- `docs/phase1_manual_features.md` -- Phase 1 methodology (feature groups, expert/gate design)
+- `docs/phase2_learned_features.md` -- Phase 2 design (candidate windows, encoder, MoE head)
+- `docs/further_steps.md` -- open ideas / ablations not yet implemented
+- `docs/running.md` -- step-by-step commands to run the whole pipeline from raw data to figures
+
+## 3. Phase 1: manual features
+
+Pipeline (`src/preprocessing/`, `src/gliner/`, `src/feature_extraction/`, `src/modeling/`):
+
+```text
+HIPE-2022 TSV
+-> token-level CSV + document-level train/val/test split
+-> GLiNER2 candidate extraction + dedup + gold-label alignment
+-> manual OCR/context/dictionary feature extraction
+-> B0 (raw ner_score) / B1 (Platt scaling) / B3 (logistic regression) / MLP baseline
+```
+
+All of B1/B3/MLP fit on `train`, early-stop on `val`, and are scored on every split;
+`plot_reliability_diagram.py` produces the reliability diagram, metrics bar (Brier/ECE/MCE
+calibration vs. AUROC/AURC/E-AURC discrimination), ROC curve, and risk-coverage curve in
+`figures/modeling/`. See `docs/pipeline.md` SS1-5 for the exact script/IO chain.
+
+## 4. Phase 2: learned features
+
+Pipeline (`src/phase2/`):
+
+```text
+candidate window (target span marked)
++ token-level dictionary/OCR-quality flag embeddings
++ target-span flag embeddings
+-> frozen CamemBERT encoder (gradients flow through, weights don't update)
+-> simple pooling: concat(H_CLS, H_first_target, mean(H_target), H_last_target)
++ predicted-type embedding
++ NER-score embedding ([p, logit(p), 1-p] -> ScoreMLP)
+-> MLP head -> reliability score
+```
+
+Trained/evaluated the same way as Phase 1 (fit on `train`, early-stop on `val`, report on
+`test`). Two alternative architectures were built to compare against this base model:
+
+- `src/phase2_expert/` -- swaps the MLP head for K=4 latent experts + a softmax gate
+  (`final_logit = sum_k alpha_k * z_k`), with a load-balancing auxiliary loss to discourage
+  gate collapse onto one expert. `analyze_experts.py` diagnoses gate usage (per-expert
+  alpha distribution) and expert specialization (pairwise parameter cosine similarity).
+- `src/phase2_simple/` -- writes type/confidence into the input as marker-tagged text
+  instead of trainable side embeddings, using only the encoder's own pretrained
+  vocabulary; a lighter-weight alternative to `phase2`'s embedding-injection approach.
+
+Each folder's `compare.py` plots it against `phase2`'s base model via
+`modeling/plot_reliability_diagram.py --extra-score`.
+
+## 5. Ablations
+
+All under `src/phase2/`, varying `train.py` flags; results plotted per group in
+`figures/ablation/<group>/`:
+
+| Group | What varies | Flags |
 |---|---|---|
-| Input | Routing features `q` | Candidate representation `h_c` |
-| Layer 1 | `Linear(d_gate, 32)` | `Linear(hidden_dim, 128)` |
-| Activation | `ReLU` | `ReLU` |
-| Layer 2 | `Linear(32, number_of_experts)` | `Linear(128, 1)` |
-| Normalization | `Softmax` | `Softmax` |
-| Output | `alpha` | `alpha` |
+| `embeddings` | Drop one metadata embedding at a time (NER score / type / dict flag / target flag) | `--no-ner-score`, `--no-type`, `--no-dict-flag`, `--no-target-flag` |
+| `ner_score` | Keep NER-score info but simplify what the ScoreMLP sees | `--score-features {full,p_logit_only,logit_only,p_only}` |
+| `encoders` | Swap the frozen encoder (CamemBERT vs. mBERT, mDeBERTa-v3, multilingual-e5, XLM-RoBERTa) | `--encoder-name ...` |
 
-Experts of phase 1 can consider to try simpler baselines with logistic regression or gradient boosting later. 
-
-
-### Phase comparison
-
-| Aspect | Phase 1 | Phase 2 |
-|---|---|---|
-| Feature extraction | Manual aggregate features | Learned from hidden states plus raw metadata |
-| Experts | Human-defined evidence experts | Latent neural experts |
-| Gate | Trained after experts | Trained jointly with experts |
-| Interpretability | High | Medium; requires gate/expert analysis |
-| Data need | Lower | Higher |
+`ner_score` isolates whether the theoretically-redundant `1-p` term in `[p, logit(p), 1-p]`
+matters empirically (`full` vs. `p_logit_only`), and whether `logit(p)` alone carries the
+useful nonlinearity that raw `p` would otherwise force the head to relearn (`logit_only`/
+`p_only`). See `src/phase2/model.py`'s module docstring for the full reasoning.
 
 ## 6. Shared evaluation metrics
 
-The expected output is a probability-like reliability score, so evaluation should focus on calibration and selective prediction, not only accuracy.
+`src/modeling/metrics.py` splits metrics into two families:
 
-Report:
+- **Calibration** -- Brier score, Expected Calibration Error (ECE), Maximum Calibration
+  Error (MCE): does the score's value match the true empirical probability.
+- **Discrimination** -- AUROC, AURC, E-AURC: does the score rank reliable candidates above
+  unreliable ones, independent of its value. (Platt scaling is a monotonic transform of
+  `ner_score`, so it never changes discrimination metrics, only calibration ones.)
 
-```text
-Accuracy
-Precision / recall / F1 for reliable vs unreliable candidates
-Brier score
-Expected Calibration Error, ECE
-Adaptive Calibration Error, optional
-Reliability diagram
-Risk-coverage curve
-Area under risk-coverage curve, AURC
-Precision at selected coverage levels
-Coverage at target precision levels
-Error rate among automatically accepted candidates
-```
+Every model produces both a raw and a calibrated score per candidate, plus `label_reliable`
+for evaluation. `plot_reliability_diagram.py` renders all four comparison figures (reliability
+diagram, metrics bar, ROC curve, risk-coverage curve) filtered to `--split test` by default.
 
-Recommended selective evaluation:
+## 7. Repository layout
 
 ```text
-Accept candidate if r(c) >= threshold
-Reject or review candidate otherwise
+confidence-aware/
+├── src/                      pipeline code, run as `python src/<module>/<script>.py`
+│   ├── preprocessing/        HIPE-2022 TSV -> token-level CSV + train/val/test split
+│   ├── gliner/                GLiNER2 candidate extraction, dedup, gold-label alignment
+│   ├── feature_extraction/   Phase 1 manual OCR/context feature extraction
+│   ├── modeling/              Phase 1 baselines (B0/B1/B3/MLP) + shared metrics/plotting
+│   ├── phase2/                Phase 2 base model (frozen encoder + MLP head) + ablations
+│   ├── phase2_expert/        Phase 2 latent mixture-of-experts head + gate diagnostics
+│   ├── phase2_simple/        Phase 2 text-marker alternative architecture
+│   ├── analysis/              read-only diagnostics (data splits, OCR quality, NER mismatches)
+│   └── other/                 one-off scripts, not part of the main pipeline
+│
+├── data/
+│   ├── data_baseline/        Phase 1 CSVs -- features, labels, baseline scores
+│   ├── data_phase2/           Phase 2 candidate windows JSONL + base-model score CSVs
+│   ├── data_phase2_expert/   phase2_expert score CSVs
+│   └── data_phase2_simple/   phase2_simple score CSVs
+│
+├── checkpoints/
+│   ├── phase2/                one .pt per phase2 variant / ablation / encoder
+│   ├── phase2_expert/
+│   └── phase2_simple/
+│
+├── figures/                  generated plots, mirroring src/ above
+│   ├── data_analysis/         split + OCR-quality sanity checks (running.md step 1)
+│   ├── ner_analysis/          GLiNER2 mismatch/confusion diagnostics (step 2)
+│   ├── modeling/               Phase 1 baseline comparison plots
+│   ├── ablation/               embeddings/ ner_score/ encoders/ (see SS5 above)
+│   ├── phase2_simple/
+│   ├── phase2_expert/
+│   └── pipeline/               architecture/pipeline diagrams
+│
+├── docs/                     design docs -- see SS2 "Deep-dive docs" above
+├── run/                      SLURM job logs from past runs
+└── try1/                     prior exploratory run (notebooks, earlier data cut) -- not part of the current pipeline
 ```
 
-Report results at thresholds such as:
+## 8. Main claims the experiments support
 
 ```text
-0.50, 0.70, 0.80, 0.90, 0.95
-```
-
-Also choose thresholds on the calibration set for target error budgets:
-
-```text
-accepted error <= 5 percent
-accepted error <= 10 percent
-```
-
-## 7. Shared calibration step
-
-After either phase, calibrate the final score on the calibration split.
-
-Possible calibration methods:
-
-```text
-Platt scaling / sigmoid calibration
-isotonic regression
-```
-
-Final output should contain both raw and calibrated scores:
-
-```json
-{
-  "candidate_id": "issue_1908_04_17_page_3_cand_0021",
-  "span_text": "Raymond Poincar6",
-  "predicted_type": "PERSON",
-  "ner_score": 0.94,
-  "raw_reliability_score": 0.78,
-  "calibrated_reliability_score": 0.72,
-  "decision": "uncertain_or_review"
-}
-```
-
-
-## 11. Main claims the experiments should support
-
-The experiments should support these claims:
-
-```text
-1. Raw NER confidence is not reliable enough for OCR-derived historical newspapers by do the calibration on it and compare the result with our method. 
-3. Adaptive evidence fusion is better than fixed-weight scoring.
-4. Latent LM-based extraction can reduce manual feature engineering while preserving or improving reliability.
+1. Raw NER confidence is not reliable enough for OCR-derived historical newspapers --
+   calibrating it (B1) and comparing against learned models quantifies the gap.
+2. Manually engineered evidence features (Phase 1) already improve over raw confidence.
+3. Learned representations from a frozen LM encoder (Phase 2) can match or improve on
+   manual feature engineering while requiring less hand-design.
+4. Ablations isolate which evidence (NER score, entity type, OCR/dictionary flags, target
+   span marking, choice of encoder) actually drives reliability estimation.
 ```

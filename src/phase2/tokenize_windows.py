@@ -136,8 +136,8 @@ def target_survived(result: dict) -> bool:
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--windows", default=str(DEFAULT_WINDOWS), help="phase2_candidate_windows.jsonl (see build_candidate_windows.py)")
-    parser.add_argument("--encoder-name", default=DEFAULT_ENCODER_NAME, help="HF tokenizer/encoder name (docs/new_phase2.md SS11: CamemBERT or XLM-R)")
-    parser.add_argument("--max-length", type=int, default=DEFAULT_MAX_LENGTH, help="Max subword length (docs/new_phase2.md SS10 default: 256)")
+    parser.add_argument("--encoder-name", default=DEFAULT_ENCODER_NAME, help="HF tokenizer/encoder name (docs/phase2_learned_features.md SS11: CamemBERT or XLM-R)")
+    parser.add_argument("--max-length", type=int, default=DEFAULT_MAX_LENGTH, help="Max subword length (docs/phase2_learned_features.md SS10 default: 256)")
     parser.add_argument("--limit", type=int, default=None, help="Only process the first N candidates (smoke test)")
     parser.add_argument("--print-examples", type=int, default=20, help="Print this many random examples (0 to skip)")
     parser.add_argument("--seed", type=int, default=42, help="Random seed for --print-examples sampling")

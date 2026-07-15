@@ -3,13 +3,9 @@ JSONL and tokenize_windows.py's tokenize_candidate_window(). Tokenization happen
 item, on the fly (__getitem__), not precomputed to disk -- see tokenize_windows.py's
 module docstring for why.
 
-Split roles reuse Phase 1's document-level split (docs/pipeline.md SS1), regrouped the
-same way docs/pipeline_phase2.md settled on for the old Phase 2 design (and
-docs/new_phase2.md SS28's 70/10/20 recommendation matches this exactly):
-    train = expert_train union gate_train  (70%)
-    val   = calibration                     (10%)
-    test  = test                            (20%)
-SPLITS maps those three names to the underlying Phase 1 split(s) each pulls from.
+Split roles reuse the project's document-level train (70%) / val (10%) / test (20%)
+split (see preprocessing/preprocessing_data.py) directly -- SPLITS exists mainly so every
+Phase 2 script shares one place that names the three split values.
 
 Padding: input_ids pad with the tokenizer's own pad_token_id, dict_flag_ids/
 target_flag_ids pad with their vocab's PAD id (0 in both, see vocab.py), attention_mask
@@ -39,8 +35,8 @@ from phase2.tokenize_windows import DEFAULT_ENCODER_NAME, DEFAULT_MAX_LENGTH, to
 from phase2.vocab import DICT_FLAG_VOCAB, ENTITY_TYPE_VOCAB, TARGET_FLAG_VOCAB
 
 SPLITS = {
-    "train": ("expert_train", "gate_train"),
-    "val": ("calibration",),
+    "train": ("train",),
+    "val": ("val",),
     "test": ("test",),
 }
 
@@ -49,13 +45,19 @@ TARGET_FLAG_NAMES = {v: k for k, v in TARGET_FLAG_VOCAB.items()}
 
 
 class Phase2WindowDataset(Dataset):
-    def __init__(self, windows_path: str | Path, tokenizer, split: str | None = None, max_length: int = DEFAULT_MAX_LENGTH):
-        """split: one of SPLITS's keys ("train"/"val"/"test"), or None to keep every
-        candidate regardless of split."""
+    def __init__(
+        self, windows_path: str | Path, tokenizer, split: str | None = None, max_length: int = DEFAULT_MAX_LENGTH,
+        splits: dict[str, tuple[str, ...]] = SPLITS,
+    ):
+        """split: one of splits's keys ("train"/"val"/"test"), or None to keep every
+        candidate regardless of split. splits defaults to the module-level SPLITS
+        (train/val/test, see preprocessing_data.py) -- only override it if the windows
+        file on disk was built with different raw split labels than what SPLITS expects
+        (e.g. mid-migration to a new split scheme)."""
         self.tokenizer = tokenizer
         self.max_length = max_length
 
-        allowed_splits = set(SPLITS[split]) if split is not None else None
+        allowed_splits = set(splits[split]) if split is not None else None
         records = []
         with open(windows_path) as f:
             for line in f:

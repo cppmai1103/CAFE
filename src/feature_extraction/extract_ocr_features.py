@@ -29,7 +29,7 @@ resolve to any scoreable train-data token (e.g. a span that is itself pure punct
 or -- shouldn't happen in practice -- one that resolved to no train-data token at all;
 see gliner/extract_ner_features.py).
 
-Features (docs/phase1_manual.md SS4.2):
+Features (docs/phase1_manual_features.md SS4.2):
     span_ocr_mean                 -- mean known-word rate across the span's tokens
     span_low_conf_word_fraction   -- fraction of the span's tokens that are unknown
     span_first_word_ocr           -- known-word flag of the span's first token
@@ -60,7 +60,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from preprocessing.preprocessing_data import DEFAULT_OUT as DEFAULT_TRAIN_DATA
 from gliner.deduplicate_ner_features import DEFAULT_OUT as DEFAULT_NER_FEATURES
 
-DATA_DIR = Path(__file__).parent.parent.parent / "data"
+DATA_DIR = Path(__file__).parent.parent.parent / "data" / "data_baseline"
 DEFAULT_OUT = DATA_DIR / "ocr_features.csv"
 
 

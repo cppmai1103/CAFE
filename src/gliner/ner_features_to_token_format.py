@@ -36,7 +36,7 @@ from tqdm import tqdm
 
 from deduplicate_ner_features import DEFAULT_OUT as DEFAULT_NER_FEATURES
 
-DATA_DIR = Path(__file__).parent.parent.parent / "data"
+DATA_DIR = Path(__file__).parent.parent.parent / "data" / "data_baseline"
 DEFAULT_TRAIN_DATA = DATA_DIR / "hipe2020_train_fr_train_data.csv"
 DEFAULT_THRESHOLD = 0.5
 

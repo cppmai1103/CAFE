@@ -1,13 +1,13 @@
 """Summarize dataset composition -- document counts, gold entity counts, and entity type
-breakdown -- for the whole dataset and for each of Phase 1's four document-level splits
-(docs/phase1_manual.md SS6.1: expert_train/gate_train/calibration/test), assigned by
-preprocessing_data.py's assign_splits and carried in train data's "split" column.
+breakdown -- for the whole dataset and for each of the document-level train/val/test
+splits, assigned by preprocessing_data.py's assign_splits and carried in train data's
+"split" column.
 
 Gold entities are NE-COARSE-LIT closed into spans (analyze_ocr_context_features.py's
 build_gold_spans, reused here, not reimplemented), each carrying a normalized type in
 {PERS, LOC, ORG, TIME, PROD}. A gold entity's split is its document's split.
 
-Two plots, "All" (the whole dataset) shown alongside the four splits for reference:
+Two plots, "All" (the whole dataset) shown alongside the three splits for reference:
     1. Documents per split               -> bar chart
     2. Entity type breakdown per split    -> stacked bar chart
 
@@ -32,7 +32,7 @@ from analyze_ocr_context_features import DEFAULT_TRAIN_DATA, build_gold_spans
 
 DEFAULT_FIGURES_DIR = Path(__file__).parent.parent.parent / "figures" / "data_analysis"
 
-SPLITS = ["expert_train", "gate_train", "calibration", "test"]
+SPLITS = ["train", "val", "test"]
 CATEGORIES = ["All"] + SPLITS
 LABELS = ["PERS", "LOC", "ORG", "TIME", "PROD"]
 

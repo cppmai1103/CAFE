@@ -21,8 +21,8 @@ flags) never collides with the full model's (or another ablation's) scores CSV.
 
 Usage:
     python src/phase2/evaluate.py
-    python src/phase2/evaluate.py --checkpoint checkpoints_phase2/camembert_mlp.pt --split test
-    python src/phase2/evaluate.py --checkpoint checkpoints_phase2/camembert_mlp_without_ner_score.pt  # writes data_phase2/camembert_mlp_without_ner_score_scores.csv
+    python src/phase2/evaluate.py --checkpoint checkpoints/phase2/camembert_mlp.pt --split test
+    python src/phase2/evaluate.py --checkpoint checkpoints/phase2/camembert_mlp_without_ner_score.pt  # writes data_phase2/camembert_mlp_without_ner_score_scores.csv
 """
 
 from __future__ import annotations
@@ -47,7 +47,7 @@ from phase2.dataset import Phase2WindowDataset
 from phase2.model import encoder_short_name, load_model
 from phase2.train import DEFAULT_CHECKPOINT_OUT
 
-DATA_PHASE2_DIR = Path(__file__).parent.parent.parent / "data_phase2"
+DATA_PHASE2_DIR = Path(__file__).parent.parent.parent / "data" / "data_phase2"
 
 KEY_COLS = ["document_id", "sentence_id", "start_token_id", "end_token_id"]
 

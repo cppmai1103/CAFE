@@ -15,7 +15,7 @@ span can appear as more than one candidate if several types clear the threshold.
 Prompt labels vs output labels: GLiNER2 treats each label as a free-text prompt, not a
 fixed vocabulary entry, so the wording sent to the model matters (natural words like
 "person" tend to score higher/cleaner than abbreviated tags like "PERS" -- see
-docs/phase1_manual.md's baseline notes). --prompt-labels controls what's actually sent to
+docs/phase1_manual_features.md's baseline notes). --prompt-labels controls what's actually sent to
 the model (default: DEFAULT_PROMPT_LABELS); it's zipped positionally against the fixed
 HIPE-scheme LABELS to build prompt_to_hipe, so whatever the model returns under its own
 prompt wording is remapped back to the fixed LABELS ("PERS", "LOC", ...) before being
@@ -32,7 +32,7 @@ character positions within the sentence; None if no token overlaps (shouldn't ha
 practice). entity_text is the candidate span's surface text, kept here for readability
 even though it's also recoverable via that join. sentence_chunked is True if the
 
-Features (docs/phase1_manual.md SS4.1):
+Features (docs/phase1_manual_features.md SS4.1):
     ner_score               -- the candidate's own confidence under its predicted type
     predicted_entity_type
     span_length_tokens
@@ -117,7 +117,7 @@ def chunk_long_text(text: str, chunk_size: int) -> list[TextChunk]:
     return chunks
 
 
-DATA_DIR = Path(__file__).parent.parent.parent / "data"
+DATA_DIR = Path(__file__).parent.parent.parent / "data" / "data_baseline"
 DEFAULT_OUT = DATA_DIR / "ner_features.csv"
 
 

@@ -40,7 +40,7 @@ from pathlib import Path
 import pandas as pd
 from tqdm import tqdm
 
-DATA_DIR = Path(__file__).parent.parent.parent / "data"
+DATA_DIR = Path(__file__).parent.parent.parent / "data" / "data_baseline"
 DEFAULT_NER_FEATURES = DATA_DIR / "ner_features.csv"
 DEFAULT_OUT = DATA_DIR / "deduplicate_ner_features.csv"
 DEFAULT_CONFLICTS_OUT = DATA_DIR / "ner_overlap_conflicts.json"

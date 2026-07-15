@@ -1,7 +1,7 @@
 """Shared train/val loss-curve fitting for the sklearn-based Phase 1 baselines (B1 Platt
 scaling, B3 logistic regression) -- both are just LogisticRegression with a different
-feature set, so both overfitting-control needs are identical: fit on expert_train, watch
-loss on calibration (never on test), stop when calibration loss stops improving.
+feature set, so both overfitting-control needs are identical: fit on train, watch loss on
+val (never on test), stop when val loss stops improving.
 
 sklearn's LogisticRegression has no built-in per-iteration callback, so
 fit_logistic_with_curve fakes one: it calls .fit() repeatedly with warm_start=True and
@@ -92,8 +92,8 @@ def plot_training_curve(
     fig, ax = plt.subplots(figsize=(7, 5), facecolor=CHART_SURFACE)
     ax.set_facecolor(CHART_SURFACE)
 
-    ax.plot(epochs, train_losses, color=CATEGORICAL_BLUE, linewidth=2, label="Train loss (expert_train)")
-    ax.plot(epochs, val_losses, color=CATEGORICAL_RED, linewidth=2, label="Val loss (calibration)")
+    ax.plot(epochs, train_losses, color=CATEGORICAL_BLUE, linewidth=2, label="Train loss")
+    ax.plot(epochs, val_losses, color=CATEGORICAL_RED, linewidth=2, label="Val loss")
     ax.axvline(best_epoch, color=MUTED_INK, linestyle="--", linewidth=1.2, label=f"Best epoch ({best_epoch})")
 
     ax.set_xlabel("Epoch", color=PRIMARY_INK)

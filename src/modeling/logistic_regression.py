@@ -5,24 +5,23 @@ reliability_score + split) -- score every candidate, and save both the calibrate
 scores and a weights plot.
 
 build_feature_matrix/fit_b3_model/plot_weights are inlined here (reconstructed from the
-now-deleted train_b3_logistic_regression.py / plot_b3_weights.py -- see docs/phase1_manual.md
+now-deleted train_b3_logistic_regression.py / plot_b3_weights.py -- see docs/phase1_manual_features.md
 SS4.1-4.3 for the feature groups) rather than imported, since this script has no
 dependency on the raw-joining path (analyze_ocr_context_features.py) those files needed --
 it loads directly from the already-prepared logistic_regression_data.csv.
 
-Split roles (docs/phase1_manual.md SS6.1's four-way document split, reused here as
-train/val/test):
-    expert_train -- train: B3's coefficients are fit here (imputation medians and the
-        missing-indicator column set are also derived from expert_train only, then reused
-        as-is on every other split -- see build_feature_matrix's docstring).
-    calibration  -- val: watched every epoch to catch overfitting and pick the best epoch
-        (early stopping); never used to fit.
-    test         -- test: not touched until the final scoring pass in Step 5.
+Split roles (document-level train/val/test, see preprocessing/preprocessing_data.py):
+    train -- B3's coefficients are fit here (imputation medians and the missing-indicator
+        column set are also derived from train only, then reused as-is on every other
+        split -- see build_feature_matrix's docstring).
+    val   -- watched every epoch to catch overfitting and pick the best epoch (early
+        stopping); never used to fit.
+    test  -- not touched until the final scoring pass in Step 5.
 
 Fit iteratively (training_curve.fit_logistic_with_curve) so a train/val loss curve can be
 tracked and early-stopped -- unlike B1's 2-parameter fit, B3 has ~20+ parameters (one per
-feature, plus one-hot columns) and only expert_train (50%) to fit on, so overfitting is a
-real risk here, not just a formality.
+feature, plus one-hot columns) fit on only the train split, so overfitting is a real risk
+here, not just a formality.
 
 Output:
     logistic_regression.csv -- document_id, sentence_id, start_token_id, end_token_id,
@@ -32,12 +31,12 @@ Output:
         ner_score are extra.
     logistic_regression_weights.png -- standardized coefficients, one bar per feature,
         sorted by |coefficient| descending.
-    logistic_regression_track_training.png -- train (expert_train) vs. val (calibration)
-        log loss per epoch, with the best (early-stopped) epoch marked.
+    logistic_regression_track_training.png -- train vs. val log loss per epoch, with the
+        best (early-stopped) epoch marked.
 
 Usage:
     python src/modeling/logistic_regression.py
-    python src/modeling/logistic_regression.py --data data/logistic_regression_data.csv --out data/logistic_regression.csv --figures-dir figures/modeling
+    python src/modeling/logistic_regression.py --data data/data_baseline/logistic_regression_data.csv --out data/data_baseline/logistic_regression.csv --figures-dir figures/modeling/train_tracking
 """
 
 from __future__ import annotations
@@ -57,13 +56,13 @@ from feature_extraction.prepare_data_logistic import DEFAULT_OUT as DEFAULT_DATA
 from gliner.extract_ner_features import LABELS
 from training_curve import fit_logistic_with_curve, plot_training_curve
 
-DATA_DIR = Path(__file__).parent.parent.parent / "data"
+DATA_DIR = Path(__file__).parent.parent.parent / "data" / "data_baseline"
 DEFAULT_OUT = DATA_DIR / "logistic_regression.csv"
-DEFAULT_FIGURES_DIR = Path(__file__).parent.parent.parent / "figures" / "modeling"
+DEFAULT_FIGURES_DIR = Path(__file__).parent.parent.parent / "figures" / "modeling" / "train_tracking"
 
 KEY_COLS = ["document_id", "sentence_id", "start_token_id", "end_token_id"]
 
-# Feature groups (docs/phase1_manual.md SS4.1-4.3). top1_top2_type_margin and
+# Feature groups (docs/phase1_manual_features.md SS4.1-4.3). top1_top2_type_margin and
 # type_entropy (also SS4.1) aren't included -- GLiNER2 scores each entity type as an
 # independent sigmoid, so there's no shared softmax distribution across types to compute
 # a margin or entropy from.
@@ -92,11 +91,11 @@ def _as_float_bool(series: pd.Series) -> pd.Series:
 def build_feature_matrix(candidates_df: pd.DataFrame, fit_stats: dict | None = None) -> tuple[pd.DataFrame, dict]:
     """Build B3's feature matrix from logistic_regression_data.csv. If `fit_stats` is
     None, both the imputation medians AND which features get a `_missing` indicator
-    column are derived from candidates_df itself (the expert_train call site).
-    Otherwise the given `fit_stats` (computed on expert_train) are reused as-is on every
+    column are derived from candidates_df itself (the train-split call site).
+    Otherwise the given `fit_stats` (computed on train) are reused as-is on every
     other split -- medians, so no other split's own distribution leaks into its
     imputation, and *which* features get a `_missing` column, so a feature that happens
-    to have zero NaNs in one split (e.g. test) but not another (e.g. expert_train) can't
+    to have zero NaNs in one split (e.g. test) but not another (e.g. train) can't
     silently change the output's column count/order and break the fitted model's
     predict_proba."""
     out = pd.DataFrame(index=candidates_df.index)
@@ -166,7 +165,7 @@ def fit_b3_model(
     model, train_losses, val_losses, best_epoch = fit_logistic_with_curve(
         model, X_train_scaled, y_train, X_val_scaled, y_val,
         max_epochs=max_epochs, patience=patience,
-        desc="Fitting B3 logistic regression (train=expert_train, val=calibration)",
+        desc="Fitting B3 logistic regression (train/val)",
     )
     return scaler, model, train_losses, val_losses, best_epoch
 
@@ -187,14 +186,14 @@ def main():
     print(f"{len(candidates_df)} candidates")
     print(candidates_df["split"].value_counts().to_string())
 
-    print("=== Step 2: Build B3 feature matrix (expert_train medians + missing-indicator set) ===")
-    train_mask = candidates_df["split"] == "expert_train"
-    val_mask = candidates_df["split"] == "calibration"
+    print("=== Step 2: Build B3 feature matrix (train medians + missing-indicator set) ===")
+    train_mask = candidates_df["split"] == "train"
+    val_mask = candidates_df["split"] == "val"
     X_train, fit_stats = build_feature_matrix(candidates_df[train_mask])
     y_train = candidates_df.loc[train_mask, "reliability_score"].astype(int)
     X_val, _ = build_feature_matrix(candidates_df[val_mask], fit_stats=fit_stats)
     y_val = candidates_df.loc[val_mask, "reliability_score"].astype(int)
-    print(f"{X_train.shape[1]} features, {len(X_train)} train (expert_train) candidates, {len(X_val)} val (calibration) candidates")
+    print(f"{X_train.shape[1]} features, {len(X_train)} train candidates, {len(X_val)} val candidates")
 
     print("=== Step 3: Fit B3 logistic regression on train, early-stop on val ===")
     scaler, model, train_losses, val_losses, best_epoch = fit_b3_model(
@@ -228,7 +227,7 @@ def main():
     curve_out_path = figures_dir / "logistic_regression_track_training.png"
     plot_training_curve(
         train_losses, val_losses, best_epoch,
-        "B3 logistic regression: train (expert_train) vs val (calibration) loss", curve_out_path,
+        "B3 logistic regression: train vs val loss", curve_out_path,
     )
     print(f"Saved {curve_out_path}")
 
