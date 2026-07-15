@@ -12,5 +12,7 @@ data/ner_overlap_conflicts.json
 src/phase2_simple 
 checkpoints_phase2_simple
 figures/phase2_simple/
+data_phase2/phase2_candidate_windows.jsonl
+
 
 
