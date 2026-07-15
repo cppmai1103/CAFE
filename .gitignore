@@ -7,7 +7,7 @@ notebook/README.md
 *.sh
 try1/
 *.err
-*.out
+# *.out
 data/data_baseline/ner_overlap_conflicts.json
 src/phase2_simple
 checkpoints/phase2_simple
