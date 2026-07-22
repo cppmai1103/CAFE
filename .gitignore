@@ -4,9 +4,6 @@ docs/
 __pycache__/
 old_results/
 *.err
-data/data_source/
-data/**/*.json
-data/**/*.jsonl
-data/**/*.csv
-figures/**/*.csv
+data/
+figures/
 *.sh
