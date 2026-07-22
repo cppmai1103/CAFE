@@ -1,5 +1,6 @@
-"""Plot the distribution of GLiNER2's raw ner_score, split into reliable vs not, from
-label_reliability.csv (see gliner/label_reliability.py) -- split out of
+"""Plot the distribution of a NER model's raw ner_score, split into reliable vs not, from
+label_reliability.csv (see ner/label_reliability.py) -- model-agnostic, works on any
+model's label_reliability.csv (GLiNER2's own or historical-ner-baseline's). Split out of
 calibrate_ner_confidence.py, which used to draw this as a side effect of fitting B0/B1/B3
 even though the plot itself only needs ner_score + reliability_score, not any of the
 fitted/calibrated scores.
@@ -12,16 +13,22 @@ y-axis would flatten into invisibility.
 Usage:
     python src/analysis/plot_ner_score_distribution.py
     python src/analysis/plot_ner_score_distribution.py --label-reliability data/label_reliability.csv --figures-dir figures/ner_analysis
+    python src/analysis/plot_ner_score_distribution.py --label-reliability data/hipe2020_fr/gliner/data_baseline/label_reliability_type_only.csv --load-data data/data_source/hipe2020/hipe2020_fr.csv --split test
 """
 
 from __future__ import annotations
 
 import argparse
+import sys
 from pathlib import Path
 
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
+from preprocessing.preprocessing_data import DEFAULT_OUT as DEFAULT_LOAD_DATA
 
 DATA_DIR = Path(__file__).parent.parent.parent / "data" / "data_baseline"
 DEFAULT_LABEL_RELIABILITY = DATA_DIR / "label_reliability_type_only.csv"
@@ -36,8 +43,8 @@ GRIDLINE = "#e1e0d9"
 
 
 def plot_score_distribution(candidates_df: pd.DataFrame, out_path: Path) -> None:
-    """Histogram of GLiNER2's raw ner_score across every candidate, split into reliable
-    (reliability_score=1) vs not, on a log-scale y-axis."""
+    """Histogram of the NER model's raw ner_score across every candidate, split into
+    reliable (reliability_score=1) vs not, on a log-scale y-axis."""
     fig, ax = plt.subplots(figsize=(8, 5.5), facecolor=CHART_SURFACE)
     ax.set_facecolor(CHART_SURFACE)
 
@@ -54,7 +61,7 @@ def plot_score_distribution(candidates_df: pd.DataFrame, out_path: Path) -> None
     ax.set_xticks(np.arange(0, 1.01, 0.1))
     ax.set_xlabel("Raw ner_score", color=PRIMARY_INK)
     ax.set_ylabel("Candidate count (log scale)", color=PRIMARY_INK)
-    ax.set_title("Distribution of GLiNER2's raw confidence score (ner_score)", color=PRIMARY_INK)
+    ax.set_title("Distribution of the NER model's raw confidence score (ner_score)", color=PRIMARY_INK)
     ax.grid(axis="y", color=GRIDLINE, linewidth=0.8, zorder=0)
     ax.set_axisbelow(True)
     for spine in ("top", "right"):
@@ -70,7 +77,16 @@ def plot_score_distribution(candidates_df: pd.DataFrame, out_path: Path) -> None
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument(
-        "--label-reliability", default=str(DEFAULT_LABEL_RELIABILITY), help="label_reliability.csv (see gliner/label_reliability.py)"
+        "--label-reliability", default=str(DEFAULT_LABEL_RELIABILITY), help="label_reliability.csv (see ner/label_reliability.py)"
+    )
+    parser.add_argument(
+        "--load-data", default=str(DEFAULT_LOAD_DATA),
+        help="Token-level data CSV (for the --split filter; label_reliability.csv has no split column of its own)",
+    )
+    parser.add_argument(
+        "--split", default="",
+        help="Filter to this document-level split before plotting (train/val/test); pass \"\" to use every "
+        "candidate (default: every candidate, unchanged from before --split existed)",
     )
     parser.add_argument("--figures-dir", default=str(DEFAULT_FIGURES_DIR), help="Directory to save the plot into")
     args = parser.parse_args()
@@ -79,6 +95,22 @@ def main():
     print(f"Loading {args.label_reliability}")
     candidates_df = pd.read_csv(args.label_reliability)
     print(f"{len(candidates_df)} candidates loaded")
+
+    if args.split:
+        print(f"=== Step 1b: Filter to split={args.split!r} ===")
+        print(f"Loading {args.load_data}")
+        data_df = pd.read_csv(args.load_data, dtype={"TOKEN": str, "MISC": str},
+        # pandas' default NA-string sentinels ("NA", "null", "nan", ...) would otherwise
+        # silently corrupt a genuine OCR token whose text happens to collide with one of
+        # them (confirmed: one real token in hipe2020_fr is literally "NA") into a float
+        # NaN despite the dtype=str hint above -- dtype coercion happens AFTER NA
+        # detection, so it can't prevent this. keep_default_na=False turns that off
+        # entirely, and na_values restores it only for the two genuinely-numeric columns
+        # that still need a blank cell to become NaN.
+        keep_default_na=False, na_values={"sentence_ocr_mean": [""], "document_ocr_mean": [""], "dictionary_score": [""]})
+        doc_to_split = data_df.drop_duplicates("document_id").set_index("document_id")["split"].to_dict()
+        candidates_df = candidates_df[candidates_df["document_id"].map(doc_to_split) == args.split]
+        print(f"{len(candidates_df)} candidates remain")
 
     print("=== Step 2: Plot ner_score distribution (reliable vs not) ===")
     figures_dir = Path(args.figures_dir)

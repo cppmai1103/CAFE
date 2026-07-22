@@ -1,0 +1,7 @@
+{
+  "PERS": "person",
+  "LOC": "location",
+  "ORG": "organization",
+  "TIME": "time",
+  "PROD": "production"
+}

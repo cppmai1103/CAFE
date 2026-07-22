@@ -1,0 +1,5894 @@
+[
+  {
+    "document_id": "EXP-1908-01-21-a-i0053",
+    "sentence_id": 40,
+    "merges": [
+      {
+        "final": {
+          "document_id": "EXP-1908-01-21-a-i0053",
+          "sentence_id": 40,
+          "start_token_id": 924,
+          "end_token_id": 924,
+          "entity_text": "Glasco",
+          "predicted_entity_type": "LOC",
+          "ner_score": 0.5543919801712036,
+          "span_length_tokens": 1,
+          "span_length_characters": 6,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 924,
+            "end_token_id": 924,
+            "entity_text": "Glas",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.5543919801712036
+          },
+          {
+            "start_token_id": 924,
+            "end_token_id": 924,
+            "entity_text": "co",
+            "predicted_entity_type": "ORG",
+            "ner_score": 0.3613511323928833
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "EXP-1908-05-15-a-i0085",
+    "sentence_id": 20,
+    "merges": [
+      {
+        "final": {
+          "document_id": "EXP-1908-05-15-a-i0085",
+          "sentence_id": 20,
+          "start_token_id": 493,
+          "end_token_id": 493,
+          "entity_text": "IaKa",
+          "predicted_entity_type": "LOC",
+          "ner_score": 0.3840593993663788,
+          "span_length_tokens": 1,
+          "span_length_characters": 4,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 493,
+            "end_token_id": 493,
+            "entity_text": "Ia",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.3840593993663788
+          },
+          {
+            "start_token_id": 493,
+            "end_token_id": 493,
+            "entity_text": "Ka",
+            "predicted_entity_type": "PERS",
+            "ner_score": 0.2934525310993194
+          }
+        ]
+      },
+      {
+        "final": {
+          "document_id": "EXP-1908-05-15-a-i0085",
+          "sentence_id": 20,
+          "start_token_id": 495,
+          "end_token_id": 495,
+          "entity_text": "Hagnec",
+          "predicted_entity_type": "PERS",
+          "ner_score": 0.3647526800632477,
+          "span_length_tokens": 1,
+          "span_length_characters": 6,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 495,
+            "end_token_id": 495,
+            "entity_text": "Hag",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.3208789825439453
+          },
+          {
+            "start_token_id": 495,
+            "end_token_id": 495,
+            "entity_text": "nec",
+            "predicted_entity_type": "PERS",
+            "ner_score": 0.3647526800632477
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "EXP-1918-01-21-a-i0066",
+    "sentence_id": 2,
+    "merges": [
+      {
+        "final": {
+          "document_id": "EXP-1918-01-21-a-i0066",
+          "sentence_id": 2,
+          "start_token_id": 19,
+          "end_token_id": 19,
+          "entity_text": "BERLIN",
+          "predicted_entity_type": "LOC",
+          "ner_score": 0.9540882110595704,
+          "span_length_tokens": 1,
+          "span_length_characters": 6,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 19,
+            "end_token_id": 19,
+            "entity_text": "BER",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.9540882110595704
+          },
+          {
+            "start_token_id": 19,
+            "end_token_id": 19,
+            "entity_text": "LIN",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.3954645693302154
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "EXP-1918-07-10-a-i0071",
+    "sentence_id": 14,
+    "merges": [
+      {
+        "final": {
+          "document_id": "EXP-1918-07-10-a-i0071",
+          "sentence_id": 14,
+          "start_token_id": 1054,
+          "end_token_id": 1054,
+          "entity_text": "BERLIN",
+          "predicted_entity_type": "LOC",
+          "ner_score": 0.94680917263031,
+          "span_length_tokens": 1,
+          "span_length_characters": 6,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 1054,
+            "end_token_id": 1054,
+            "entity_text": "BER",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.94680917263031
+          },
+          {
+            "start_token_id": 1054,
+            "end_token_id": 1054,
+            "entity_text": "LIN",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.7345171570777893
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "EXP-1918-07-10-a-i0071",
+    "sentence_id": 23,
+    "merges": [
+      {
+        "final": {
+          "document_id": "EXP-1918-07-10-a-i0071",
+          "sentence_id": 23,
+          "start_token_id": 1198,
+          "end_token_id": 1198,
+          "entity_text": "STOCKHOLM",
+          "predicted_entity_type": "LOC",
+          "ner_score": 0.991156816482544,
+          "span_length_tokens": 1,
+          "span_length_characters": 9,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 1198,
+            "end_token_id": 1198,
+            "entity_text": "ST",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.991156816482544
+          },
+          {
+            "start_token_id": 1198,
+            "end_token_id": 1198,
+            "entity_text": "OCKHOLM",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.8914902210235596
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "EXP-1918-11-18-a-i0067",
+    "sentence_id": 59,
+    "merges": [
+      {
+        "final": {
+          "document_id": "EXP-1918-11-18-a-i0067",
+          "sentence_id": 59,
+          "start_token_id": 1360,
+          "end_token_id": 1360,
+          "entity_text": "ZURICH",
+          "predicted_entity_type": "LOC",
+          "ner_score": 0.991612672805786,
+          "span_length_tokens": 1,
+          "span_length_characters": 6,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 1360,
+            "end_token_id": 1360,
+            "entity_text": "Z",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.991612672805786
+          },
+          {
+            "start_token_id": 1360,
+            "end_token_id": 1360,
+            "entity_text": "URICH",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.7136330604553223
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "EXP-1928-01-17-a-i0062",
+    "sentence_id": 1,
+    "merges": [
+      {
+        "final": {
+          "document_id": "EXP-1928-01-17-a-i0062",
+          "sentence_id": 1,
+          "start_token_id": 63,
+          "end_token_id": 63,
+          "entity_text": "Sagnes",
+          "predicted_entity_type": "PERS",
+          "ner_score": 0.6929015517234802,
+          "span_length_tokens": 1,
+          "span_length_characters": 6,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 63,
+            "end_token_id": 63,
+            "entity_text": "Sag",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.3732095062732696
+          },
+          {
+            "start_token_id": 63,
+            "end_token_id": 63,
+            "entity_text": "nes",
+            "predicted_entity_type": "PERS",
+            "ner_score": 0.6929015517234802
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "EXP-1928-04-18-a-i0070",
+    "sentence_id": 5,
+    "merges": [
+      {
+        "final": {
+          "document_id": "EXP-1928-04-18-a-i0070",
+          "sentence_id": 5,
+          "start_token_id": 258,
+          "end_token_id": 258,
+          "entity_text": "Serrières",
+          "predicted_entity_type": "LOC",
+          "ner_score": 0.8895966410636902,
+          "span_length_tokens": 1,
+          "span_length_characters": 9,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 258,
+            "end_token_id": 258,
+            "entity_text": "Ser",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.8895966410636902
+          },
+          {
+            "start_token_id": 258,
+            "end_token_id": 258,
+            "entity_text": "rières",
+            "predicted_entity_type": "ORG",
+            "ner_score": 0.4777002334594726
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "EXP-1928-04-18-a-i0070",
+    "sentence_id": 16,
+    "merges": [
+      {
+        "final": {
+          "document_id": "EXP-1928-04-18-a-i0070",
+          "sentence_id": 16,
+          "start_token_id": 685,
+          "end_token_id": 685,
+          "entity_text": "Bâle",
+          "predicted_entity_type": "LOC",
+          "ner_score": 0.9561201333999634,
+          "span_length_tokens": 1,
+          "span_length_characters": 4,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 685,
+            "end_token_id": 685,
+            "entity_text": "B",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.9561201333999634
+          },
+          {
+            "start_token_id": 685,
+            "end_token_id": 685,
+            "entity_text": "âle",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.616787850856781
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "EXP-1928-04-18-a-i0070",
+    "sentence_id": 33,
+    "merges": [
+      {
+        "final": {
+          "document_id": "EXP-1928-04-18-a-i0070",
+          "sentence_id": 33,
+          "start_token_id": 1176,
+          "end_token_id": 1176,
+          "entity_text": "Berne",
+          "predicted_entity_type": "LOC",
+          "ner_score": 0.7624068856239319,
+          "span_length_tokens": 1,
+          "span_length_characters": 5,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 1176,
+            "end_token_id": 1176,
+            "entity_text": "Bern",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.7624068856239319
+          },
+          {
+            "start_token_id": 1176,
+            "end_token_id": 1176,
+            "entity_text": "e",
+            "predicted_entity_type": "ORG",
+            "ner_score": 0.5376666188240051
+          }
+        ]
+      },
+      {
+        "final": {
+          "document_id": "EXP-1928-04-18-a-i0070",
+          "sentence_id": 33,
+          "start_token_id": 1191,
+          "end_token_id": 1191,
+          "entity_text": "Bâle",
+          "predicted_entity_type": "ORG",
+          "ner_score": 0.5865562558174133,
+          "span_length_tokens": 1,
+          "span_length_characters": 4,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 1191,
+            "end_token_id": 1191,
+            "entity_text": "B",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.5039589405059814
+          },
+          {
+            "start_token_id": 1191,
+            "end_token_id": 1191,
+            "entity_text": "âle",
+            "predicted_entity_type": "ORG",
+            "ner_score": 0.5865562558174133
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "EXP-1938-05-11-a-i0108",
+    "sentence_id": 27,
+    "merges": [
+      {
+        "final": {
+          "document_id": "EXP-1938-05-11-a-i0108",
+          "sentence_id": 27,
+          "start_token_id": 876,
+          "end_token_id": 878,
+          "entity_text": "dTSumbert-Droz",
+          "predicted_entity_type": "PERS",
+          "ner_score": 0.9098437428474426,
+          "span_length_tokens": 1,
+          "span_length_characters": 14,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 876,
+            "end_token_id": 876,
+            "entity_text": "d",
+            "predicted_entity_type": "PERS",
+            "ner_score": 0.4941131770610809
+          },
+          {
+            "start_token_id": 876,
+            "end_token_id": 878,
+            "entity_text": "TSumbert-Droz",
+            "predicted_entity_type": "PERS",
+            "ner_score": 0.9098437428474426
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "EXP-1938-06-21-a-i0086",
+    "sentence_id": 15,
+    "merges": [
+      {
+        "final": {
+          "document_id": "EXP-1938-06-21-a-i0086",
+          "sentence_id": 15,
+          "start_token_id": 357,
+          "end_token_id": 357,
+          "entity_text": "LAUSANNE",
+          "predicted_entity_type": "LOC",
+          "ner_score": 0.9873443841934204,
+          "span_length_tokens": 1,
+          "span_length_characters": 8,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 357,
+            "end_token_id": 357,
+            "entity_text": "LA",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.9873443841934204
+          },
+          {
+            "start_token_id": 357,
+            "end_token_id": 357,
+            "entity_text": "USANNE",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.8111903071403503
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "EXP-1938-06-21-a-i0086",
+    "sentence_id": 36,
+    "merges": [
+      {
+        "final": {
+          "document_id": "EXP-1938-06-21-a-i0086",
+          "sentence_id": 36,
+          "start_token_id": 892,
+          "end_token_id": 892,
+          "entity_text": "Erma",
+          "predicted_entity_type": "PERS",
+          "ner_score": 0.5952035188674927,
+          "span_length_tokens": 1,
+          "span_length_characters": 4,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 892,
+            "end_token_id": 892,
+            "entity_text": "Er",
+            "predicted_entity_type": "ORG",
+            "ner_score": 0.4814577102661133
+          },
+          {
+            "start_token_id": 892,
+            "end_token_id": 892,
+            "entity_text": "ma",
+            "predicted_entity_type": "PERS",
+            "ner_score": 0.5952035188674927
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "EXP-1938-09-08-a-i0070",
+    "sentence_id": 8,
+    "merges": [
+      {
+        "final": {
+          "document_id": "EXP-1938-09-08-a-i0070",
+          "sentence_id": 8,
+          "start_token_id": 257,
+          "end_token_id": 257,
+          "entity_text": "BERLIN",
+          "predicted_entity_type": "LOC",
+          "ner_score": 0.979397475719452,
+          "span_length_tokens": 1,
+          "span_length_characters": 6,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 257,
+            "end_token_id": 257,
+            "entity_text": "BER",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.979397475719452
+          },
+          {
+            "start_token_id": 257,
+            "end_token_id": 257,
+            "entity_text": "LIN",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.5044828653335571
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "EXP-1938-09-08-a-i0070",
+    "sentence_id": 12,
+    "merges": [
+      {
+        "final": {
+          "document_id": "EXP-1938-09-08-a-i0070",
+          "sentence_id": 12,
+          "start_token_id": 546,
+          "end_token_id": 546,
+          "entity_text": "PRAGUE",
+          "predicted_entity_type": "LOC",
+          "ner_score": 0.9726886749267578,
+          "span_length_tokens": 1,
+          "span_length_characters": 6,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 546,
+            "end_token_id": 546,
+            "entity_text": "PR",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.9726886749267578
+          },
+          {
+            "start_token_id": 546,
+            "end_token_id": 546,
+            "entity_text": "AGUE",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.7030361890792847
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "EXP-1938-09-27-a-i0094",
+    "sentence_id": 40,
+    "merges": [
+      {
+        "final": {
+          "document_id": "EXP-1938-09-27-a-i0094",
+          "sentence_id": 40,
+          "start_token_id": 1131,
+          "end_token_id": 1131,
+          "entity_text": "Zurich",
+          "predicted_entity_type": "LOC",
+          "ner_score": 0.8075411915779114,
+          "span_length_tokens": 1,
+          "span_length_characters": 6,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 1131,
+            "end_token_id": 1131,
+            "entity_text": "Zur",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.8075411915779114
+          },
+          {
+            "start_token_id": 1131,
+            "end_token_id": 1131,
+            "entity_text": "ich",
+            "predicted_entity_type": "ORG",
+            "ner_score": 0.4272288978099823
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "EXP-1948-03-17-a-i0148",
+    "sentence_id": 12,
+    "merges": [
+      {
+        "final": {
+          "document_id": "EXP-1948-03-17-a-i0148",
+          "sentence_id": 12,
+          "start_token_id": 261,
+          "end_token_id": 261,
+          "entity_text": "Neuchâtel",
+          "predicted_entity_type": "LOC",
+          "ner_score": 0.6099249124526978,
+          "span_length_tokens": 1,
+          "span_length_characters": 9,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 261,
+            "end_token_id": 261,
+            "entity_text": "Neuch",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.6099249124526978
+          },
+          {
+            "start_token_id": 261,
+            "end_token_id": 261,
+            "entity_text": "âtel",
+            "predicted_entity_type": "PERS",
+            "ner_score": 0.5709447264671326
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "EXP-1948-03-17-a-i0148",
+    "sentence_id": 31,
+    "merges": [
+      {
+        "final": {
+          "document_id": "EXP-1948-03-17-a-i0148",
+          "sentence_id": 31,
+          "start_token_id": 828,
+          "end_token_id": 828,
+          "entity_text": "Boudry",
+          "predicted_entity_type": "LOC",
+          "ner_score": 0.6919179558753967,
+          "span_length_tokens": 1,
+          "span_length_characters": 6,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 828,
+            "end_token_id": 828,
+            "entity_text": "Bou",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.6919179558753967
+          },
+          {
+            "start_token_id": 828,
+            "end_token_id": 828,
+            "entity_text": "dry",
+            "predicted_entity_type": "PERS",
+            "ner_score": 0.3669892847537994
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "EXP-1948-03-17-a-i0148",
+    "sentence_id": 47,
+    "merges": [
+      {
+        "final": {
+          "document_id": "EXP-1948-03-17-a-i0148",
+          "sentence_id": 47,
+          "start_token_id": 1355,
+          "end_token_id": 1356,
+          "entity_text": "Société choe",
+          "predicted_entity_type": "ORG",
+          "ner_score": 0.593332052230835,
+          "span_length_tokens": 2,
+          "span_length_characters": 12,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 1355,
+            "end_token_id": 1356,
+            "entity_text": "Société cho",
+            "predicted_entity_type": "ORG",
+            "ner_score": 0.593332052230835
+          },
+          {
+            "start_token_id": 1356,
+            "end_token_id": 1356,
+            "entity_text": "e",
+            "predicted_entity_type": "ORG",
+            "ner_score": 0.5437300205230713
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "EXP-1948-12-13-a-i0153",
+    "sentence_id": 28,
+    "merges": [
+      {
+        "final": {
+          "document_id": "EXP-1948-12-13-a-i0153",
+          "sentence_id": 28,
+          "start_token_id": 702,
+          "end_token_id": 702,
+          "entity_text": "Schaffhouse",
+          "predicted_entity_type": "LOC",
+          "ner_score": 0.7164431810379028,
+          "span_length_tokens": 1,
+          "span_length_characters": 11,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 702,
+            "end_token_id": 702,
+            "entity_text": "Schaff",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.7164431810379028
+          },
+          {
+            "start_token_id": 702,
+            "end_token_id": 702,
+            "entity_text": "house",
+            "predicted_entity_type": "PERS",
+            "ner_score": 0.555992603302002
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "EXP-1948-12-13-a-i0153",
+    "sentence_id": 30,
+    "merges": [
+      {
+        "final": {
+          "document_id": "EXP-1948-12-13-a-i0153",
+          "sentence_id": 30,
+          "start_token_id": 721,
+          "end_token_id": 721,
+          "entity_text": "Schaffhouse",
+          "predicted_entity_type": "LOC",
+          "ner_score": 0.7762951850891113,
+          "span_length_tokens": 1,
+          "span_length_characters": 11,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 721,
+            "end_token_id": 721,
+            "entity_text": "Scha",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.7762951850891113
+          },
+          {
+            "start_token_id": 721,
+            "end_token_id": 721,
+            "entity_text": "ffhouse",
+            "predicted_entity_type": "PERS",
+            "ner_score": 0.4851702451705932
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "EXP-1968-05-07-a-i0151",
+    "sentence_id": 10,
+    "merges": [
+      {
+        "final": {
+          "document_id": "EXP-1968-05-07-a-i0151",
+          "sentence_id": 10,
+          "start_token_id": 849,
+          "end_token_id": 849,
+          "entity_text": "Avress",
+          "predicted_entity_type": "ORG",
+          "ner_score": 0.4304315745830536,
+          "span_length_tokens": 1,
+          "span_length_characters": 6,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 849,
+            "end_token_id": 849,
+            "entity_text": "Av",
+            "predicted_entity_type": "ORG",
+            "ner_score": 0.4304315745830536
+          },
+          {
+            "start_token_id": 849,
+            "end_token_id": 849,
+            "entity_text": "ress",
+            "predicted_entity_type": "PROD",
+            "ner_score": 0.3582073450088501
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "EXP-1968-05-28-a-i0241",
+    "sentence_id": 8,
+    "merges": [
+      {
+        "final": {
+          "document_id": "EXP-1968-05-28-a-i0241",
+          "sentence_id": 8,
+          "start_token_id": 205,
+          "end_token_id": 205,
+          "entity_text": "Camps",
+          "predicted_entity_type": "LOC",
+          "ner_score": 0.5491307973861694,
+          "span_length_tokens": 1,
+          "span_length_characters": 5,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 205,
+            "end_token_id": 205,
+            "entity_text": "Camp",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.472126305103302
+          },
+          {
+            "start_token_id": 205,
+            "end_token_id": 205,
+            "entity_text": "s",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.5491307973861694
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "EXP-1978-01-16-a-i0047",
+    "sentence_id": 1,
+    "merges": [
+      {
+        "final": {
+          "document_id": "EXP-1978-01-16-a-i0047",
+          "sentence_id": 1,
+          "start_token_id": 31,
+          "end_token_id": 41,
+          "entity_text": "Société d'agriculture et de viticulture du district de Neuchâtel",
+          "predicted_entity_type": "ORG",
+          "ner_score": 0.877061128616333,
+          "span_length_tokens": 9,
+          "span_length_characters": 64,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 31,
+            "end_token_id": 41,
+            "entity_text": "Société d'agriculture et de viticulture du district de Neu",
+            "predicted_entity_type": "ORG",
+            "ner_score": 0.877061128616333
+          },
+          {
+            "start_token_id": 41,
+            "end_token_id": 41,
+            "entity_text": "châtel",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.685008704662323
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "EXP-1978-01-16-a-i0047",
+    "sentence_id": 9,
+    "merges": [
+      {
+        "final": {
+          "document_id": "EXP-1978-01-16-a-i0047",
+          "sentence_id": 9,
+          "start_token_id": 304,
+          "end_token_id": 304,
+          "entity_text": "Préfargier",
+          "predicted_entity_type": "LOC",
+          "ner_score": 0.8390629291534424,
+          "span_length_tokens": 1,
+          "span_length_characters": 10,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 304,
+            "end_token_id": 304,
+            "entity_text": "Pré",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.8390629291534424
+          },
+          {
+            "start_token_id": 304,
+            "end_token_id": 304,
+            "entity_text": "fargier",
+            "predicted_entity_type": "PERS",
+            "ner_score": 0.7326602935791016
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "EXP-1978-09-27-a-i0229",
+    "sentence_id": 19,
+    "merges": [
+      {
+        "final": {
+          "document_id": "EXP-1978-09-27-a-i0229",
+          "sentence_id": 19,
+          "start_token_id": 647,
+          "end_token_id": 648,
+          "entity_text": "Nottingham Forest",
+          "predicted_entity_type": "LOC",
+          "ner_score": 0.7164092659950256,
+          "span_length_tokens": 2,
+          "span_length_characters": 17,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 647,
+            "end_token_id": 648,
+            "entity_text": "Nottingham For",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.7164092659950256
+          },
+          {
+            "start_token_id": 648,
+            "end_token_id": 648,
+            "entity_text": "est",
+            "predicted_entity_type": "ORG",
+            "ner_score": 0.6205288767814636
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "EXP-1988-02-15-a-i0330",
+    "sentence_id": 10,
+    "merges": [
+      {
+        "final": {
+          "document_id": "EXP-1988-02-15-a-i0330",
+          "sentence_id": 10,
+          "start_token_id": 573,
+          "end_token_id": 573,
+          "entity_text": "Zurich",
+          "predicted_entity_type": "PERS",
+          "ner_score": 0.6650006175041199,
+          "span_length_tokens": 1,
+          "span_length_characters": 6,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 573,
+            "end_token_id": 573,
+            "entity_text": "Zur",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.6438669562339783
+          },
+          {
+            "start_token_id": 573,
+            "end_token_id": 573,
+            "entity_text": "ich",
+            "predicted_entity_type": "PERS",
+            "ner_score": 0.6650006175041199
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "EXP-1998-07-25-a-i0143",
+    "sentence_id": 3,
+    "merges": [
+      {
+        "final": {
+          "document_id": "EXP-1998-07-25-a-i0143",
+          "sentence_id": 3,
+          "start_token_id": 104,
+          "end_token_id": 104,
+          "entity_text": "Neuchâtel",
+          "predicted_entity_type": "LOC",
+          "ner_score": 0.5618376135826111,
+          "span_length_tokens": 1,
+          "span_length_characters": 9,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 104,
+            "end_token_id": 104,
+            "entity_text": "Neu",
+            "predicted_entity_type": "ORG",
+            "ner_score": 0.4983647465705871
+          },
+          {
+            "start_token_id": 104,
+            "end_token_id": 104,
+            "entity_text": "ch",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.5618376135826111
+          },
+          {
+            "start_token_id": 104,
+            "end_token_id": 104,
+            "entity_text": "âte",
+            "predicted_entity_type": "ORG",
+            "ner_score": 0.4666560292243957
+          },
+          {
+            "start_token_id": 104,
+            "end_token_id": 104,
+            "entity_text": "l",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.416953980922699
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "EXP-1998-07-25-a-i0143",
+    "sentence_id": 11,
+    "merges": [
+      {
+        "final": {
+          "document_id": "EXP-1998-07-25-a-i0143",
+          "sentence_id": 11,
+          "start_token_id": 552,
+          "end_token_id": 552,
+          "entity_text": "Xx",
+          "predicted_entity_type": "LOC",
+          "ner_score": 0.6725924611091614,
+          "span_length_tokens": 1,
+          "span_length_characters": 2,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 552,
+            "end_token_id": 552,
+            "entity_text": "X",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.6725924611091614
+          },
+          {
+            "start_token_id": 552,
+            "end_token_id": 552,
+            "entity_text": "x",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.515762209892273
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "EXP-1998-07-25-a-i0143",
+    "sentence_id": 21,
+    "merges": [
+      {
+        "final": {
+          "document_id": "EXP-1998-07-25-a-i0143",
+          "sentence_id": 21,
+          "start_token_id": 666,
+          "end_token_id": 666,
+          "entity_text": "Bâle",
+          "predicted_entity_type": "LOC",
+          "ner_score": 0.9805458784103394,
+          "span_length_tokens": 1,
+          "span_length_characters": 4,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 666,
+            "end_token_id": 666,
+            "entity_text": "B",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.9805458784103394
+          },
+          {
+            "start_token_id": 666,
+            "end_token_id": 666,
+            "entity_text": "âle",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.7423924207687378
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "EXP-1998-07-25-a-i0143",
+    "sentence_id": 22,
+    "merges": [
+      {
+        "final": {
+          "document_id": "EXP-1998-07-25-a-i0143",
+          "sentence_id": 22,
+          "start_token_id": 697,
+          "end_token_id": 697,
+          "entity_text": "Kriens",
+          "predicted_entity_type": "LOC",
+          "ner_score": 0.9628124237060548,
+          "span_length_tokens": 1,
+          "span_length_characters": 6,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 697,
+            "end_token_id": 697,
+            "entity_text": "Krie",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.9628124237060548
+          },
+          {
+            "start_token_id": 697,
+            "end_token_id": 697,
+            "entity_text": "ns",
+            "predicted_entity_type": "ORG",
+            "ner_score": 0.4563073813915252
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "EXP-2008-04-19-a-i0202",
+    "sentence_id": 5,
+    "merges": [
+      {
+        "final": {
+          "document_id": "EXP-2008-04-19-a-i0202",
+          "sentence_id": 5,
+          "start_token_id": 205,
+          "end_token_id": 206,
+          "entity_text": "FMH)",
+          "predicted_entity_type": "ORG",
+          "ner_score": 0.801076352596283,
+          "span_length_tokens": 1,
+          "span_length_characters": 4,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 205,
+            "end_token_id": 205,
+            "entity_text": "F",
+            "predicted_entity_type": "ORG",
+            "ner_score": 0.801076352596283
+          },
+          {
+            "start_token_id": 205,
+            "end_token_id": 206,
+            "entity_text": "MH)",
+            "predicted_entity_type": "PERS",
+            "ner_score": 0.508915901184082
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "EXP-2008-04-19-a-i0202",
+    "sentence_id": 16,
+    "merges": [
+      {
+        "final": {
+          "document_id": "EXP-2008-04-19-a-i0202",
+          "sentence_id": 16,
+          "start_token_id": 421,
+          "end_token_id": 421,
+          "entity_text": "OSP",
+          "predicted_entity_type": "ORG",
+          "ner_score": 0.8918884992599487,
+          "span_length_tokens": 1,
+          "span_length_characters": 3,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 421,
+            "end_token_id": 421,
+            "entity_text": "OS",
+            "predicted_entity_type": "ORG",
+            "ner_score": 0.8918884992599487
+          },
+          {
+            "start_token_id": 421,
+            "end_token_id": 421,
+            "entity_text": "P",
+            "predicted_entity_type": "PERS",
+            "ner_score": 0.3749435245990753
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "EXP-2008-08-11-a-i0196",
+    "sentence_id": 6,
+    "merges": [
+      {
+        "final": {
+          "document_id": "EXP-2008-08-11-a-i0196",
+          "sentence_id": 6,
+          "start_token_id": 209,
+          "end_token_id": 209,
+          "entity_text": "Cadolles",
+          "predicted_entity_type": "LOC",
+          "ner_score": 0.3577712476253509,
+          "span_length_tokens": 1,
+          "span_length_characters": 8,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 209,
+            "end_token_id": 209,
+            "entity_text": "Cad",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.3577712476253509
+          },
+          {
+            "start_token_id": 209,
+            "end_token_id": 209,
+            "entity_text": "olles",
+            "predicted_entity_type": "PERS",
+            "ner_score": 0.3410494327545166
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "EXP-2008-08-15-a-i0044",
+    "sentence_id": 11,
+    "merges": [
+      {
+        "final": {
+          "document_id": "EXP-2008-08-15-a-i0044",
+          "sentence_id": 11,
+          "start_token_id": 484,
+          "end_token_id": 485,
+          "entity_text": "Le bou",
+          "predicted_entity_type": "LOC",
+          "ner_score": 0.4350594878196716,
+          "span_length_tokens": 2,
+          "span_length_characters": 6,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 484,
+            "end_token_id": 484,
+            "entity_text": "L",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.4350594878196716
+          },
+          {
+            "start_token_id": 484,
+            "end_token_id": 485,
+            "entity_text": "e bou",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.3812654018402099
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "GDL-1808-09-09-a-i0005",
+    "sentence_id": 16,
+    "merges": [
+      {
+        "final": {
+          "document_id": "GDL-1808-09-09-a-i0005",
+          "sentence_id": 16,
+          "start_token_id": 641,
+          "end_token_id": 641,
+          "entity_text": "EFpagne",
+          "predicted_entity_type": "LOC",
+          "ner_score": 0.9689325094223022,
+          "span_length_tokens": 1,
+          "span_length_characters": 7,
+          "sentence_chunked": true
+        },
+        "candidates": [
+          {
+            "start_token_id": 641,
+            "end_token_id": 641,
+            "entity_text": "E",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.9689325094223022
+          },
+          {
+            "start_token_id": 641,
+            "end_token_id": 641,
+            "entity_text": "Fpagne",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.6031637787818909
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "GDL-1808-09-09-a-i0005",
+    "sentence_id": 29,
+    "merges": [
+      {
+        "final": {
+          "document_id": "GDL-1808-09-09-a-i0005",
+          "sentence_id": 29,
+          "start_token_id": 1181,
+          "end_token_id": 1181,
+          "entity_text": "AUGSBOURG",
+          "predicted_entity_type": "LOC",
+          "ner_score": 0.989753484725952,
+          "span_length_tokens": 1,
+          "span_length_characters": 9,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 1181,
+            "end_token_id": 1181,
+            "entity_text": "AU",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.989753484725952
+          },
+          {
+            "start_token_id": 1181,
+            "end_token_id": 1181,
+            "entity_text": "GSBOURG",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.8952266573905945
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "GDL-1808-10-21-a-i0004",
+    "sentence_id": 40,
+    "merges": [
+      {
+        "final": {
+          "document_id": "GDL-1808-10-21-a-i0004",
+          "sentence_id": 40,
+          "start_token_id": 806,
+          "end_token_id": 807,
+          "entity_text": "duhin -",
+          "predicted_entity_type": "LOC",
+          "ner_score": 0.6456375122070312,
+          "span_length_tokens": 2,
+          "span_length_characters": 7,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 806,
+            "end_token_id": 806,
+            "entity_text": "du",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.5301287174224854
+          },
+          {
+            "start_token_id": 806,
+            "end_token_id": 807,
+            "entity_text": "hin -",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.6456375122070312
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "GDL-1808-11-11-a-i0009",
+    "sentence_id": 5,
+    "merges": [
+      {
+        "final": {
+          "document_id": "GDL-1808-11-11-a-i0009",
+          "sentence_id": 5,
+          "start_token_id": 53,
+          "end_token_id": 63,
+          "entity_text": "foté helvétique, pour l'avancement de l'éducation",
+          "predicted_entity_type": "ORG",
+          "ner_score": 0.7532384395599365,
+          "span_length_tokens": 6,
+          "span_length_characters": 49,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 53,
+            "end_token_id": 53,
+            "entity_text": "fo",
+            "predicted_entity_type": "ORG",
+            "ner_score": 0.5064094066619873
+          },
+          {
+            "start_token_id": 53,
+            "end_token_id": 63,
+            "entity_text": "té helvétique, pour l'avancement de l'éducation",
+            "predicted_entity_type": "ORG",
+            "ner_score": 0.7532384395599365
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "GDL-1808-11-11-a-i0009",
+    "sentence_id": 6,
+    "merges": [
+      {
+        "final": {
+          "document_id": "GDL-1808-11-11-a-i0009",
+          "sentence_id": 6,
+          "start_token_id": 117,
+          "end_token_id": 117,
+          "entity_text": "OnydiftSuiffe",
+          "predicted_entity_type": "LOC",
+          "ner_score": 0.7949350476264954,
+          "span_length_tokens": 1,
+          "span_length_characters": 13,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 117,
+            "end_token_id": 117,
+            "entity_text": "Onydift",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.7949350476264954
+          },
+          {
+            "start_token_id": 117,
+            "end_token_id": 117,
+            "entity_text": "Suiffe",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.7854792475700378
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "GDL-1808-11-11-a-i0009",
+    "sentence_id": 16,
+    "merges": [
+      {
+        "final": {
+          "document_id": "GDL-1808-11-11-a-i0009",
+          "sentence_id": 16,
+          "start_token_id": 226,
+          "end_token_id": 226,
+          "entity_text": "diftadcn",
+          "predicted_entity_type": "LOC",
+          "ner_score": 0.6466821432113647,
+          "span_length_tokens": 1,
+          "span_length_characters": 8,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 226,
+            "end_token_id": 226,
+            "entity_text": "dif",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.6466821432113647
+          },
+          {
+            "start_token_id": 226,
+            "end_token_id": 226,
+            "entity_text": "t",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.3935121595859527
+          },
+          {
+            "start_token_id": 226,
+            "end_token_id": 226,
+            "entity_text": "adcn",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.5139586329460144
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "GDL-1808-11-11-a-i0009",
+    "sentence_id": 23,
+    "merges": [
+      {
+        "final": {
+          "document_id": "GDL-1808-11-11-a-i0009",
+          "sentence_id": 23,
+          "start_token_id": 316,
+          "end_token_id": 316,
+          "entity_text": "FRK",
+          "predicted_entity_type": "LOC",
+          "ner_score": 0.5633236765861511,
+          "span_length_tokens": 1,
+          "span_length_characters": 3,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 316,
+            "end_token_id": 316,
+            "entity_text": "FR",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.5633236765861511
+          },
+          {
+            "start_token_id": 316,
+            "end_token_id": 316,
+            "entity_text": "K",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.4932844042778015
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "GDL-1808-11-11-a-i0009",
+    "sentence_id": 29,
+    "merges": [
+      {
+        "final": {
+          "document_id": "GDL-1808-11-11-a-i0009",
+          "sentence_id": 29,
+          "start_token_id": 612,
+          "end_token_id": 612,
+          "entity_text": "àEcublens",
+          "predicted_entity_type": "LOC",
+          "ner_score": 0.9908517003059388,
+          "span_length_tokens": 1,
+          "span_length_characters": 9,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 612,
+            "end_token_id": 612,
+            "entity_text": "à",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.5835002064704895
+          },
+          {
+            "start_token_id": 612,
+            "end_token_id": 612,
+            "entity_text": "E",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.9908517003059388
+          },
+          {
+            "start_token_id": 612,
+            "end_token_id": 612,
+            "entity_text": "cublens",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.8086839318275452
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "GDL-1808-11-11-a-i0009",
+    "sentence_id": 38,
+    "merges": [
+      {
+        "final": {
+          "document_id": "GDL-1808-11-11-a-i0009",
+          "sentence_id": 38,
+          "start_token_id": 1063,
+          "end_token_id": 1063,
+          "entity_text": "OÎlon",
+          "predicted_entity_type": "LOC",
+          "ner_score": 0.9389174580574036,
+          "span_length_tokens": 1,
+          "span_length_characters": 5,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 1063,
+            "end_token_id": 1063,
+            "entity_text": "O",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.9389174580574036
+          },
+          {
+            "start_token_id": 1063,
+            "end_token_id": 1063,
+            "entity_text": "Îlon",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.864065945148468
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "GDL-1808-12-09-a-i0004",
+    "sentence_id": 2,
+    "merges": [
+      {
+        "final": {
+          "document_id": "GDL-1808-12-09-a-i0004",
+          "sentence_id": 2,
+          "start_token_id": 21,
+          "end_token_id": 21,
+          "entity_text": "àKœnigsberg",
+          "predicted_entity_type": "LOC",
+          "ner_score": 0.9814864993095398,
+          "span_length_tokens": 1,
+          "span_length_characters": 11,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 21,
+            "end_token_id": 21,
+            "entity_text": "à",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.6288947463035583
+          },
+          {
+            "start_token_id": 21,
+            "end_token_id": 21,
+            "entity_text": "K",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.9814864993095398
+          },
+          {
+            "start_token_id": 21,
+            "end_token_id": 21,
+            "entity_text": "œnigsberg",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.9353976845741272
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "GDL-1808-12-09-a-i0004",
+    "sentence_id": 20,
+    "merges": [
+      {
+        "final": {
+          "document_id": "GDL-1808-12-09-a-i0004",
+          "sentence_id": 20,
+          "start_token_id": 324,
+          "end_token_id": 324,
+          "entity_text": "WURZEOURG",
+          "predicted_entity_type": "LOC",
+          "ner_score": 0.9958286881446838,
+          "span_length_tokens": 1,
+          "span_length_characters": 9,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 324,
+            "end_token_id": 324,
+            "entity_text": "W",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.9958286881446838
+          },
+          {
+            "start_token_id": 324,
+            "end_token_id": 324,
+            "entity_text": "URZEOURG",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.9583465456962584
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "GDL-1818-03-06-a-i0008",
+    "sentence_id": 25,
+    "merges": [
+      {
+        "final": {
+          "document_id": "GDL-1818-03-06-a-i0008",
+          "sentence_id": 25,
+          "start_token_id": 1013,
+          "end_token_id": 1013,
+          "entity_text": "héLubeck",
+          "predicted_entity_type": "LOC",
+          "ner_score": 0.7261543273925781,
+          "span_length_tokens": 1,
+          "span_length_characters": 8,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 1013,
+            "end_token_id": 1013,
+            "entity_text": "h",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.7261543273925781
+          },
+          {
+            "start_token_id": 1013,
+            "end_token_id": 1013,
+            "entity_text": "éLubeck",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.6790546774864197
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "GDL-1828-01-04-a-i0017",
+    "sentence_id": 4,
+    "merges": [
+      {
+        "final": {
+          "document_id": "GDL-1828-01-04-a-i0017",
+          "sentence_id": 4,
+          "start_token_id": 122,
+          "end_token_id": 129,
+          "entity_text": "de Justice et Police du Canton de Vaud",
+          "predicted_entity_type": "ORG",
+          "ner_score": 0.6297856569290161,
+          "span_length_tokens": 8,
+          "span_length_characters": 38,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 122,
+            "end_token_id": 129,
+            "entity_text": "de Justice et Police du Canton de Vau",
+            "predicted_entity_type": "ORG",
+            "ner_score": 0.6297856569290161
+          },
+          {
+            "start_token_id": 129,
+            "end_token_id": 129,
+            "entity_text": "d",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.5036205053329468
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "GDL-1828-01-04-a-i0017",
+    "sentence_id": 46,
+    "merges": [
+      {
+        "final": {
+          "document_id": "GDL-1828-01-04-a-i0017",
+          "sentence_id": 46,
+          "start_token_id": 1014,
+          "end_token_id": 1014,
+          "entity_text": "Marnand",
+          "predicted_entity_type": "LOC",
+          "ner_score": 0.603562593460083,
+          "span_length_tokens": 1,
+          "span_length_characters": 7,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 1014,
+            "end_token_id": 1014,
+            "entity_text": "Mar",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.603562593460083
+          },
+          {
+            "start_token_id": 1014,
+            "end_token_id": 1014,
+            "entity_text": "nand",
+            "predicted_entity_type": "PERS",
+            "ner_score": 0.4709256291389465
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "GDL-1828-01-04-a-i0017",
+    "sentence_id": 58,
+    "merges": [
+      {
+        "final": {
+          "document_id": "GDL-1828-01-04-a-i0017",
+          "sentence_id": 58,
+          "start_token_id": 1242,
+          "end_token_id": 1249,
+          "entity_text": "Tribunal de première instance du District de Paverne",
+          "predicted_entity_type": "ORG",
+          "ner_score": 0.6986925601959229,
+          "span_length_tokens": 8,
+          "span_length_characters": 52,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 1242,
+            "end_token_id": 1249,
+            "entity_text": "Tribunal de première instance du District de Pav",
+            "predicted_entity_type": "ORG",
+            "ner_score": 0.6986925601959229
+          },
+          {
+            "start_token_id": 1249,
+            "end_token_id": 1249,
+            "entity_text": "erne",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.5086796283721924
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "GDL-1828-09-16-a-i0014",
+    "sentence_id": 115,
+    "merges": [
+      {
+        "final": {
+          "document_id": "GDL-1828-09-16-a-i0014",
+          "sentence_id": 115,
+          "start_token_id": 2397,
+          "end_token_id": 2399,
+          "entity_text": "quePierre-Franqois",
+          "predicted_entity_type": "PERS",
+          "ner_score": 0.9578874111175536,
+          "span_length_tokens": 1,
+          "span_length_characters": 18,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 2397,
+            "end_token_id": 2397,
+            "entity_text": "que",
+            "predicted_entity_type": "PERS",
+            "ner_score": 0.8822378516197205
+          },
+          {
+            "start_token_id": 2397,
+            "end_token_id": 2399,
+            "entity_text": "Pierre-Franqois",
+            "predicted_entity_type": "PERS",
+            "ner_score": 0.9578874111175536
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "GDL-1838-10-19-a-i0004",
+    "sentence_id": 8,
+    "merges": [
+      {
+        "final": {
+          "document_id": "GDL-1838-10-19-a-i0004",
+          "sentence_id": 8,
+          "start_token_id": 185,
+          "end_token_id": 185,
+          "entity_text": "Schwarzemberg",
+          "predicted_entity_type": "PERS",
+          "ner_score": 0.7374700903892517,
+          "span_length_tokens": 1,
+          "span_length_characters": 13,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 185,
+            "end_token_id": 185,
+            "entity_text": "Schwarz",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.4291570782661438
+          },
+          {
+            "start_token_id": 185,
+            "end_token_id": 185,
+            "entity_text": "emberg",
+            "predicted_entity_type": "PERS",
+            "ner_score": 0.7374700903892517
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "GDL-1838-10-19-a-i0004",
+    "sentence_id": 10,
+    "merges": [
+      {
+        "final": {
+          "document_id": "GDL-1838-10-19-a-i0004",
+          "sentence_id": 10,
+          "start_token_id": 239,
+          "end_token_id": 239,
+          "entity_text": "SARRAGOSSE",
+          "predicted_entity_type": "LOC",
+          "ner_score": 0.959793984889984,
+          "span_length_tokens": 1,
+          "span_length_characters": 10,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 239,
+            "end_token_id": 239,
+            "entity_text": "SA",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.959793984889984
+          },
+          {
+            "start_token_id": 239,
+            "end_token_id": 239,
+            "entity_text": "RRAGOSSE",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.8081958889961243
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "GDL-1838-11-09-a-i0003",
+    "sentence_id": 28,
+    "merges": [
+      {
+        "final": {
+          "document_id": "GDL-1838-11-09-a-i0003",
+          "sentence_id": 28,
+          "start_token_id": 783,
+          "end_token_id": 783,
+          "entity_text": "Llarch",
+          "predicted_entity_type": "PERS",
+          "ner_score": 0.6899587512016296,
+          "span_length_tokens": 1,
+          "span_length_characters": 6,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 783,
+            "end_token_id": 783,
+            "entity_text": "Ll",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.4527369439601898
+          },
+          {
+            "start_token_id": 783,
+            "end_token_id": 783,
+            "entity_text": "arch",
+            "predicted_entity_type": "PERS",
+            "ner_score": 0.6899587512016296
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "GDL-1848-05-09-a-i0005",
+    "sentence_id": 53,
+    "merges": [
+      {
+        "final": {
+          "document_id": "GDL-1848-05-09-a-i0005",
+          "sentence_id": 53,
+          "start_token_id": 1341,
+          "end_token_id": 1341,
+          "entity_text": "HONGRIE",
+          "predicted_entity_type": "LOC",
+          "ner_score": 0.9820712208747864,
+          "span_length_tokens": 1,
+          "span_length_characters": 7,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 1341,
+            "end_token_id": 1341,
+            "entity_text": "HO",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.9820712208747864
+          },
+          {
+            "start_token_id": 1341,
+            "end_token_id": 1341,
+            "entity_text": "NGRIE",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.66166090965271
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "GDL-1848-05-09-a-i0005",
+    "sentence_id": 62,
+    "merges": [
+      {
+        "final": {
+          "document_id": "GDL-1848-05-09-a-i0005",
+          "sentence_id": 62,
+          "start_token_id": 1579,
+          "end_token_id": 1579,
+          "entity_text": "BERLIN",
+          "predicted_entity_type": "LOC",
+          "ner_score": 0.9681534171104432,
+          "span_length_tokens": 1,
+          "span_length_characters": 6,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 1579,
+            "end_token_id": 1579,
+            "entity_text": "BER",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.9681534171104432
+          },
+          {
+            "start_token_id": 1579,
+            "end_token_id": 1579,
+            "entity_text": "LIN",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.5089665651321411
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "GDL-1848-06-15-a-i0006",
+    "sentence_id": 37,
+    "merges": [
+      {
+        "final": {
+          "document_id": "GDL-1848-06-15-a-i0006",
+          "sentence_id": 37,
+          "start_token_id": 1564,
+          "end_token_id": 1564,
+          "entity_text": "POSEN",
+          "predicted_entity_type": "LOC",
+          "ner_score": 0.4468338787555694,
+          "span_length_tokens": 1,
+          "span_length_characters": 5,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 1564,
+            "end_token_id": 1564,
+            "entity_text": "PO",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.4468338787555694
+          },
+          {
+            "start_token_id": 1564,
+            "end_token_id": 1564,
+            "entity_text": "SE",
+            "predicted_entity_type": "PERS",
+            "ner_score": 0.3462744653224945
+          },
+          {
+            "start_token_id": 1564,
+            "end_token_id": 1564,
+            "entity_text": "N",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.4409827589988708
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "GDL-1848-06-15-a-i0006",
+    "sentence_id": 50,
+    "merges": [
+      {
+        "final": {
+          "document_id": "GDL-1848-06-15-a-i0006",
+          "sentence_id": 50,
+          "start_token_id": 1922,
+          "end_token_id": 1922,
+          "entity_text": "STUTTGARD",
+          "predicted_entity_type": "LOC",
+          "ner_score": 0.9947432279586792,
+          "span_length_tokens": 1,
+          "span_length_characters": 9,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 1922,
+            "end_token_id": 1922,
+            "entity_text": "ST",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.9947432279586792
+          },
+          {
+            "start_token_id": 1922,
+            "end_token_id": 1922,
+            "entity_text": "UTTGARD",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.9124922156333924
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "GDL-1848-06-15-a-i0006",
+    "sentence_id": 83,
+    "merges": [
+      {
+        "final": {
+          "document_id": "GDL-1848-06-15-a-i0006",
+          "sentence_id": 83,
+          "start_token_id": 2775,
+          "end_token_id": 2775,
+          "entity_text": "LAGRANGE",
+          "predicted_entity_type": "PERS",
+          "ner_score": 0.4555273354053497,
+          "span_length_tokens": 1,
+          "span_length_characters": 8,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 2775,
+            "end_token_id": 2775,
+            "entity_text": "LA",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.3577126562595367
+          },
+          {
+            "start_token_id": 2775,
+            "end_token_id": 2775,
+            "entity_text": "GRANGE",
+            "predicted_entity_type": "PERS",
+            "ner_score": 0.4555273354053497
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "GDL-1848-06-15-a-i0006",
+    "sentence_id": 87,
+    "merges": [
+      {
+        "final": {
+          "document_id": "GDL-1848-06-15-a-i0006",
+          "sentence_id": 87,
+          "start_token_id": 2881,
+          "end_token_id": 2881,
+          "entity_text": "àBelforte",
+          "predicted_entity_type": "LOC",
+          "ner_score": 0.9024274945259094,
+          "span_length_tokens": 1,
+          "span_length_characters": 9,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 2881,
+            "end_token_id": 2881,
+            "entity_text": "à",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.8161028027534485
+          },
+          {
+            "start_token_id": 2881,
+            "end_token_id": 2881,
+            "entity_text": "Belforte",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.9024274945259094
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "GDL-1848-07-11-a-i0001",
+    "sentence_id": 94,
+    "merges": [
+      {
+        "final": {
+          "document_id": "GDL-1848-07-11-a-i0001",
+          "sentence_id": 94,
+          "start_token_id": 2690,
+          "end_token_id": 2690,
+          "entity_text": "TESSIN",
+          "predicted_entity_type": "LOC",
+          "ner_score": 0.9526354670524596,
+          "span_length_tokens": 1,
+          "span_length_characters": 6,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 2690,
+            "end_token_id": 2690,
+            "entity_text": "TE",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.9526354670524596
+          },
+          {
+            "start_token_id": 2690,
+            "end_token_id": 2690,
+            "entity_text": "SSIN",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.634006679058075
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "GDL-1848-07-11-a-i0001",
+    "sentence_id": 97,
+    "merges": [
+      {
+        "final": {
+          "document_id": "GDL-1848-07-11-a-i0001",
+          "sentence_id": 97,
+          "start_token_id": 2728,
+          "end_token_id": 2728,
+          "entity_text": "ontenere",
+          "predicted_entity_type": "LOC",
+          "ner_score": 0.720160186290741,
+          "span_length_tokens": 1,
+          "span_length_characters": 8,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 2728,
+            "end_token_id": 2728,
+            "entity_text": "ont",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.720160186290741
+          },
+          {
+            "start_token_id": 2728,
+            "end_token_id": 2728,
+            "entity_text": "enere",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.6774530410766602
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "GDL-1848-07-11-a-i0001",
+    "sentence_id": 99,
+    "merges": [
+      {
+        "final": {
+          "document_id": "GDL-1848-07-11-a-i0001",
+          "sentence_id": 99,
+          "start_token_id": 2758,
+          "end_token_id": 2758,
+          "entity_text": "ZURICH",
+          "predicted_entity_type": "LOC",
+          "ner_score": 0.991612672805786,
+          "span_length_tokens": 1,
+          "span_length_characters": 6,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 2758,
+            "end_token_id": 2758,
+            "entity_text": "Z",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.991612672805786
+          },
+          {
+            "start_token_id": 2758,
+            "end_token_id": 2758,
+            "entity_text": "URICH",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.7136330604553223
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "GDL-1858-04-29-a-i0011",
+    "sentence_id": 6,
+    "merges": [
+      {
+        "final": {
+          "document_id": "GDL-1858-04-29-a-i0011",
+          "sentence_id": 6,
+          "start_token_id": 122,
+          "end_token_id": 128,
+          "entity_text": "Dâhler etBrunner, conseillers d'Etal",
+          "predicted_entity_type": "PERS",
+          "ner_score": 0.8308772444725037,
+          "span_length_tokens": 4,
+          "span_length_characters": 36,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 122,
+            "end_token_id": 123,
+            "entity_text": "Dâhler et",
+            "predicted_entity_type": "PERS",
+            "ner_score": 0.8198281526565552
+          },
+          {
+            "start_token_id": 123,
+            "end_token_id": 128,
+            "entity_text": "Brunner, conseillers d'Etal",
+            "predicted_entity_type": "PERS",
+            "ner_score": 0.8308772444725037
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "GDL-1858-04-29-a-i0011",
+    "sentence_id": 9,
+    "merges": [
+      {
+        "final": {
+          "document_id": "GDL-1858-04-29-a-i0011",
+          "sentence_id": 9,
+          "start_token_id": 194,
+          "end_token_id": 194,
+          "entity_text": "Arau",
+          "predicted_entity_type": "PERS",
+          "ner_score": 0.7483607530593872,
+          "span_length_tokens": 1,
+          "span_length_characters": 4,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 194,
+            "end_token_id": 194,
+            "entity_text": "Ara",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.4731276035308838
+          },
+          {
+            "start_token_id": 194,
+            "end_token_id": 194,
+            "entity_text": "u",
+            "predicted_entity_type": "PERS",
+            "ner_score": 0.7483607530593872
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "GDL-1858-04-29-a-i0011",
+    "sentence_id": 16,
+    "merges": [
+      {
+        "final": {
+          "document_id": "GDL-1858-04-29-a-i0011",
+          "sentence_id": 16,
+          "start_token_id": 355,
+          "end_token_id": 355,
+          "entity_text": "Palestine",
+          "predicted_entity_type": "PERS",
+          "ner_score": 0.7516108155250549,
+          "span_length_tokens": 1,
+          "span_length_characters": 9,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 355,
+            "end_token_id": 355,
+            "entity_text": "Pal",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.5794150233268738
+          },
+          {
+            "start_token_id": 355,
+            "end_token_id": 355,
+            "entity_text": "estine",
+            "predicted_entity_type": "PERS",
+            "ner_score": 0.7516108155250549
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "GDL-1858-08-10-a-i0010",
+    "sentence_id": 10,
+    "merges": [
+      {
+        "final": {
+          "document_id": "GDL-1858-08-10-a-i0010",
+          "sentence_id": 10,
+          "start_token_id": 420,
+          "end_token_id": 420,
+          "entity_text": "deWinterthour",
+          "predicted_entity_type": "LOC",
+          "ner_score": 0.8922505974769592,
+          "span_length_tokens": 1,
+          "span_length_characters": 13,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 420,
+            "end_token_id": 420,
+            "entity_text": "de",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.7502636909484863
+          },
+          {
+            "start_token_id": 420,
+            "end_token_id": 420,
+            "entity_text": "Winterthour",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.8922505974769592
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "GDL-1858-11-18-a-i0007",
+    "sentence_id": 26,
+    "merges": [
+      {
+        "final": {
+          "document_id": "GDL-1858-11-18-a-i0007",
+          "sentence_id": 26,
+          "start_token_id": 747,
+          "end_token_id": 747,
+          "entity_text": "Crête",
+          "predicted_entity_type": "LOC",
+          "ner_score": 0.7088978886604309,
+          "span_length_tokens": 1,
+          "span_length_characters": 5,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 747,
+            "end_token_id": 747,
+            "entity_text": "Cr",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.7088978886604309
+          },
+          {
+            "start_token_id": 747,
+            "end_token_id": 747,
+            "entity_text": "ête",
+            "predicted_entity_type": "PERS",
+            "ner_score": 0.6127365231513977
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "GDL-1868-01-13-a-i0002",
+    "sentence_id": 0,
+    "merges": [
+      {
+        "final": {
+          "document_id": "GDL-1868-01-13-a-i0002",
+          "sentence_id": 0,
+          "start_token_id": 0,
+          "end_token_id": 1,
+          "entity_text": "CONFEDERATION SUISSE",
+          "predicted_entity_type": "ORG",
+          "ner_score": 0.48966845870018,
+          "span_length_tokens": 2,
+          "span_length_characters": 20,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 0,
+            "end_token_id": 1,
+            "entity_text": "CONFEDERATION SU",
+            "predicted_entity_type": "ORG",
+            "ner_score": 0.48966845870018
+          },
+          {
+            "start_token_id": 1,
+            "end_token_id": 1,
+            "entity_text": "ISSE",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.4417050182819366
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "GDL-1868-01-13-a-i0002",
+    "sentence_id": 7,
+    "merges": [
+      {
+        "final": {
+          "document_id": "GDL-1868-01-13-a-i0002",
+          "sentence_id": 7,
+          "start_token_id": 183,
+          "end_token_id": 183,
+          "entity_text": "Bonfol",
+          "predicted_entity_type": "LOC",
+          "ner_score": 0.5001336336135864,
+          "span_length_tokens": 1,
+          "span_length_characters": 6,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 183,
+            "end_token_id": 183,
+            "entity_text": "Bon",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.5001336336135864
+          },
+          {
+            "start_token_id": 183,
+            "end_token_id": 183,
+            "entity_text": "fol",
+            "predicted_entity_type": "PERS",
+            "ner_score": 0.4075063467025757
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "GDL-1868-07-27-a-i0002",
+    "sentence_id": 0,
+    "merges": [
+      {
+        "final": {
+          "document_id": "GDL-1868-07-27-a-i0002",
+          "sentence_id": 0,
+          "start_token_id": 0,
+          "end_token_id": 0,
+          "entity_text": "CONFEDERATION",
+          "predicted_entity_type": "ORG",
+          "ner_score": 0.5021443963050842,
+          "span_length_tokens": 1,
+          "span_length_characters": 13,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 0,
+            "end_token_id": 0,
+            "entity_text": "CONFED",
+            "predicted_entity_type": "ORG",
+            "ner_score": 0.4323021471500397
+          },
+          {
+            "start_token_id": 0,
+            "end_token_id": 0,
+            "entity_text": "ER",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.4787171185016632
+          },
+          {
+            "start_token_id": 0,
+            "end_token_id": 0,
+            "entity_text": "ATION",
+            "predicted_entity_type": "ORG",
+            "ner_score": 0.5021443963050842
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "GDL-1868-07-27-a-i0002",
+    "sentence_id": 13,
+    "merges": [
+      {
+        "final": {
+          "document_id": "GDL-1868-07-27-a-i0002",
+          "sentence_id": 13,
+          "start_token_id": 401,
+          "end_token_id": 403,
+          "entity_text": "Gonl des Etats",
+          "predicted_entity_type": "ORG",
+          "ner_score": 0.6515091061592102,
+          "span_length_tokens": 3,
+          "span_length_characters": 14,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 401,
+            "end_token_id": 401,
+            "entity_text": "Gon",
+            "predicted_entity_type": "ORG",
+            "ner_score": 0.6515091061592102
+          },
+          {
+            "start_token_id": 401,
+            "end_token_id": 403,
+            "entity_text": "l des Etats",
+            "predicted_entity_type": "ORG",
+            "ner_score": 0.6359944939613342
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "GDL-1868-07-27-a-i0002",
+    "sentence_id": 54,
+    "merges": [
+      {
+        "final": {
+          "document_id": "GDL-1868-07-27-a-i0002",
+          "sentence_id": 54,
+          "start_token_id": 2185,
+          "end_token_id": 2187,
+          "entity_text": "CONSEIL DES ÉTATS",
+          "predicted_entity_type": "ORG",
+          "ner_score": 0.8502593636512756,
+          "span_length_tokens": 3,
+          "span_length_characters": 17,
+          "sentence_chunked": true
+        },
+        "candidates": [
+          {
+            "start_token_id": 2185,
+            "end_token_id": 2185,
+            "entity_text": "CONS",
+            "predicted_entity_type": "ORG",
+            "ner_score": 0.8502593636512756
+          },
+          {
+            "start_token_id": 2185,
+            "end_token_id": 2187,
+            "entity_text": "EIL DES ÉTATS",
+            "predicted_entity_type": "ORG",
+            "ner_score": 0.7359372973442078
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "GDL-1878-02-13-a-i0014",
+    "sentence_id": 39,
+    "merges": [
+      {
+        "final": {
+          "document_id": "GDL-1878-02-13-a-i0014",
+          "sentence_id": 39,
+          "start_token_id": 1243,
+          "end_token_id": 1243,
+          "entity_text": "Athènes",
+          "predicted_entity_type": "LOC",
+          "ner_score": 0.9802756905555724,
+          "span_length_tokens": 1,
+          "span_length_characters": 7,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 1243,
+            "end_token_id": 1243,
+            "entity_text": "Ath",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.9802756905555724
+          },
+          {
+            "start_token_id": 1243,
+            "end_token_id": 1243,
+            "entity_text": "ènes",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.7696962356567383
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "GDL-1888-01-16-a-i0010",
+    "sentence_id": 0,
+    "merges": [
+      {
+        "final": {
+          "document_id": "GDL-1888-01-16-a-i0010",
+          "sentence_id": 0,
+          "start_token_id": 1,
+          "end_token_id": 3,
+          "entity_text": "ÎVcw-York",
+          "predicted_entity_type": "LOC",
+          "ner_score": 0.9265877604484558,
+          "span_length_tokens": 1,
+          "span_length_characters": 9,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 1,
+            "end_token_id": 1,
+            "entity_text": "Î",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.9194013476371764
+          },
+          {
+            "start_token_id": 1,
+            "end_token_id": 3,
+            "entity_text": "Vcw-York",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.9265877604484558
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "GDL-1888-12-15-a-i0002",
+    "sentence_id": 22,
+    "merges": [
+      {
+        "final": {
+          "document_id": "GDL-1888-12-15-a-i0002",
+          "sentence_id": 22,
+          "start_token_id": 772,
+          "end_token_id": 772,
+          "entity_text": "Hambourg",
+          "predicted_entity_type": "PROD",
+          "ner_score": 0.7851237654685974,
+          "span_length_tokens": 1,
+          "span_length_characters": 8,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 772,
+            "end_token_id": 772,
+            "entity_text": "Hambour",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.7760770916938782
+          },
+          {
+            "start_token_id": 772,
+            "end_token_id": 772,
+            "entity_text": "g",
+            "predicted_entity_type": "PROD",
+            "ner_score": 0.7851237654685974
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "GDL-1898-03-31-a-i0006",
+    "sentence_id": 0,
+    "merges": [
+      {
+        "final": {
+          "document_id": "GDL-1898-03-31-a-i0006",
+          "sentence_id": 0,
+          "start_token_id": 4,
+          "end_token_id": 4,
+          "entity_text": "Lcliberg",
+          "predicted_entity_type": "LOC",
+          "ner_score": 0.6200360059738159,
+          "span_length_tokens": 1,
+          "span_length_characters": 8,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 4,
+            "end_token_id": 4,
+            "entity_text": "L",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.6200360059738159
+          },
+          {
+            "start_token_id": 4,
+            "end_token_id": 4,
+            "entity_text": "cliberg",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.5432218909263611
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "GDL-1898-08-02-a-i0008",
+    "sentence_id": 4,
+    "merges": [
+      {
+        "final": {
+          "document_id": "GDL-1898-08-02-a-i0008",
+          "sentence_id": 4,
+          "start_token_id": 93,
+          "end_token_id": 95,
+          "entity_text": "Jura-Simplon",
+          "predicted_entity_type": "ORG",
+          "ner_score": 0.8427146673202515,
+          "span_length_tokens": 1,
+          "span_length_characters": 12,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 93,
+            "end_token_id": 93,
+            "entity_text": "Jur",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.4540700316429138
+          },
+          {
+            "start_token_id": 93,
+            "end_token_id": 95,
+            "entity_text": "a-Simplon",
+            "predicted_entity_type": "ORG",
+            "ner_score": 0.8427146673202515
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "GDL-1898-08-02-a-i0008",
+    "sentence_id": 7,
+    "merges": [
+      {
+        "final": {
+          "document_id": "GDL-1898-08-02-a-i0008",
+          "sentence_id": 7,
+          "start_token_id": 206,
+          "end_token_id": 216,
+          "entity_text": "Montreux, professeur de géologie à l'académie de Neuchâtel",
+          "predicted_entity_type": "PERS",
+          "ner_score": 0.9192033410072328,
+          "span_length_tokens": 8,
+          "span_length_characters": 58,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 206,
+            "end_token_id": 206,
+            "entity_text": "Montre",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.4812135100364685
+          },
+          {
+            "start_token_id": 206,
+            "end_token_id": 216,
+            "entity_text": "ux, professeur de géologie à l'académie de Neuchâtel",
+            "predicted_entity_type": "PERS",
+            "ner_score": 0.9192033410072328
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "GDL-1898-08-02-a-i0008",
+    "sentence_id": 75,
+    "merges": [
+      {
+        "final": {
+          "document_id": "GDL-1898-08-02-a-i0008",
+          "sentence_id": 75,
+          "start_token_id": 1557,
+          "end_token_id": 1558,
+          "entity_text": ". LiebeD",
+          "predicted_entity_type": "PERS",
+          "ner_score": 0.5733988285064697,
+          "span_length_tokens": 2,
+          "span_length_characters": 8,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 1557,
+            "end_token_id": 1558,
+            "entity_text": ". Liebe",
+            "predicted_entity_type": "PERS",
+            "ner_score": 0.5733988285064697
+          },
+          {
+            "start_token_id": 1558,
+            "end_token_id": 1558,
+            "entity_text": "D",
+            "predicted_entity_type": "PERS",
+            "ner_score": 0.4976500272750854
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "GDL-1898-08-02-a-i0008",
+    "sentence_id": 118,
+    "merges": [
+      {
+        "final": {
+          "document_id": "GDL-1898-08-02-a-i0008",
+          "sentence_id": 118,
+          "start_token_id": 2445,
+          "end_token_id": 2452,
+          "entity_text": "M. WilhelmKall, réviseur, à Mannheim",
+          "predicted_entity_type": "PERS",
+          "ner_score": 0.902928113937378,
+          "span_length_tokens": 5,
+          "span_length_characters": 36,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 2445,
+            "end_token_id": 2452,
+            "entity_text": "M. WilhelmKall, réviseur, à Mann",
+            "predicted_entity_type": "PERS",
+            "ner_score": 0.902928113937378
+          },
+          {
+            "start_token_id": 2452,
+            "end_token_id": 2452,
+            "entity_text": "heim",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.5474297404289246
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "GDL-1898-10-31-a-i0013",
+    "sentence_id": 25,
+    "merges": [
+      {
+        "final": {
+          "document_id": "GDL-1898-10-31-a-i0013",
+          "sentence_id": 25,
+          "start_token_id": 1151,
+          "end_token_id": 1151,
+          "entity_text": "lausanne",
+          "predicted_entity_type": "LOC",
+          "ner_score": 0.9243571758270264,
+          "span_length_tokens": 1,
+          "span_length_characters": 8,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 1151,
+            "end_token_id": 1151,
+            "entity_text": "laus",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.9243571758270264
+          },
+          {
+            "start_token_id": 1151,
+            "end_token_id": 1151,
+            "entity_text": "anne",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.5415951013565063
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "GDL-1908-01-23-a-i0010",
+    "sentence_id": 34,
+    "merges": [
+      {
+        "final": {
+          "document_id": "GDL-1908-01-23-a-i0010",
+          "sentence_id": 34,
+          "start_token_id": 1122,
+          "end_token_id": 1123,
+          "entity_text": "YEvening Post",
+          "predicted_entity_type": "PROD",
+          "ner_score": 0.7351503372192383,
+          "span_length_tokens": 2,
+          "span_length_characters": 13,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 1122,
+            "end_token_id": 1122,
+            "entity_text": "Y",
+            "predicted_entity_type": "PROD",
+            "ner_score": 0.6033573150634766
+          },
+          {
+            "start_token_id": 1122,
+            "end_token_id": 1123,
+            "entity_text": "Evening Post",
+            "predicted_entity_type": "PROD",
+            "ner_score": 0.7351503372192383
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "GDL-1918-01-27-a-i0011",
+    "sentence_id": 0,
+    "merges": [
+      {
+        "final": {
+          "document_id": "GDL-1918-01-27-a-i0011",
+          "sentence_id": 0,
+          "start_token_id": 9,
+          "end_token_id": 9,
+          "entity_text": "Bâle",
+          "predicted_entity_type": "LOC",
+          "ner_score": 0.988025724887848,
+          "span_length_tokens": 1,
+          "span_length_characters": 4,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 9,
+            "end_token_id": 9,
+            "entity_text": "B",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.988025724887848
+          },
+          {
+            "start_token_id": 9,
+            "end_token_id": 9,
+            "entity_text": "âle",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.7320708632469177
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "GDL-1918-01-27-a-i0011",
+    "sentence_id": 12,
+    "merges": [
+      {
+        "final": {
+          "document_id": "GDL-1918-01-27-a-i0011",
+          "sentence_id": 12,
+          "start_token_id": 231,
+          "end_token_id": 231,
+          "entity_text": "Prusse",
+          "predicted_entity_type": "LOC",
+          "ner_score": 0.7133433222770691,
+          "span_length_tokens": 1,
+          "span_length_characters": 6,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 231,
+            "end_token_id": 231,
+            "entity_text": "Pruss",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.7133433222770691
+          },
+          {
+            "start_token_id": 231,
+            "end_token_id": 231,
+            "entity_text": "e",
+            "predicted_entity_type": "ORG",
+            "ner_score": 0.6729832887649536
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "GDL-1918-02-04-a-i0001",
+    "sentence_id": 5,
+    "merges": [
+      {
+        "final": {
+          "document_id": "GDL-1918-02-04-a-i0001",
+          "sentence_id": 5,
+          "start_token_id": 1637,
+          "end_token_id": 1648,
+          "entity_text": "Quantier-ia-Tente, conseiller d'Etat à Neuchâtel",
+          "predicted_entity_type": "PERS",
+          "ner_score": 0.9356528520584106,
+          "span_length_tokens": 5,
+          "span_length_characters": 48,
+          "sentence_chunked": true
+        },
+        "candidates": [
+          {
+            "start_token_id": 1637,
+            "end_token_id": 1648,
+            "entity_text": "Quantier-ia-Tente, conseiller d'Etat à Neu",
+            "predicted_entity_type": "PERS",
+            "ner_score": 0.9356528520584106
+          },
+          {
+            "start_token_id": 1648,
+            "end_token_id": 1648,
+            "entity_text": "ch",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.5418959856033325
+          },
+          {
+            "start_token_id": 1648,
+            "end_token_id": 1648,
+            "entity_text": "âtel",
+            "predicted_entity_type": "PERS",
+            "ner_score": 0.7326371073722839
+          }
+        ]
+      },
+      {
+        "final": {
+          "document_id": "GDL-1918-02-04-a-i0001",
+          "sentence_id": 5,
+          "start_token_id": 1712,
+          "end_token_id": 1714,
+          "entity_text": "'. aise",
+          "predicted_entity_type": "PERS",
+          "ner_score": 0.8540542721748352,
+          "span_length_tokens": 2,
+          "span_length_characters": 7,
+          "sentence_chunked": true
+        },
+        "candidates": [
+          {
+            "start_token_id": 1712,
+            "end_token_id": 1714,
+            "entity_text": "'. ais",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.6234764456748962
+          },
+          {
+            "start_token_id": 1714,
+            "end_token_id": 1714,
+            "entity_text": "e",
+            "predicted_entity_type": "PERS",
+            "ner_score": 0.8540542721748352
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "GDL-1918-11-06-a-i0093",
+    "sentence_id": 1,
+    "merges": [
+      {
+        "final": {
+          "document_id": "GDL-1918-11-06-a-i0093",
+          "sentence_id": 1,
+          "start_token_id": 37,
+          "end_token_id": 37,
+          "entity_text": "àBerlin",
+          "predicted_entity_type": "LOC",
+          "ner_score": 0.984529435634613,
+          "span_length_tokens": 1,
+          "span_length_characters": 7,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 37,
+            "end_token_id": 37,
+            "entity_text": "à",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.8200412392616272
+          },
+          {
+            "start_token_id": 37,
+            "end_token_id": 37,
+            "entity_text": "B",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.984529435634613
+          },
+          {
+            "start_token_id": 37,
+            "end_token_id": 37,
+            "entity_text": "erlin",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.9160370826721193
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "GDL-1938-02-21-a-i0039",
+    "sentence_id": 90,
+    "merges": [
+      {
+        "final": {
+          "document_id": "GDL-1938-02-21-a-i0039",
+          "sentence_id": 90,
+          "start_token_id": 1378,
+          "end_token_id": 1378,
+          "entity_text": "DER",
+          "predicted_entity_type": "LOC",
+          "ner_score": 0.5195464491844177,
+          "span_length_tokens": 1,
+          "span_length_characters": 3,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 1378,
+            "end_token_id": 1378,
+            "entity_text": "DE",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.5195464491844177
+          },
+          {
+            "start_token_id": 1378,
+            "end_token_id": 1378,
+            "entity_text": "R",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.4880536794662475
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "GDL-1938-10-03-a-i0027",
+    "sentence_id": 0,
+    "merges": [
+      {
+        "final": {
+          "document_id": "GDL-1938-10-03-a-i0027",
+          "sentence_id": 0,
+          "start_token_id": 11,
+          "end_token_id": 11,
+          "entity_text": "Zurich",
+          "predicted_entity_type": "ORG",
+          "ner_score": 0.7710216045379639,
+          "span_length_tokens": 1,
+          "span_length_characters": 6,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 11,
+            "end_token_id": 11,
+            "entity_text": "Zur",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.5594385266304016
+          },
+          {
+            "start_token_id": 11,
+            "end_token_id": 11,
+            "entity_text": "ich",
+            "predicted_entity_type": "ORG",
+            "ner_score": 0.7710216045379639
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "GDL-1938-10-03-a-i0027",
+    "sentence_id": 1,
+    "merges": [
+      {
+        "final": {
+          "document_id": "GDL-1938-10-03-a-i0027",
+          "sentence_id": 1,
+          "start_token_id": 25,
+          "end_token_id": 25,
+          "entity_text": "Grasehopers",
+          "predicted_entity_type": "ORG",
+          "ner_score": 0.8135576248168945,
+          "span_length_tokens": 1,
+          "span_length_characters": 11,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 25,
+            "end_token_id": 25,
+            "entity_text": "Gras",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.3780142068862915
+          },
+          {
+            "start_token_id": 25,
+            "end_token_id": 25,
+            "entity_text": "ehopers",
+            "predicted_entity_type": "ORG",
+            "ner_score": 0.8135576248168945
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "GDL-1938-10-03-a-i0027",
+    "sentence_id": 5,
+    "merges": [
+      {
+        "final": {
+          "document_id": "GDL-1938-10-03-a-i0027",
+          "sentence_id": 5,
+          "start_token_id": 50,
+          "end_token_id": 50,
+          "entity_text": "Bàle",
+          "predicted_entity_type": "LOC",
+          "ner_score": 0.5760549306869507,
+          "span_length_tokens": 1,
+          "span_length_characters": 4,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 50,
+            "end_token_id": 50,
+            "entity_text": "B",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.3101325631141662
+          },
+          {
+            "start_token_id": 50,
+            "end_token_id": 50,
+            "entity_text": "à",
+            "predicted_entity_type": "ORG",
+            "ner_score": 0.2871294319629669
+          },
+          {
+            "start_token_id": 50,
+            "end_token_id": 50,
+            "entity_text": "le",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.5760549306869507
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "GDL-1938-10-03-a-i0027",
+    "sentence_id": 43,
+    "merges": [
+      {
+        "final": {
+          "document_id": "GDL-1938-10-03-a-i0027",
+          "sentence_id": 43,
+          "start_token_id": 1033,
+          "end_token_id": 1033,
+          "entity_text": "Berthoud",
+          "predicted_entity_type": "ORG",
+          "ner_score": 0.740575909614563,
+          "span_length_tokens": 1,
+          "span_length_characters": 8,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 1033,
+            "end_token_id": 1033,
+            "entity_text": "Berth",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.5303329825401306
+          },
+          {
+            "start_token_id": 1033,
+            "end_token_id": 1033,
+            "entity_text": "oud",
+            "predicted_entity_type": "ORG",
+            "ner_score": 0.740575909614563
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "GDL-1958-06-20-a-i0112",
+    "sentence_id": 0,
+    "merges": [
+      {
+        "final": {
+          "document_id": "GDL-1958-06-20-a-i0112",
+          "sentence_id": 0,
+          "start_token_id": 1,
+          "end_token_id": 1,
+          "entity_text": "LAUSANNE",
+          "predicted_entity_type": "LOC",
+          "ner_score": 0.9952926635742188,
+          "span_length_tokens": 1,
+          "span_length_characters": 8,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 1,
+            "end_token_id": 1,
+            "entity_text": "LA",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.9952926635742188
+          },
+          {
+            "start_token_id": 1,
+            "end_token_id": 1,
+            "entity_text": "USANNE",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.8708286881446838
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "GDL-1968-03-02-a-i0316",
+    "sentence_id": 0,
+    "merges": [
+      {
+        "final": {
+          "document_id": "GDL-1968-03-02-a-i0316",
+          "sentence_id": 0,
+          "start_token_id": 7,
+          "end_token_id": 7,
+          "entity_text": "APARIS",
+          "predicted_entity_type": "LOC",
+          "ner_score": 0.8302347660064697,
+          "span_length_tokens": 1,
+          "span_length_characters": 6,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 7,
+            "end_token_id": 7,
+            "entity_text": "AP",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.8302347660064697
+          },
+          {
+            "start_token_id": 7,
+            "end_token_id": 7,
+            "entity_text": "ARIS",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.4988263845443725
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "GDL-1968-12-04-a-i0176",
+    "sentence_id": 20,
+    "merges": [
+      {
+        "final": {
+          "document_id": "GDL-1968-12-04-a-i0176",
+          "sentence_id": 20,
+          "start_token_id": 562,
+          "end_token_id": 562,
+          "entity_text": "pacsme",
+          "predicted_entity_type": "PROD",
+          "ner_score": 0.5786666870117188,
+          "span_length_tokens": 1,
+          "span_length_characters": 6,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 562,
+            "end_token_id": 562,
+            "entity_text": "pac",
+            "predicted_entity_type": "PROD",
+            "ner_score": 0.5786666870117188
+          },
+          {
+            "start_token_id": 562,
+            "end_token_id": 562,
+            "entity_text": "sme",
+            "predicted_entity_type": "PROD",
+            "ner_score": 0.546392560005188
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "GDL-1978-04-01-a-i0088",
+    "sentence_id": 19,
+    "merges": [
+      {
+        "final": {
+          "document_id": "GDL-1978-04-01-a-i0088",
+          "sentence_id": 19,
+          "start_token_id": 608,
+          "end_token_id": 608,
+          "entity_text": "ceylan",
+          "predicted_entity_type": "LOC",
+          "ner_score": 0.8752893805503845,
+          "span_length_tokens": 1,
+          "span_length_characters": 6,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 608,
+            "end_token_id": 608,
+            "entity_text": "ce",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.8752893805503845
+          },
+          {
+            "start_token_id": 608,
+            "end_token_id": 608,
+            "entity_text": "ylan",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.5484029650688171
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "GDL-1978-10-11-a-i0020",
+    "sentence_id": 7,
+    "merges": [
+      {
+        "final": {
+          "document_id": "GDL-1978-10-11-a-i0020",
+          "sentence_id": 7,
+          "start_token_id": 315,
+          "end_token_id": 315,
+          "entity_text": "dTverdon",
+          "predicted_entity_type": "LOC",
+          "ner_score": 0.8623644709587097,
+          "span_length_tokens": 1,
+          "span_length_characters": 8,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 315,
+            "end_token_id": 315,
+            "entity_text": "d",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.6285889148712158
+          },
+          {
+            "start_token_id": 315,
+            "end_token_id": 315,
+            "entity_text": "T",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.8623644709587097
+          },
+          {
+            "start_token_id": 315,
+            "end_token_id": 315,
+            "entity_text": "verdon",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.7408877611160278
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "GDL-1988-02-18-a-i0126",
+    "sentence_id": 17,
+    "merges": [
+      {
+        "final": {
+          "document_id": "GDL-1988-02-18-a-i0126",
+          "sentence_id": 17,
+          "start_token_id": 504,
+          "end_token_id": 504,
+          "entity_text": "ARC",
+          "predicted_entity_type": "ORG",
+          "ner_score": 0.7329981923103333,
+          "span_length_tokens": 1,
+          "span_length_characters": 3,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 504,
+            "end_token_id": 504,
+            "entity_text": "AR",
+            "predicted_entity_type": "ORG",
+            "ner_score": 0.7329981923103333
+          },
+          {
+            "start_token_id": 504,
+            "end_token_id": 504,
+            "entity_text": "C",
+            "predicted_entity_type": "PERS",
+            "ner_score": 0.4102583825588226
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "GDL-1988-04-08-a-i0084",
+    "sentence_id": 59,
+    "merges": [
+      {
+        "final": {
+          "document_id": "GDL-1988-04-08-a-i0084",
+          "sentence_id": 59,
+          "start_token_id": 1661,
+          "end_token_id": 1662,
+          "entity_text": "Merlin Gerin",
+          "predicted_entity_type": "ORG",
+          "ner_score": 0.5705218315124512,
+          "span_length_tokens": 2,
+          "span_length_characters": 12,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 1661,
+            "end_token_id": 1662,
+            "entity_text": "Merlin Ger",
+            "predicted_entity_type": "PERS",
+            "ner_score": 0.5571696162223816
+          },
+          {
+            "start_token_id": 1662,
+            "end_token_id": 1662,
+            "entity_text": "in",
+            "predicted_entity_type": "ORG",
+            "ner_score": 0.5705218315124512
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "GDL-1988-04-08-a-i0084",
+    "sentence_id": 75,
+    "merges": [
+      {
+        "final": {
+          "document_id": "GDL-1988-04-08-a-i0084",
+          "sentence_id": 75,
+          "start_token_id": 2047,
+          "end_token_id": 2048,
+          "entity_text": "ferit Eliasson",
+          "predicted_entity_type": "ORG",
+          "ner_score": 0.674231767654419,
+          "span_length_tokens": 2,
+          "span_length_characters": 14,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 2047,
+            "end_token_id": 2047,
+            "entity_text": "f",
+            "predicted_entity_type": "ORG",
+            "ner_score": 0.5434232354164124
+          },
+          {
+            "start_token_id": 2047,
+            "end_token_id": 2048,
+            "entity_text": "erit Eliasson",
+            "predicted_entity_type": "ORG",
+            "ner_score": 0.674231767654419
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "GDL-1988-04-08-a-i0084",
+    "sentence_id": 77,
+    "merges": [
+      {
+        "final": {
+          "document_id": "GDL-1988-04-08-a-i0084",
+          "sentence_id": 77,
+          "start_token_id": 2147,
+          "end_token_id": 2147,
+          "entity_text": "Zurich",
+          "predicted_entity_type": "ORG",
+          "ner_score": 0.5016911625862122,
+          "span_length_tokens": 1,
+          "span_length_characters": 6,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 2147,
+            "end_token_id": 2147,
+            "entity_text": "Zur",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.4860008656978607
+          },
+          {
+            "start_token_id": 2147,
+            "end_token_id": 2147,
+            "entity_text": "ich",
+            "predicted_entity_type": "ORG",
+            "ner_score": 0.5016911625862122
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "IMP-1908-02-09-a-i0023",
+    "sentence_id": 0,
+    "merges": [
+      {
+        "final": {
+          "document_id": "IMP-1908-02-09-a-i0023",
+          "sentence_id": 0,
+          "start_token_id": 38,
+          "end_token_id": 38,
+          "entity_text": "Finlande",
+          "predicted_entity_type": "LOC",
+          "ner_score": 0.8652233481407166,
+          "span_length_tokens": 1,
+          "span_length_characters": 8,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 38,
+            "end_token_id": 38,
+            "entity_text": "Finland",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.8652233481407166
+          },
+          {
+            "start_token_id": 38,
+            "end_token_id": 38,
+            "entity_text": "e",
+            "predicted_entity_type": "ORG",
+            "ner_score": 0.4124618172645569
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "IMP-1918-01-17-a-i0017",
+    "sentence_id": 14,
+    "merges": [
+      {
+        "final": {
+          "document_id": "IMP-1918-01-17-a-i0017",
+          "sentence_id": 14,
+          "start_token_id": 329,
+          "end_token_id": 329,
+          "entity_text": "Soleure",
+          "predicted_entity_type": "LOC",
+          "ner_score": 0.5735928416252136,
+          "span_length_tokens": 1,
+          "span_length_characters": 7,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 329,
+            "end_token_id": 329,
+            "entity_text": "Sol",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.5735928416252136
+          },
+          {
+            "start_token_id": 329,
+            "end_token_id": 329,
+            "entity_text": "eure",
+            "predicted_entity_type": "PERS",
+            "ner_score": 0.4587987065315246
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "IMP-1948-01-28-a-i0004",
+    "sentence_id": 8,
+    "merges": [
+      {
+        "final": {
+          "document_id": "IMP-1948-01-28-a-i0004",
+          "sentence_id": 8,
+          "start_token_id": 138,
+          "end_token_id": 138,
+          "entity_text": "7470",
+          "predicted_entity_type": "TIME",
+          "ner_score": 0.6648355722427368,
+          "span_length_tokens": 1,
+          "span_length_characters": 4,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 138,
+            "end_token_id": 138,
+            "entity_text": "74",
+            "predicted_entity_type": "TIME",
+            "ner_score": 0.6648355722427368
+          },
+          {
+            "start_token_id": 138,
+            "end_token_id": 138,
+            "entity_text": "70",
+            "predicted_entity_type": "TIME",
+            "ner_score": 0.5839073657989502
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "IMP-1948-01-28-a-i0004",
+    "sentence_id": 12,
+    "merges": [
+      {
+        "final": {
+          "document_id": "IMP-1948-01-28-a-i0004",
+          "sentence_id": 12,
+          "start_token_id": 155,
+          "end_token_id": 155,
+          "entity_text": "2030",
+          "predicted_entity_type": "TIME",
+          "ner_score": 0.7717331647872925,
+          "span_length_tokens": 1,
+          "span_length_characters": 4,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 155,
+            "end_token_id": 155,
+            "entity_text": "203",
+            "predicted_entity_type": "TIME",
+            "ner_score": 0.7674716114997864
+          },
+          {
+            "start_token_id": 155,
+            "end_token_id": 155,
+            "entity_text": "0",
+            "predicted_entity_type": "TIME",
+            "ner_score": 0.7717331647872925
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "IMP-1948-01-28-a-i0004",
+    "sentence_id": 14,
+    "merges": [
+      {
+        "final": {
+          "document_id": "IMP-1948-01-28-a-i0004",
+          "sentence_id": 14,
+          "start_token_id": 162,
+          "end_token_id": 162,
+          "entity_text": "22601896",
+          "predicted_entity_type": "TIME",
+          "ner_score": 0.8738719820976257,
+          "span_length_tokens": 1,
+          "span_length_characters": 8,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 162,
+            "end_token_id": 162,
+            "entity_text": "226",
+            "predicted_entity_type": "TIME",
+            "ner_score": 0.8738719820976257
+          },
+          {
+            "start_token_id": 162,
+            "end_token_id": 162,
+            "entity_text": "0",
+            "predicted_entity_type": "TIME",
+            "ner_score": 0.4702954888343811
+          },
+          {
+            "start_token_id": 162,
+            "end_token_id": 162,
+            "entity_text": "1896",
+            "predicted_entity_type": "TIME",
+            "ner_score": 0.7209893465042114
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "IMP-1948-01-28-a-i0004",
+    "sentence_id": 16,
+    "merges": [
+      {
+        "final": {
+          "document_id": "IMP-1948-01-28-a-i0004",
+          "sentence_id": 16,
+          "start_token_id": 168,
+          "end_token_id": 168,
+          "entity_text": "3808,1893",
+          "predicted_entity_type": "TIME",
+          "ner_score": 0.8162461519241333,
+          "span_length_tokens": 1,
+          "span_length_characters": 9,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 168,
+            "end_token_id": 168,
+            "entity_text": "3808",
+            "predicted_entity_type": "TIME",
+            "ner_score": 0.8162461519241333
+          },
+          {
+            "start_token_id": 168,
+            "end_token_id": 168,
+            "entity_text": ",",
+            "predicted_entity_type": "TIME",
+            "ner_score": 0.5760564804077148
+          },
+          {
+            "start_token_id": 168,
+            "end_token_id": 168,
+            "entity_text": "1893",
+            "predicted_entity_type": "TIME",
+            "ner_score": 0.7679845094680786
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "IMP-1948-01-28-a-i0004",
+    "sentence_id": 18,
+    "merges": [
+      {
+        "final": {
+          "document_id": "IMP-1948-01-28-a-i0004",
+          "sentence_id": 18,
+          "start_token_id": 176,
+          "end_token_id": 176,
+          "entity_text": "7600",
+          "predicted_entity_type": "TIME",
+          "ner_score": 0.7023179531097412,
+          "span_length_tokens": 1,
+          "span_length_characters": 4,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 176,
+            "end_token_id": 176,
+            "entity_text": "760",
+            "predicted_entity_type": "TIME",
+            "ner_score": 0.7023179531097412
+          },
+          {
+            "start_token_id": 176,
+            "end_token_id": 176,
+            "entity_text": "0",
+            "predicted_entity_type": "TIME",
+            "ner_score": 0.5188524127006531
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "IMP-1948-01-28-a-i0004",
+    "sentence_id": 20,
+    "merges": [
+      {
+        "final": {
+          "document_id": "IMP-1948-01-28-a-i0004",
+          "sentence_id": 20,
+          "start_token_id": 182,
+          "end_token_id": 182,
+          "entity_text": "Luo",
+          "predicted_entity_type": "LOC",
+          "ner_score": 0.7402254343032837,
+          "span_length_tokens": 1,
+          "span_length_characters": 3,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 182,
+            "end_token_id": 182,
+            "entity_text": "Lu",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.7402254343032837
+          },
+          {
+            "start_token_id": 182,
+            "end_token_id": 182,
+            "entity_text": "o",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.5092715620994568
+          }
+        ]
+      },
+      {
+        "final": {
+          "document_id": "IMP-1948-01-28-a-i0004",
+          "sentence_id": 20,
+          "start_token_id": 183,
+          "end_token_id": 183,
+          "entity_text": "9158",
+          "predicted_entity_type": "TIME",
+          "ner_score": 0.6103090047836304,
+          "span_length_tokens": 1,
+          "span_length_characters": 4,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 183,
+            "end_token_id": 183,
+            "entity_text": "915",
+            "predicted_entity_type": "TIME",
+            "ner_score": 0.6103090047836304
+          },
+          {
+            "start_token_id": 183,
+            "end_token_id": 183,
+            "entity_text": "8",
+            "predicted_entity_type": "TIME",
+            "ner_score": 0.3611582517623901
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "IMP-1948-01-28-a-i0004",
+    "sentence_id": 23,
+    "merges": [
+      {
+        "final": {
+          "document_id": "IMP-1948-01-28-a-i0004",
+          "sentence_id": 23,
+          "start_token_id": 198,
+          "end_token_id": 198,
+          "entity_text": "4206",
+          "predicted_entity_type": "TIME",
+          "ner_score": 0.8725228309631348,
+          "span_length_tokens": 1,
+          "span_length_characters": 4,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 198,
+            "end_token_id": 198,
+            "entity_text": "420",
+            "predicted_entity_type": "TIME",
+            "ner_score": 0.8725228309631348
+          },
+          {
+            "start_token_id": 198,
+            "end_token_id": 198,
+            "entity_text": "6",
+            "predicted_entity_type": "TIME",
+            "ner_score": 0.8018330335617065
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "IMP-1948-01-28-a-i0004",
+    "sentence_id": 34,
+    "merges": [
+      {
+        "final": {
+          "document_id": "IMP-1948-01-28-a-i0004",
+          "sentence_id": 34,
+          "start_token_id": 345,
+          "end_token_id": 345,
+          "entity_text": "Bâle",
+          "predicted_entity_type": "LOC",
+          "ner_score": 0.7143685221672058,
+          "span_length_tokens": 1,
+          "span_length_characters": 4,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 345,
+            "end_token_id": 345,
+            "entity_text": "B",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.7143685221672058
+          },
+          {
+            "start_token_id": 345,
+            "end_token_id": 345,
+            "entity_text": "âle",
+            "predicted_entity_type": "ORG",
+            "ner_score": 0.6305761337280273
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "IMP-1948-01-28-a-i0004",
+    "sentence_id": 35,
+    "merges": [
+      {
+        "final": {
+          "document_id": "IMP-1948-01-28-a-i0004",
+          "sentence_id": 35,
+          "start_token_id": 356,
+          "end_token_id": 356,
+          "entity_text": "Bâle",
+          "predicted_entity_type": "LOC",
+          "ner_score": 0.8481011986732483,
+          "span_length_tokens": 1,
+          "span_length_characters": 4,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 356,
+            "end_token_id": 356,
+            "entity_text": "B",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.8481011986732483
+          },
+          {
+            "start_token_id": 356,
+            "end_token_id": 356,
+            "entity_text": "â",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.5193036794662476
+          },
+          {
+            "start_token_id": 356,
+            "end_token_id": 356,
+            "entity_text": "le",
+            "predicted_entity_type": "ORG",
+            "ner_score": 0.4069095849990845
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "IMP-1948-01-28-a-i0004",
+    "sentence_id": 36,
+    "merges": [
+      {
+        "final": {
+          "document_id": "IMP-1948-01-28-a-i0004",
+          "sentence_id": 36,
+          "start_token_id": 367,
+          "end_token_id": 367,
+          "entity_text": "Bâle",
+          "predicted_entity_type": "ORG",
+          "ner_score": 0.5545409917831421,
+          "span_length_tokens": 1,
+          "span_length_characters": 4,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 367,
+            "end_token_id": 367,
+            "entity_text": "B",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.5482226014137268
+          },
+          {
+            "start_token_id": 367,
+            "end_token_id": 367,
+            "entity_text": "âle",
+            "predicted_entity_type": "ORG",
+            "ner_score": 0.5545409917831421
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "EXP-1928-05-15-a-i0009",
+    "sentence_id": 4,
+    "merges": [
+      {
+        "final": {
+          "document_id": "EXP-1928-05-15-a-i0009",
+          "sentence_id": 4,
+          "start_token_id": 511,
+          "end_token_id": 511,
+          "entity_text": "Dreux",
+          "predicted_entity_type": "LOC",
+          "ner_score": 0.9849210381507874,
+          "span_length_tokens": 1,
+          "span_length_characters": 5,
+          "sentence_chunked": true
+        },
+        "candidates": [
+          {
+            "start_token_id": 511,
+            "end_token_id": 511,
+            "entity_text": "Dre",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.9849210381507874
+          },
+          {
+            "start_token_id": 511,
+            "end_token_id": 511,
+            "entity_text": "ux",
+            "predicted_entity_type": "PROD",
+            "ner_score": 0.8395611047744751
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "EXP-1948-08-25-a-i0008",
+    "sentence_id": 7,
+    "merges": [
+      {
+        "final": {
+          "document_id": "EXP-1948-08-25-a-i0008",
+          "sentence_id": 7,
+          "start_token_id": 165,
+          "end_token_id": 165,
+          "entity_text": "Eeuter",
+          "predicted_entity_type": "ORG",
+          "ner_score": 0.8342747688293457,
+          "span_length_tokens": 1,
+          "span_length_characters": 6,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 165,
+            "end_token_id": 165,
+            "entity_text": "Ee",
+            "predicted_entity_type": "ORG",
+            "ner_score": 0.8342747688293457
+          },
+          {
+            "start_token_id": 165,
+            "end_token_id": 165,
+            "entity_text": "uter",
+            "predicted_entity_type": "ORG",
+            "ner_score": 0.5490880012512207
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "EXP-1948-08-25-a-i0008",
+    "sentence_id": 16,
+    "merges": [
+      {
+        "final": {
+          "document_id": "EXP-1948-08-25-a-i0008",
+          "sentence_id": 16,
+          "start_token_id": 356,
+          "end_token_id": 356,
+          "entity_text": "Eeuter",
+          "predicted_entity_type": "ORG",
+          "ner_score": 0.8890601396560669,
+          "span_length_tokens": 1,
+          "span_length_characters": 6,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 356,
+            "end_token_id": 356,
+            "entity_text": "Ee",
+            "predicted_entity_type": "ORG",
+            "ner_score": 0.8890601396560669
+          },
+          {
+            "start_token_id": 356,
+            "end_token_id": 356,
+            "entity_text": "uter",
+            "predicted_entity_type": "ORG",
+            "ner_score": 0.5528653860092163
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "EXP-1958-07-01-a-i0006",
+    "sentence_id": 18,
+    "merges": [
+      {
+        "final": {
+          "document_id": "EXP-1958-07-01-a-i0006",
+          "sentence_id": 18,
+          "start_token_id": 574,
+          "end_token_id": 574,
+          "entity_text": "Murville",
+          "predicted_entity_type": "LOC",
+          "ner_score": 0.6660837531089783,
+          "span_length_tokens": 1,
+          "span_length_characters": 8,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 574,
+            "end_token_id": 574,
+            "entity_text": "Mur",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.6660837531089783
+          },
+          {
+            "start_token_id": 574,
+            "end_token_id": 574,
+            "entity_text": "ville",
+            "predicted_entity_type": "PERS",
+            "ner_score": 0.489834576845169
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "EXP-1998-09-14-a-i0215",
+    "sentence_id": 2,
+    "merges": [
+      {
+        "final": {
+          "document_id": "EXP-1998-09-14-a-i0215",
+          "sentence_id": 2,
+          "start_token_id": 216,
+          "end_token_id": 216,
+          "entity_text": "Estepona",
+          "predicted_entity_type": "PERS",
+          "ner_score": 0.5769453644752502,
+          "span_length_tokens": 1,
+          "span_length_characters": 8,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 216,
+            "end_token_id": 216,
+            "entity_text": "Est",
+            "predicted_entity_type": "ORG",
+            "ner_score": 0.231726124882698
+          },
+          {
+            "start_token_id": 216,
+            "end_token_id": 216,
+            "entity_text": "epona",
+            "predicted_entity_type": "PERS",
+            "ner_score": 0.5769453644752502
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "EXP-2008-11-21-a-i0082",
+    "sentence_id": 24,
+    "merges": [
+      {
+        "final": {
+          "document_id": "EXP-2008-11-21-a-i0082",
+          "sentence_id": 24,
+          "start_token_id": 673,
+          "end_token_id": 675,
+          "entity_text": "ARCHIVES CHRISTIAN GALLEY",
+          "predicted_entity_type": "ORG",
+          "ner_score": 0.8126780390739441,
+          "span_length_tokens": 3,
+          "span_length_characters": 25,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 673,
+            "end_token_id": 673,
+            "entity_text": "AR",
+            "predicted_entity_type": "ORG",
+            "ner_score": 0.8126780390739441
+          },
+          {
+            "start_token_id": 673,
+            "end_token_id": 675,
+            "entity_text": "CHIVES CHRISTIAN GALLEY",
+            "predicted_entity_type": "ORG",
+            "ner_score": 0.6230525374412537
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "GDL-1808-09-30-a-i0002",
+    "sentence_id": 1,
+    "merges": [
+      {
+        "final": {
+          "document_id": "GDL-1808-09-30-a-i0002",
+          "sentence_id": 1,
+          "start_token_id": 2,
+          "end_token_id": 2,
+          "entity_text": "PBTERSBOURG",
+          "predicted_entity_type": "LOC",
+          "ner_score": 0.9931949377059937,
+          "span_length_tokens": 1,
+          "span_length_characters": 11,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 2,
+            "end_token_id": 2,
+            "entity_text": "P",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.9931949377059937
+          },
+          {
+            "start_token_id": 2,
+            "end_token_id": 2,
+            "entity_text": "BTERSBOURG",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.9159515500068665
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "GDL-1818-05-22-a-i0007",
+    "sentence_id": 13,
+    "merges": [
+      {
+        "final": {
+          "document_id": "GDL-1818-05-22-a-i0007",
+          "sentence_id": 13,
+          "start_token_id": 528,
+          "end_token_id": 528,
+          "entity_text": "ïCalabozo",
+          "predicted_entity_type": "LOC",
+          "ner_score": 0.9696391224861144,
+          "span_length_tokens": 1,
+          "span_length_characters": 9,
+          "sentence_chunked": true
+        },
+        "candidates": [
+          {
+            "start_token_id": 528,
+            "end_token_id": 528,
+            "entity_text": "ï",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.9696391224861144
+          },
+          {
+            "start_token_id": 528,
+            "end_token_id": 528,
+            "entity_text": "Calabozo",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.9691099524497986
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "GDL-1828-11-14-a-i0003",
+    "sentence_id": 0,
+    "merges": [
+      {
+        "final": {
+          "document_id": "GDL-1828-11-14-a-i0003",
+          "sentence_id": 0,
+          "start_token_id": 3,
+          "end_token_id": 3,
+          "entity_text": "ÔRÎENT",
+          "predicted_entity_type": "LOC",
+          "ner_score": 0.8831766843795776,
+          "span_length_tokens": 1,
+          "span_length_characters": 6,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 3,
+            "end_token_id": 3,
+            "entity_text": "Ô",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.8831766843795776
+          },
+          {
+            "start_token_id": 3,
+            "end_token_id": 3,
+            "entity_text": "RÎENT",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.6922369003295898
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "GDL-1828-11-14-a-i0003",
+    "sentence_id": 8,
+    "merges": [
+      {
+        "final": {
+          "document_id": "GDL-1828-11-14-a-i0003",
+          "sentence_id": 8,
+          "start_token_id": 91,
+          "end_token_id": 91,
+          "entity_text": "aVàfna",
+          "predicted_entity_type": "LOC",
+          "ner_score": 0.8645767569541931,
+          "span_length_tokens": 1,
+          "span_length_characters": 6,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 91,
+            "end_token_id": 91,
+            "entity_text": "a",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.747539758682251
+          },
+          {
+            "start_token_id": 91,
+            "end_token_id": 91,
+            "entity_text": "V",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.8645767569541931
+          },
+          {
+            "start_token_id": 91,
+            "end_token_id": 91,
+            "entity_text": "àfna",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.6239689588546753
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "GDL-1888-09-25-a-i0002",
+    "sentence_id": 0,
+    "merges": [
+      {
+        "final": {
+          "document_id": "GDL-1888-09-25-a-i0002",
+          "sentence_id": 0,
+          "start_token_id": 3,
+          "end_token_id": 4,
+          "entity_text": "Frédéric III",
+          "predicted_entity_type": "PERS",
+          "ner_score": 0.9372338056564332,
+          "span_length_tokens": 2,
+          "span_length_characters": 12,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 3,
+            "end_token_id": 3,
+            "entity_text": "Fr",
+            "predicted_entity_type": "PERS",
+            "ner_score": 0.9372338056564332
+          },
+          {
+            "start_token_id": 3,
+            "end_token_id": 4,
+            "entity_text": "édéric III",
+            "predicted_entity_type": "PERS",
+            "ner_score": 0.8867326378822327
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "GDL-1908-04-08-a-i0023",
+    "sentence_id": 0,
+    "merges": [
+      {
+        "final": {
+          "document_id": "GDL-1908-04-08-a-i0023",
+          "sentence_id": 0,
+          "start_token_id": 0,
+          "end_token_id": 1,
+          "entity_text": "ASSMBLÉE FÉDÉRALE",
+          "predicted_entity_type": "ORG",
+          "ner_score": 0.799652099609375,
+          "span_length_tokens": 2,
+          "span_length_characters": 17,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 0,
+            "end_token_id": 0,
+            "entity_text": "ASS",
+            "predicted_entity_type": "ORG",
+            "ner_score": 0.799652099609375
+          },
+          {
+            "start_token_id": 0,
+            "end_token_id": 1,
+            "entity_text": "MBLÉE FÉDÉRALE",
+            "predicted_entity_type": "ORG",
+            "ner_score": 0.7329587340354919
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "GDL-1928-08-28-a-i0014",
+    "sentence_id": 6,
+    "merges": [
+      {
+        "final": {
+          "document_id": "GDL-1928-08-28-a-i0014",
+          "sentence_id": 6,
+          "start_token_id": 231,
+          "end_token_id": 240,
+          "entity_text": "M. Max Veraaud, pasteur à Mézières (Vaud",
+          "predicted_entity_type": "PERS",
+          "ner_score": 0.8246577382087708,
+          "span_length_tokens": 7,
+          "span_length_characters": 40,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 231,
+            "end_token_id": 240,
+            "entity_text": "M. Max Veraaud, pasteur à Mézières (Vau",
+            "predicted_entity_type": "PERS",
+            "ner_score": 0.8246577382087708
+          },
+          {
+            "start_token_id": 240,
+            "end_token_id": 240,
+            "entity_text": "d",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.5086886882781982
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "GDL-1928-08-28-a-i0014",
+    "sentence_id": 13,
+    "merges": [
+      {
+        "final": {
+          "document_id": "GDL-1928-08-28-a-i0014",
+          "sentence_id": 13,
+          "start_token_id": 374,
+          "end_token_id": 374,
+          "entity_text": "Zurich",
+          "predicted_entity_type": "PERS",
+          "ner_score": 0.6961963772773743,
+          "span_length_tokens": 1,
+          "span_length_characters": 6,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 374,
+            "end_token_id": 374,
+            "entity_text": "Zur",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.6255496740341187
+          },
+          {
+            "start_token_id": 374,
+            "end_token_id": 374,
+            "entity_text": "ich",
+            "predicted_entity_type": "PERS",
+            "ner_score": 0.6961963772773743
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "GDL-1938-03-25-a-i0036",
+    "sentence_id": 2,
+    "merges": [
+      {
+        "final": {
+          "document_id": "GDL-1938-03-25-a-i0036",
+          "sentence_id": 2,
+          "start_token_id": 614,
+          "end_token_id": 614,
+          "entity_text": "Grisons",
+          "predicted_entity_type": "LOC",
+          "ner_score": 0.3633966147899627,
+          "span_length_tokens": 1,
+          "span_length_characters": 7,
+          "sentence_chunked": true
+        },
+        "candidates": [
+          {
+            "start_token_id": 614,
+            "end_token_id": 614,
+            "entity_text": "Gri",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.3633966147899627
+          },
+          {
+            "start_token_id": 614,
+            "end_token_id": 614,
+            "entity_text": "sons",
+            "predicted_entity_type": "ORG",
+            "ner_score": 0.3287527859210968
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "GDL-1938-03-25-a-i0036",
+    "sentence_id": 3,
+    "merges": [
+      {
+        "final": {
+          "document_id": "GDL-1938-03-25-a-i0036",
+          "sentence_id": 3,
+          "start_token_id": 1163,
+          "end_token_id": 1163,
+          "entity_text": "lesch",
+          "predicted_entity_type": "PERS",
+          "ner_score": 0.5151053667068481,
+          "span_length_tokens": 1,
+          "span_length_characters": 5,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 1163,
+            "end_token_id": 1163,
+            "entity_text": "les",
+            "predicted_entity_type": "PERS",
+            "ner_score": 0.5151053667068481
+          },
+          {
+            "start_token_id": 1163,
+            "end_token_id": 1163,
+            "entity_text": "ch",
+            "predicted_entity_type": "PERS",
+            "ner_score": 0.3864309787750244
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "GDL-1938-09-16-a-i0015",
+    "sentence_id": 33,
+    "merges": [
+      {
+        "final": {
+          "document_id": "GDL-1938-09-16-a-i0015",
+          "sentence_id": 33,
+          "start_token_id": 1312,
+          "end_token_id": 1312,
+          "entity_text": "TESSIN",
+          "predicted_entity_type": "LOC",
+          "ner_score": 0.9526354670524596,
+          "span_length_tokens": 1,
+          "span_length_characters": 6,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 1312,
+            "end_token_id": 1312,
+            "entity_text": "TE",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.9526354670524596
+          },
+          {
+            "start_token_id": 1312,
+            "end_token_id": 1312,
+            "entity_text": "SSIN",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.634006679058075
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "GDL-1948-02-10-a-i0122",
+    "sentence_id": 30,
+    "merges": [
+      {
+        "final": {
+          "document_id": "GDL-1948-02-10-a-i0122",
+          "sentence_id": 30,
+          "start_token_id": 922,
+          "end_token_id": 923,
+          "entity_text": "aornemeni Schuman",
+          "predicted_entity_type": "ORG",
+          "ner_score": 0.643664538860321,
+          "span_length_tokens": 2,
+          "span_length_characters": 17,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 922,
+            "end_token_id": 922,
+            "entity_text": "ao",
+            "predicted_entity_type": "ORG",
+            "ner_score": 0.643664538860321
+          },
+          {
+            "start_token_id": 922,
+            "end_token_id": 923,
+            "entity_text": "rnemeni Schuman",
+            "predicted_entity_type": "ORG",
+            "ner_score": 0.5798611044883728
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "GDL-1958-05-10-a-i0212",
+    "sentence_id": 9,
+    "merges": [
+      {
+        "final": {
+          "document_id": "GDL-1958-05-10-a-i0212",
+          "sentence_id": 9,
+          "start_token_id": 506,
+          "end_token_id": 506,
+          "entity_text": "AMS",
+          "predicted_entity_type": "ORG",
+          "ner_score": 0.5877383351325989,
+          "span_length_tokens": 1,
+          "span_length_characters": 3,
+          "sentence_chunked": true
+        },
+        "candidates": [
+          {
+            "start_token_id": 506,
+            "end_token_id": 506,
+            "entity_text": "AM",
+            "predicted_entity_type": "ORG",
+            "ner_score": 0.5877383351325989
+          },
+          {
+            "start_token_id": 506,
+            "end_token_id": 506,
+            "entity_text": "S",
+            "predicted_entity_type": "ORG",
+            "ner_score": 0.2391421943902969
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "GDL-1988-11-22-a-i0054",
+    "sentence_id": 0,
+    "merges": [
+      {
+        "final": {
+          "document_id": "GDL-1988-11-22-a-i0054",
+          "sentence_id": 0,
+          "start_token_id": 4,
+          "end_token_id": 7,
+          "entity_text": "RR Nabisco WALL STREET",
+          "predicted_entity_type": "ORG",
+          "ner_score": 0.8156682252883911,
+          "span_length_tokens": 4,
+          "span_length_characters": 22,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 4,
+            "end_token_id": 4,
+            "entity_text": "R",
+            "predicted_entity_type": "ORG",
+            "ner_score": 0.8156682252883911
+          },
+          {
+            "start_token_id": 4,
+            "end_token_id": 7,
+            "entity_text": "R Nabisco WALL STREET",
+            "predicted_entity_type": "ORG",
+            "ner_score": 0.6112520098686218
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "GDL-1988-11-22-a-i0054",
+    "sentence_id": 1,
+    "merges": [
+      {
+        "final": {
+          "document_id": "GDL-1988-11-22-a-i0054",
+          "sentence_id": 1,
+          "start_token_id": 23,
+          "end_token_id": 24,
+          "entity_text": "RR Na",
+          "predicted_entity_type": "ORG",
+          "ner_score": 0.8094094395637512,
+          "span_length_tokens": 2,
+          "span_length_characters": 5,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 23,
+            "end_token_id": 23,
+            "entity_text": "R",
+            "predicted_entity_type": "ORG",
+            "ner_score": 0.8094094395637512
+          },
+          {
+            "start_token_id": 23,
+            "end_token_id": 24,
+            "entity_text": "R Na",
+            "predicted_entity_type": "ORG",
+            "ner_score": 0.4993626475334167
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "EXP-1798-01-04-a-i0005",
+    "sentence_id": 3,
+    "merges": [
+      {
+        "final": {
+          "document_id": "EXP-1798-01-04-a-i0005",
+          "sentence_id": 3,
+          "start_token_id": 232,
+          "end_token_id": 232,
+          "entity_text": "Neuchatel",
+          "predicted_entity_type": "LOC",
+          "ner_score": 0.6541106700897217,
+          "span_length_tokens": 1,
+          "span_length_characters": 9,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 232,
+            "end_token_id": 232,
+            "entity_text": "Neu",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.6541106700897217
+          },
+          {
+            "start_token_id": 232,
+            "end_token_id": 232,
+            "entity_text": "chatel",
+            "predicted_entity_type": "PERS",
+            "ner_score": 0.6239010095596313
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "EXP-1798-02-15-a-i0004",
+    "sentence_id": 23,
+    "merges": [
+      {
+        "final": {
+          "document_id": "EXP-1798-02-15-a-i0004",
+          "sentence_id": 23,
+          "start_token_id": 465,
+          "end_token_id": 466,
+          "entity_text": "Couve t",
+          "predicted_entity_type": "LOC",
+          "ner_score": 0.4973275661468506,
+          "span_length_tokens": 2,
+          "span_length_characters": 7,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 465,
+            "end_token_id": 465,
+            "entity_text": "Cou",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.4973275661468506
+          },
+          {
+            "start_token_id": 465,
+            "end_token_id": 466,
+            "entity_text": "ve t",
+            "predicted_entity_type": "PERS",
+            "ner_score": 0.4899442195892334
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "EXP-1808-09-01-a-i0001",
+    "sentence_id": 13,
+    "merges": [
+      {
+        "final": {
+          "document_id": "EXP-1808-09-01-a-i0001",
+          "sentence_id": 13,
+          "start_token_id": 483,
+          "end_token_id": 483,
+          "entity_text": "Neuchatel",
+          "predicted_entity_type": "PERS",
+          "ner_score": 0.8272391557693481,
+          "span_length_tokens": 1,
+          "span_length_characters": 9,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 483,
+            "end_token_id": 483,
+            "entity_text": "Neu",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.7433549761772156
+          },
+          {
+            "start_token_id": 483,
+            "end_token_id": 483,
+            "entity_text": "chatel",
+            "predicted_entity_type": "PERS",
+            "ner_score": 0.8272391557693481
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "EXP-1828-06-12-a-i0001",
+    "sentence_id": 18,
+    "merges": [
+      {
+        "final": {
+          "document_id": "EXP-1828-06-12-a-i0001",
+          "sentence_id": 18,
+          "start_token_id": 601,
+          "end_token_id": 603,
+          "entity_text": "signéKocH, avocat",
+          "predicted_entity_type": "PERS",
+          "ner_score": 0.6056703329086304,
+          "span_length_tokens": 2,
+          "span_length_characters": 17,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 601,
+            "end_token_id": 601,
+            "entity_text": "signé",
+            "predicted_entity_type": "PERS",
+            "ner_score": 0.5401757955551147
+          },
+          {
+            "start_token_id": 601,
+            "end_token_id": 603,
+            "entity_text": "KocH, avocat",
+            "predicted_entity_type": "PERS",
+            "ner_score": 0.6056703329086304
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "EXP-1828-06-12-a-i0001",
+    "sentence_id": 115,
+    "merges": [
+      {
+        "final": {
+          "document_id": "EXP-1828-06-12-a-i0001",
+          "sentence_id": 115,
+          "start_token_id": 2779,
+          "end_token_id": 2779,
+          "entity_text": "Petvel",
+          "predicted_entity_type": "PERS",
+          "ner_score": 0.6516158580780029,
+          "span_length_tokens": 1,
+          "span_length_characters": 6,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 2779,
+            "end_token_id": 2779,
+            "entity_text": "Pet",
+            "predicted_entity_type": "PERS",
+            "ner_score": 0.6516158580780029
+          },
+          {
+            "start_token_id": 2779,
+            "end_token_id": 2779,
+            "entity_text": "vel",
+            "predicted_entity_type": "PERS",
+            "ner_score": 0.4599800407886505
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "EXP-1868-04-22-a-i0042",
+    "sentence_id": 2,
+    "merges": [
+      {
+        "final": {
+          "document_id": "EXP-1868-04-22-a-i0042",
+          "sentence_id": 2,
+          "start_token_id": 169,
+          "end_token_id": 169,
+          "entity_text": "àSalford",
+          "predicted_entity_type": "LOC",
+          "ner_score": 0.8899946808815002,
+          "span_length_tokens": 1,
+          "span_length_characters": 8,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 169,
+            "end_token_id": 169,
+            "entity_text": "à",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.7734055519104004
+          },
+          {
+            "start_token_id": 169,
+            "end_token_id": 169,
+            "entity_text": "Salford",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.8899946808815002
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "EXP-1928-05-29-a-i0007",
+    "sentence_id": 4,
+    "merges": [
+      {
+        "final": {
+          "document_id": "EXP-1928-05-29-a-i0007",
+          "sentence_id": 4,
+          "start_token_id": 612,
+          "end_token_id": 612,
+          "entity_text": "Wolff",
+          "predicted_entity_type": "PERS",
+          "ner_score": 0.7496771812438965,
+          "span_length_tokens": 1,
+          "span_length_characters": 5,
+          "sentence_chunked": true
+        },
+        "candidates": [
+          {
+            "start_token_id": 612,
+            "end_token_id": 612,
+            "entity_text": "Wolf",
+            "predicted_entity_type": "ORG",
+            "ner_score": 0.5870683789253235
+          },
+          {
+            "start_token_id": 612,
+            "end_token_id": 612,
+            "entity_text": "f",
+            "predicted_entity_type": "PERS",
+            "ner_score": 0.7496771812438965
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "EXP-1928-05-29-a-i0007",
+    "sentence_id": 13,
+    "merges": [
+      {
+        "final": {
+          "document_id": "EXP-1928-05-29-a-i0007",
+          "sentence_id": 13,
+          "start_token_id": 762,
+          "end_token_id": 762,
+          "entity_text": "STOCKHOLM",
+          "predicted_entity_type": "LOC",
+          "ner_score": 0.9765785932540894,
+          "span_length_tokens": 1,
+          "span_length_characters": 9,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 762,
+            "end_token_id": 762,
+            "entity_text": "ST",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.9765785932540894
+          },
+          {
+            "start_token_id": 762,
+            "end_token_id": 762,
+            "entity_text": "OCKHOLM",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.9423112869262696
+          }
+        ]
+      },
+      {
+        "final": {
+          "document_id": "EXP-1928-05-29-a-i0007",
+          "sentence_id": 13,
+          "start_token_id": 766,
+          "end_token_id": 766,
+          "entity_text": "Wolff",
+          "predicted_entity_type": "ORG",
+          "ner_score": 0.8791211843490601,
+          "span_length_tokens": 1,
+          "span_length_characters": 5,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 766,
+            "end_token_id": 766,
+            "entity_text": "Wolf",
+            "predicted_entity_type": "ORG",
+            "ner_score": 0.8791211843490601
+          },
+          {
+            "start_token_id": 766,
+            "end_token_id": 766,
+            "entity_text": "f",
+            "predicted_entity_type": "PERS",
+            "ner_score": 0.5459120273590088
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "EXP-1928-08-15-a-i0065",
+    "sentence_id": 16,
+    "merges": [
+      {
+        "final": {
+          "document_id": "EXP-1928-08-15-a-i0065",
+          "sentence_id": 16,
+          "start_token_id": 255,
+          "end_token_id": 255,
+          "entity_text": "Wângi",
+          "predicted_entity_type": "LOC",
+          "ner_score": 0.8651681542396545,
+          "span_length_tokens": 1,
+          "span_length_characters": 5,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 255,
+            "end_token_id": 255,
+            "entity_text": "W",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.8651681542396545
+          },
+          {
+            "start_token_id": 255,
+            "end_token_id": 255,
+            "entity_text": "â",
+            "predicted_entity_type": "PERS",
+            "ner_score": 0.6550970077514648
+          },
+          {
+            "start_token_id": 255,
+            "end_token_id": 255,
+            "entity_text": "ngi",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.4381179809570312
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "EXP-1928-08-15-a-i0065",
+    "sentence_id": 34,
+    "merges": [
+      {
+        "final": {
+          "document_id": "EXP-1928-08-15-a-i0065",
+          "sentence_id": 34,
+          "start_token_id": 556,
+          "end_token_id": 556,
+          "entity_text": "Sion",
+          "predicted_entity_type": "PERS",
+          "ner_score": 0.8471819758415222,
+          "span_length_tokens": 1,
+          "span_length_characters": 4,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 556,
+            "end_token_id": 556,
+            "entity_text": "Si",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.5389917492866516
+          },
+          {
+            "start_token_id": 556,
+            "end_token_id": 556,
+            "entity_text": "on",
+            "predicted_entity_type": "PERS",
+            "ner_score": 0.8471819758415222
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "GDL-1818-03-13-a-i0005",
+    "sentence_id": 1,
+    "merges": [
+      {
+        "final": {
+          "document_id": "GDL-1818-03-13-a-i0005",
+          "sentence_id": 1,
+          "start_token_id": 405,
+          "end_token_id": 405,
+          "entity_text": "lWrgovic",
+          "predicted_entity_type": "LOC",
+          "ner_score": 0.959553360939026,
+          "span_length_tokens": 1,
+          "span_length_characters": 8,
+          "sentence_chunked": true
+        },
+        "candidates": [
+          {
+            "start_token_id": 405,
+            "end_token_id": 405,
+            "entity_text": "l",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.7702970504760742
+          },
+          {
+            "start_token_id": 405,
+            "end_token_id": 405,
+            "entity_text": "Wrgovic",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.959553360939026
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "GDL-1818-08-04-a-i0002",
+    "sentence_id": 20,
+    "merges": [
+      {
+        "final": {
+          "document_id": "GDL-1818-08-04-a-i0002",
+          "sentence_id": 20,
+          "start_token_id": 840,
+          "end_token_id": 840,
+          "entity_text": "Bayane",
+          "predicted_entity_type": "LOC",
+          "ner_score": 0.6732466220855713,
+          "span_length_tokens": 1,
+          "span_length_characters": 6,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 840,
+            "end_token_id": 840,
+            "entity_text": "Bay",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.6732466220855713
+          },
+          {
+            "start_token_id": 840,
+            "end_token_id": 840,
+            "entity_text": "ane",
+            "predicted_entity_type": "PERS",
+            "ner_score": 0.5371554493904114
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "GDL-1828-07-04-a-i0008",
+    "sentence_id": 13,
+    "merges": [
+      {
+        "final": {
+          "document_id": "GDL-1828-07-04-a-i0008",
+          "sentence_id": 13,
+          "start_token_id": 306,
+          "end_token_id": 308,
+          "entity_text": "CHAMBRE DES DÉPUTÉS",
+          "predicted_entity_type": "ORG",
+          "ner_score": 0.9002513885498047,
+          "span_length_tokens": 3,
+          "span_length_characters": 19,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 306,
+            "end_token_id": 306,
+            "entity_text": "CH",
+            "predicted_entity_type": "ORG",
+            "ner_score": 0.9002513885498047
+          },
+          {
+            "start_token_id": 306,
+            "end_token_id": 308,
+            "entity_text": "AMBRE DES DÉPUTÉS",
+            "predicted_entity_type": "ORG",
+            "ner_score": 0.7750236988067627
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "GDL-1828-07-04-a-i0008",
+    "sentence_id": 38,
+    "merges": [
+      {
+        "final": {
+          "document_id": "GDL-1828-07-04-a-i0008",
+          "sentence_id": 38,
+          "start_token_id": 890,
+          "end_token_id": 890,
+          "entity_text": "MARSEILLE",
+          "predicted_entity_type": "LOC",
+          "ner_score": 0.9896682500839232,
+          "span_length_tokens": 1,
+          "span_length_characters": 9,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 890,
+            "end_token_id": 890,
+            "entity_text": "MAR",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.9896682500839232
+          },
+          {
+            "start_token_id": 890,
+            "end_token_id": 890,
+            "entity_text": "SEILLE",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.7715122699737549
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "GDL-1838-05-15-a-i0002",
+    "sentence_id": 1,
+    "merges": [
+      {
+        "final": {
+          "document_id": "GDL-1838-05-15-a-i0002",
+          "sentence_id": 1,
+          "start_token_id": 8,
+          "end_token_id": 8,
+          "entity_text": "deBelidah",
+          "predicted_entity_type": "LOC",
+          "ner_score": 0.9164069890975952,
+          "span_length_tokens": 1,
+          "span_length_characters": 9,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 8,
+            "end_token_id": 8,
+            "entity_text": "de",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.7518100738525391
+          },
+          {
+            "start_token_id": 8,
+            "end_token_id": 8,
+            "entity_text": "Belidah",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.9164069890975952
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "GDL-1848-10-03-a-i0001",
+    "sentence_id": 3,
+    "merges": [
+      {
+        "final": {
+          "document_id": "GDL-1848-10-03-a-i0001",
+          "sentence_id": 3,
+          "start_token_id": 76,
+          "end_token_id": 76,
+          "entity_text": "Ble",
+          "predicted_entity_type": "LOC",
+          "ner_score": 0.6783093810081482,
+          "span_length_tokens": 1,
+          "span_length_characters": 3,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 76,
+            "end_token_id": 76,
+            "entity_text": "B",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.6783093810081482
+          },
+          {
+            "start_token_id": 76,
+            "end_token_id": 76,
+            "entity_text": "le",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.5110039114952087
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "GDL-1848-10-03-a-i0001",
+    "sentence_id": 50,
+    "merges": [
+      {
+        "final": {
+          "document_id": "GDL-1848-10-03-a-i0001",
+          "sentence_id": 50,
+          "start_token_id": 1455,
+          "end_token_id": 1455,
+          "entity_text": "Ochsenbein",
+          "predicted_entity_type": "LOC",
+          "ner_score": 0.6021417379379272,
+          "span_length_tokens": 1,
+          "span_length_characters": 10,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 1455,
+            "end_token_id": 1455,
+            "entity_text": "Och",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.6021417379379272
+          },
+          {
+            "start_token_id": 1455,
+            "end_token_id": 1455,
+            "entity_text": "sen",
+            "predicted_entity_type": "PERS",
+            "ner_score": 0.5662792921066284
+          },
+          {
+            "start_token_id": 1455,
+            "end_token_id": 1455,
+            "entity_text": "bein",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.5098760724067688
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "GDL-1858-07-12-a-i0002",
+    "sentence_id": 1,
+    "merges": [
+      {
+        "final": {
+          "document_id": "GDL-1858-07-12-a-i0002",
+          "sentence_id": 1,
+          "start_token_id": 3,
+          "end_token_id": 3,
+          "entity_text": "FRANGE",
+          "predicted_entity_type": "LOC",
+          "ner_score": 0.7550350427627563,
+          "span_length_tokens": 1,
+          "span_length_characters": 6,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 3,
+            "end_token_id": 3,
+            "entity_text": "FRAN",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.7550350427627563
+          },
+          {
+            "start_token_id": 3,
+            "end_token_id": 3,
+            "entity_text": "GE",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.4945885837078094
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "GDL-1878-12-20-a-i0026",
+    "sentence_id": 0,
+    "merges": [
+      {
+        "final": {
+          "document_id": "GDL-1878-12-20-a-i0026",
+          "sentence_id": 0,
+          "start_token_id": 0,
+          "end_token_id": 0,
+          "entity_text": "LAUSANNE",
+          "predicted_entity_type": "LOC",
+          "ner_score": 0.9719995856285096,
+          "span_length_tokens": 1,
+          "span_length_characters": 8,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 0,
+            "end_token_id": 0,
+            "entity_text": "LA",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.9719995856285096
+          },
+          {
+            "start_token_id": 0,
+            "end_token_id": 0,
+            "entity_text": "USANNE",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.793637752532959
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "GDL-1948-07-15-a-i0035",
+    "sentence_id": 29,
+    "merges": [
+      {
+        "final": {
+          "document_id": "GDL-1948-07-15-a-i0035",
+          "sentence_id": 29,
+          "start_token_id": 730,
+          "end_token_id": 730,
+          "entity_text": "Ecublens",
+          "predicted_entity_type": "PERS",
+          "ner_score": 0.6529176235198975,
+          "span_length_tokens": 1,
+          "span_length_characters": 8,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 730,
+            "end_token_id": 730,
+            "entity_text": "Ec",
+            "predicted_entity_type": "PERS",
+            "ner_score": 0.6529176235198975
+          },
+          {
+            "start_token_id": 730,
+            "end_token_id": 730,
+            "entity_text": "ublens",
+            "predicted_entity_type": "LOC",
+            "ner_score": 0.5888751149177551
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "IMP-1908-10-03-a-i0027",
+    "sentence_id": 73,
+    "merges": [
+      {
+        "final": {
+          "document_id": "IMP-1908-10-03-a-i0027",
+          "sentence_id": 73,
+          "start_token_id": 1332,
+          "end_token_id": 1333,
+          "entity_text": "Eài 1870",
+          "predicted_entity_type": "TIME",
+          "ner_score": 0.8125936985015869,
+          "span_length_tokens": 2,
+          "span_length_characters": 8,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 1332,
+            "end_token_id": 1332,
+            "entity_text": "E",
+            "predicted_entity_type": "TIME",
+            "ner_score": 0.8125936985015869
+          },
+          {
+            "start_token_id": 1332,
+            "end_token_id": 1332,
+            "entity_text": "à",
+            "predicted_entity_type": "TIME",
+            "ner_score": 0.7152678370475769
+          },
+          {
+            "start_token_id": 1332,
+            "end_token_id": 1333,
+            "entity_text": "i 1870",
+            "predicted_entity_type": "TIME",
+            "ner_score": 0.596777081489563
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "document_id": "IMP-1958-02-28-a-i0106",
+    "sentence_id": 10,
+    "merges": [
+      {
+        "final": {
+          "document_id": "IMP-1958-02-28-a-i0106",
+          "sentence_id": 10,
+          "start_token_id": 368,
+          "end_token_id": 368,
+          "entity_text": "ANE",
+          "predicted_entity_type": "ORG",
+          "ner_score": 0.5548021793365479,
+          "span_length_tokens": 1,
+          "span_length_characters": 3,
+          "sentence_chunked": false
+        },
+        "candidates": [
+          {
+            "start_token_id": 368,
+            "end_token_id": 368,
+            "entity_text": "AN",
+            "predicted_entity_type": "ORG",
+            "ner_score": 0.5548021793365479
+          },
+          {
+            "start_token_id": 368,
+            "end_token_id": 368,
+            "entity_text": "E",
+            "predicted_entity_type": "ORG",
+            "ner_score": 0.3124356865882873
+          }
+        ]
+      }
+    ]
+  }
+]

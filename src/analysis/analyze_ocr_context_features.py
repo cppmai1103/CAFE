@@ -40,10 +40,10 @@ import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from gliner.label_reliability import build_gold_spans, gold_type, label_reliability  # noqa: F401
+from ner.label_reliability import build_gold_spans, gold_type, label_reliability  # noqa: F401
 
 DATA_DIR = Path(__file__).parent.parent.parent / "data" / "data_baseline"
-DEFAULT_TRAIN_DATA = DATA_DIR / "hipe2020_train_fr_train_data.csv"
+DEFAULT_LOAD_DATA = Path(__file__).parent.parent.parent / "data" / "data_source" / "hipe2020_fr.csv"
 DEFAULT_NER_FEATURES = DATA_DIR / "ner_features.csv"
 DEFAULT_OCR_FEATURES = DATA_DIR / "ocr_features.csv"
 DEFAULT_CONTEXT_FEATURES = DATA_DIR / "context_features.csv"
@@ -70,16 +70,24 @@ def reliability_by_bucket(df: pd.DataFrame, bucket_col: str) -> pd.DataFrame:
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--train-data", default=str(DEFAULT_TRAIN_DATA), help="Token-level train data CSV (gold labels)")
+    parser.add_argument("--load-data", default=str(DEFAULT_LOAD_DATA), help="Token-level data CSV (gold labels)")
     parser.add_argument("--ner-features", default=str(DEFAULT_NER_FEATURES), help="ner_features.csv")
     parser.add_argument("--ocr-features", default=str(DEFAULT_OCR_FEATURES), help="ocr_features.csv")
     parser.add_argument("--context-features", default=str(DEFAULT_CONTEXT_FEATURES), help="context_features.csv")
     args = parser.parse_args()
 
     print("=== Step 1: Load train data and close gold spans ===")
-    train_df = pd.read_csv(args.train_data, dtype={"TOKEN": str, "MISC": str})
-    train_df["token_id"] = train_df["token_id"].astype(int)
-    gold_spans = build_gold_spans(train_df)
+    data_df = pd.read_csv(args.load_data, dtype={"TOKEN": str, "MISC": str},
+        # pandas' default NA-string sentinels ("NA", "null", "nan", ...) would otherwise
+        # silently corrupt a genuine OCR token whose text happens to collide with one of
+        # them (confirmed: one real token in hipe2020_fr is literally "NA") into a float
+        # NaN despite the dtype=str hint above -- dtype coercion happens AFTER NA
+        # detection, so it can't prevent this. keep_default_na=False turns that off
+        # entirely, and na_values restores it only for the two genuinely-numeric columns
+        # that still need a blank cell to become NaN.
+        keep_default_na=False, na_values={"sentence_ocr_mean": [""], "document_ocr_mean": [""], "dictionary_score": [""]})
+    data_df["token_id"] = data_df["token_id"].astype(int)
+    gold_spans = build_gold_spans(data_df)
     print(f"{len(gold_spans)} gold entity spans")
 
     print("=== Step 2: Load and join candidate feature tables ===")

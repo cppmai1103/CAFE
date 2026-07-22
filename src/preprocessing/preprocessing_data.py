@@ -1,21 +1,35 @@
-"""Download and parse a HIPE-2022 TSV into token-level train data, with OCR
-dictionary-membership features attached.
+"""Download and parse HIPE-2022's official hipe2020 train/dev/test TSVs into one
+token-level CSV (data/data_source/hipe2020_<language>.csv, default language fr), with OCR
+dictionary-membership features attached. --language selects which language subset to load
+(default: fr; impresso's OCR-quality bloom filter covers French and German, see
+ocr_dictionary_check.BLOOM_LANGUAGES). To point this at a different HIPE-2022 v2.1
+dataset entirely (e.g. letemps instead of hipe2020 -- same
+https://github.com/hipe-eval/HIPE-2022-data train/dev/test TSV layout, just a different
+folder name), override --train-url/--dev-url/--test-url/--out directly rather than adding
+a --dataset flag here -- see Usage below.
 
-Output columns: 
+Lives in data/data_source/, not data/data_baseline/ -- data_baseline/ is reserved for the
+OUTPUT of baseline runs (ner_features.csv, logistic_regression.csv, mlp_baseline.csv,
+...), not this raw source data every one of them reads via --load-data. Every downstream
+script's --load-data flag (see e.g. gliner/extract_ner_features.py) loads this one file
+whole (every split, not just "train" -- the old --train-data name was misleading) and
+filters by its own `split` column for whatever it actually needs.
+
+Output columns:
 - the source file's own columns (TOKEN, NE-COARSE-LIT, ..., MISC)
 - document_id prepended and sentence_id, token_id, split, dictionary_score, sentence_ocr_mean, document_ocr_mean appended
 
-Split:
-- train (70%)
-- val (10%)
-- test (20%)
-Splitting is done:
-- per document (every token/sentence of a document gets the same split), not per token/candidate
---> so no document's context leaks across splits
-
-the assignment is a deterministic shuffle keyed on --split-seed. Downstream per-candidate files
-(ner_features.csv, ocr_features.csv, context_features.csv, ...) don't carry split
-themselves -- join back on document_id to recover it.
+Split: this is now a full-data run, so every document from all three official files is
+kept -- no document is held back or resampled. `split` is tagged directly by which file a
+document came from (train-fr.tsv -> "train", dev-fr.tsv -> "val", test-fr.tsv -> "test"),
+not a random per-document split like the previous single-file version of this script
+(that version only had a train-fr.tsv to work with and had to carve 70/10/20 out of it
+itself; HIPE-2022 ships hipe2020/fr as three separate official files, so re-splitting one
+of them and discarding the corpus's real held-out dev/test documents was never necessary
+here -- see test/ajmc/preprocessing_data_ajmc.py for the same reasoning applied to ajmc
+earlier). Downstream per-candidate files (ner_features.csv, ocr_features.csv,
+context_features.csv, ...) don't carry split themselves -- join back on document_id to
+recover it.
 
 sentence_id is 0-indexed and resets at each new document; it's derived from MISC's
 EndOfSentence flag, so the token immediately after a sentence-ending token starts the
@@ -33,8 +47,13 @@ ocr_dictionary_check.py (see that module's docstring) -- this file just calls in
 Usage:
     pip install -r requirements.txt
     python src/preprocessing/preprocessing_data.py
-    python src/preprocessing/preprocessing_data.py --limit 50 --out /tmp/smoke_train_data.csv  # quick smoke test
-    python src/preprocessing/preprocessing_data.py --split-seed 7  # different deterministic document split
+    python src/preprocessing/preprocessing_data.py --language de  # German hipe2020 subset -> hipe2020_de.csv
+    python src/preprocessing/preprocessing_data.py \
+      --train-url https://raw.githubusercontent.com/hipe-eval/HIPE-2022-data/main/data/v2.1/letemps/fr/HIPE-2022-v2.1-letemps-train-fr.tsv \
+      --dev-url https://raw.githubusercontent.com/hipe-eval/HIPE-2022-data/main/data/v2.1/letemps/fr/HIPE-2022-v2.1-letemps-dev-fr.tsv \
+      --test-url https://raw.githubusercontent.com/hipe-eval/HIPE-2022-data/main/data/v2.1/letemps/fr/HIPE-2022-v2.1-letemps-test-fr.tsv \
+      --out data/data_source/letemps_fr.csv  # a different HIPE-2022 dataset entirely
+    python src/preprocessing/preprocessing_data.py --limit-per-split 50 --out data/data_source/.smoke/smoke_data.csv  # quick smoke test
 """
 
 from __future__ import annotations
@@ -44,26 +63,34 @@ import re
 import sys
 from pathlib import Path
 
-import numpy as np
 import pandas as pd
 import requests
+from tqdm import tqdm
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from preprocessing.ocr_dictionary_check import BLOOM_FILENAME, BLOOM_MODEL_ID, compute_dictionary_score, compute_ocr_means, get_bloomfilter
+from preprocessing.ocr_dictionary_check import BLOOM_MODEL_ID, bloom_filename_for, compute_dictionary_score, compute_ocr_means, get_bloomfilter
 
-HIPE_URL = (
-    "https://raw.githubusercontent.com/hipe-eval/HIPE-2022-data/main/"
-    "data/v2.1/hipe2020/fr/HIPE-2022-v2.1-hipe2020-train-fr.tsv"
-)
+LANGUAGES = ("fr", "de")
+DEFAULT_LANGUAGE = "fr"
 DOC_ID_RE = re.compile(r"^#\s*hipe2022:document_id\s*=\s*(.+)$")
 
-DATA_DIR = Path(__file__).parent.parent.parent / "data" / "data_baseline"
-DEFAULT_OUT = DATA_DIR / "hipe2020_train_fr_train_data.csv"
+DATA_DIR = Path(__file__).parent.parent.parent / "data" / "data_source"
+DEFAULT_OUT = DATA_DIR / f"hipe2020_{DEFAULT_LANGUAGE}.csv"
 
-# Data split proportions, document-level.
-SPLIT_PROPORTIONS = {"train": 0.7, "val": 0.1, "test": 0.2}
-DEFAULT_SPLIT_SEED = 42
+
+def split_urls_for(language: str) -> dict[str, str]:
+    """The three official hipe2020/<language> file URLs, tagged by which split they
+    become (train-fr.tsv -> "train", dev-fr.tsv -> "val", test-fr.tsv -> "test") --
+    same layout for every LANGUAGES entry, just the language segment changes."""
+    if language not in LANGUAGES:
+        raise ValueError(f"language must be one of {LANGUAGES}, got {language!r}")
+    base = f"https://raw.githubusercontent.com/hipe-eval/HIPE-2022-data/main/data/v2.1/hipe2020/{language}"
+    return {
+        "train": f"{base}/HIPE-2022-v2.1-hipe2020-train-{language}.tsv",
+        "val": f"{base}/HIPE-2022-v2.1-hipe2020-dev-{language}.tsv",
+        "test": f"{base}/HIPE-2022-v2.1-hipe2020-test-{language}.tsv",
+    }
 
 
 def load_hipe_tokens(url: str) -> pd.DataFrame:
@@ -120,66 +147,77 @@ def assign_token_ids(df: pd.DataFrame) -> pd.DataFrame:
     return out
 
 
-def assign_splits(document_ids, seed: int = DEFAULT_SPLIT_SEED) -> dict:
-    """Assign each document to train (70%) / val (10%) / test (20%) -- see
-    SPLIT_PROPORTIONS. Splitting is done by document, not by individual token/candidate,
-    so that no document's sentences leak across splits. Deterministic given `seed`."""
-    unique_ids = sorted(set(document_ids))
-    shuffled = np.random.RandomState(seed).permutation(unique_ids)
+def load_split(url: str, split_name: str, limit: int | None) -> pd.DataFrame:
+    """Load one of the three official files and tag every row with split_name directly
+    (no per-document random assignment -- see module docstring)."""
+    df = load_hipe_tokens(url)
+    df["MISC"] = df["MISC"].fillna("_")
+    df = assign_sentence_ids(df)
+    df = assign_token_ids(df)
 
-    n = len(shuffled)
-    counts = {name: round(n * frac) for name, frac in SPLIT_PROPORTIONS.items()}
-    counts["train"] += n - sum(counts.values())  # absorb any rounding remainder
+    if limit is not None:
+        keys = df[["document_id", "sentence_id"]].drop_duplicates().head(limit)
+        df = df.merge(keys, on=["document_id", "sentence_id"], how="inner")
 
-    split_of = {}
-    cursor = 0
-    for name in ["train", "val", "test"]:
-        for doc_id in shuffled[cursor : cursor + counts[name]]:
-            split_of[doc_id] = name
-        cursor += counts[name]
-    return split_of
+    df["split"] = split_name
+    print(f"  {split_name}: {df.shape[0]} tokens across {df['document_id'].nunique()} documents (from {url})")
+    return df
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--hipe-url", default=HIPE_URL, help="HIPE-2022 TSV URL (default: hipe2020 train-fr)")
-    parser.add_argument("--out", default=str(DEFAULT_OUT), help="Train data output CSV path")
-    parser.add_argument("--limit", type=int, default=None, help="Only keep the first N sentences (smoke test)")
+    parser.add_argument("--language", default=DEFAULT_LANGUAGE, choices=LANGUAGES, help="HIPE-2022 hipe2020 language subset to load (default: fr)")
     parser.add_argument(
-        "--split-seed", type=int, default=DEFAULT_SPLIT_SEED, help="Seed for the deterministic Phase 1 document split"
+        "--train-url", default=None,
+        help="HIPE-2022 train TSV URL (default: derived from --language; override to point at a different dataset "
+        "entirely, or pass \"\" (empty string) to skip this split -- e.g. sonar/de has no train file at all)",
     )
+    parser.add_argument(
+        "--dev-url", default=None,
+        help="HIPE-2022 dev TSV URL (default: derived from --language; becomes split='val'; \"\" to skip)",
+    )
+    parser.add_argument(
+        "--test-url", default=None,
+        help="HIPE-2022 test TSV URL (default: derived from --language; \"\" to skip)",
+    )
+    parser.add_argument("--out", default=str(DEFAULT_OUT), help="Output CSV path")
+    parser.add_argument("--limit-per-split", type=int, default=None, help="Only keep the first N sentences of each split (smoke test)")
     args = parser.parse_args()
 
-    print("=== Step 1: Load HIPE tokens ===")
-    print(f"Loading HIPE tokens from {args.hipe_url}")
-    tokens_df = load_hipe_tokens(args.hipe_url)
-    tokens_df["MISC"] = tokens_df["MISC"].fillna("_")
-    tokens_df = assign_sentence_ids(tokens_df)
-    tokens_df = assign_token_ids(tokens_df)
-    print(f"{tokens_df.shape[0]} tokens across {tokens_df['document_id'].nunique()} documents")
+    # None (flag not given) -> the --language default; "" (explicitly passed) -> skip this
+    # split entirely, not fall back to the default -- "" is falsy same as None in Python,
+    # so this has to check `is None` rather than truthiness, or --train-url "" would
+    # silently resolve to the hipe2020 default instead of actually skipping.
+    default_urls = split_urls_for(args.language)
+    raw_urls = {"train": args.train_url, "val": args.dev_url, "test": args.test_url}
+    split_urls = {
+        split: (url if url is not None else default_urls[split])
+        for split, url in raw_urls.items()
+        if url != ""
+    }
+    if not split_urls:
+        raise ValueError("all three splits were skipped (--train-url/--dev-url/--test-url all \"\") -- nothing to load")
+    out_path = Path(args.out)
 
-    if args.limit is not None:
-        keys = tokens_df[["document_id", "sentence_id"]].drop_duplicates().head(args.limit)
-        tokens_df = tokens_df.merge(keys, on=["document_id", "sentence_id"], how="inner")
-
-    print("=== Step 2: Assign Phase 1 data splits (per document) ===")
-    split_of = assign_splits(tokens_df["document_id"].unique(), seed=args.split_seed)
-    tokens_df["split"] = tokens_df["document_id"].map(split_of)
-    doc_split_counts = tokens_df.drop_duplicates("document_id")["split"].value_counts()
-    print(f"Documents per split:\n{doc_split_counts}")
+    print(f"=== Step 1: Load official {'/'.join(split_urls)} TSVs ===")
+    split_dfs = []
+    for split_name, url in tqdm(split_urls.items(), desc="Loading splits", unit="file"):
+        split_dfs.append(load_split(url, split_name, args.limit_per_split))
+    tokens_df = pd.concat(split_dfs, ignore_index=True)
+    print(f"{tokens_df.shape[0]} tokens across {tokens_df['document_id'].nunique()} documents (all splits combined)")
     print(f"Tokens per split:\n{tokens_df['split'].value_counts()}")
+    print(f"Documents per split:\n{tokens_df.drop_duplicates('document_id')['split'].value_counts()}")
 
-    print("=== Step 3: Load French OCR-quality bloom filter ===")
-    bloom_filter = get_bloomfilter(BLOOM_MODEL_ID, BLOOM_FILENAME)
+    print(f"=== Step 2: Load {args.language} OCR-quality bloom filter ===")
+    bloom_filter = get_bloomfilter(BLOOM_MODEL_ID, bloom_filename_for(args.language))
 
-    print("=== Step 4: Score token dictionary membership ===")
+    print("=== Step 3: Score token dictionary membership ===")
     tokens_df = compute_dictionary_score(tokens_df, bloom_filter)
 
-    print("=== Step 5: Compute sentence/document OCR means ===")
+    print("=== Step 4: Compute sentence/document OCR means ===")
     tokens_df = compute_ocr_means(tokens_df)
 
-    print("=== Step 6: Save train data ===")
-    out_path = Path(args.out)
+    print("=== Step 5: Save train data ===")
     out_path.parent.mkdir(parents=True, exist_ok=True)
     tokens_df.to_csv(out_path, index=False)
     print(f"Saved train data to {out_path}")

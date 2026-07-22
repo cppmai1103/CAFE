@@ -4,10 +4,11 @@ loading/splitting pipeline (see other/extract_pressmint_ocrqa.py, which reuses
 get_bloomfilter/word_is_known on a different, non-HIPE source).
 
 dictionary_score is True/False/None per token, from the impresso
-OCR-quality-assessment-unigram French bloom filter (a list of known French word forms
-built from Wikipedia + lexicons): True = known French word, False = unknown (likely OCR
-error, or a rare/proper name -- the filter can't tell the two apart), None = punctuation
-(not scoreable). "Known" is a proxy for correct OCR, not a verified fact -- there is no
+OCR-quality-assessment-unigram bloom filter for the token's language (a list of known
+word forms built from Wikipedia + lexicons -- see bloom_filename_for/BLOOM_LANGUAGES for
+which languages are available): True = known word, False = unknown (likely OCR error, or
+a rare/proper name -- the filter can't tell the two apart), None = punctuation (not
+scoreable). "Known" is a proxy for correct OCR, not a verified fact -- there is no
 continuous OCR confidence anywhere in the HIPE data, so this 0/1 dictionary-membership
 signal stands in for it throughout.
 
@@ -28,7 +29,20 @@ from pybloomfilter import BloomFilter
 from tqdm import tqdm
 
 BLOOM_MODEL_ID = "impresso-project/OCR-quality-assessment-unigram"
-BLOOM_FILENAME = "ocrqa-wp_v1.0.6-fr.bloom"
+BLOOM_LANGUAGES = ("fr", "de")
+DEFAULT_BLOOM_LANGUAGE = "fr"
+
+
+def bloom_filename_for(language: str) -> str:
+    """impresso's per-language bloom filter filename, e.g. "fr" ->
+    "ocrqa-wp_v1.0.6-fr.bloom" -- same v1.0.6 release used for every BLOOM_LANGUAGES
+    entry, confirmed present on the model repo for both."""
+    if language not in BLOOM_LANGUAGES:
+        raise ValueError(f"language must be one of {BLOOM_LANGUAGES}, got {language!r}")
+    return f"ocrqa-wp_v1.0.6-{language}.bloom"
+
+
+BLOOM_FILENAME = bloom_filename_for(DEFAULT_BLOOM_LANGUAGE)  # backward-compat default (French)
 
 # Normalization table as documented on the bloom filter's model card
 # (NFKC + lowercase + digits->'0' + strip punctuation). Ported from

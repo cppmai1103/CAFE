@@ -22,8 +22,8 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import pandas as pd
 
-DATA_DIR = Path(__file__).parent.parent.parent / "data" / "data_baseline"
-DEFAULT_TRAIN_DATA = DATA_DIR / "hipe2020_train_fr_train_data.csv"
+DATA_DIR = Path(__file__).parent.parent.parent / "data" / "data_source"
+DEFAULT_LOAD_DATA = DATA_DIR / "hipe2020_fr.csv"
 DEFAULT_FIGURES_DIR = Path(__file__).parent.parent.parent / "figures" / "data_analysis"
 
 CATEGORICAL_BLUE = "#2a78d6"
@@ -91,19 +91,27 @@ def plot_ocr_mean_distribution(values: pd.Series, out_path: Path, title: str, xl
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--train-data", default=str(DEFAULT_TRAIN_DATA), help="Token-level train data CSV")
+    parser.add_argument("--load-data", default=str(DEFAULT_LOAD_DATA), help="Token-level data CSV")
     parser.add_argument("--figures-dir", default=str(DEFAULT_FIGURES_DIR), help="Directory to save plots into")
     args = parser.parse_args()
 
     print("=== Step 1: Load train data ===")
-    train_df = pd.read_csv(args.train_data, dtype={"TOKEN": str, "MISC": str})
-    print(f"{len(train_df)} tokens")
+    data_df = pd.read_csv(args.load_data, dtype={"TOKEN": str, "MISC": str},
+        # pandas' default NA-string sentinels ("NA", "null", "nan", ...) would otherwise
+        # silently corrupt a genuine OCR token whose text happens to collide with one of
+        # them (confirmed: one real token in hipe2020_fr is literally "NA") into a float
+        # NaN despite the dtype=str hint above -- dtype coercion happens AFTER NA
+        # detection, so it can't prevent this. keep_default_na=False turns that off
+        # entirely, and na_values restores it only for the two genuinely-numeric columns
+        # that still need a blank cell to become NaN.
+        keep_default_na=False, na_values={"sentence_ocr_mean": [""], "document_ocr_mean": [""], "dictionary_score": [""]})
+    print(f"{len(data_df)} tokens")
 
     figures_dir = Path(args.figures_dir)
     figures_dir.mkdir(parents=True, exist_ok=True)
 
     print("=== Step 2: Token-level dictionary_score counts (True/False/None) ===")
-    dictionary_score = train_df["dictionary_score"]
+    dictionary_score = data_df["dictionary_score"]
     n_known = int((dictionary_score == True).sum())
     n_unknown = int((dictionary_score == False).sum())
     n_na = int(dictionary_score.isna().sum())
@@ -113,11 +121,11 @@ def main():
         f"Unknown (False): {n_unknown:,} ({n_unknown / n_total:.2%})  "
         f"N/A (None): {n_na:,} ({n_na / n_total:.2%})"
     )
-    plot_dictionary_score_counts(train_df, figures_dir / "dictionary_score_counts.png")
+    plot_dictionary_score_counts(data_df, figures_dir / "dictionary_score_counts.png")
     print(f"Saved {figures_dir / 'dictionary_score_counts.png'}")
 
     print("=== Step 3: Distribution of document_ocr_mean (one value per document) ===")
-    document_means = train_df.drop_duplicates("document_id")["document_ocr_mean"].dropna()
+    document_means = data_df.drop_duplicates("document_id")["document_ocr_mean"].dropna()
     print(document_means.describe())
     plot_ocr_mean_distribution(
         document_means, figures_dir / "document_ocr_mean_distribution.png",
@@ -126,7 +134,7 @@ def main():
     print(f"Saved {figures_dir / 'document_ocr_mean_distribution.png'}")
 
     print("=== Step 4: Distribution of sentence_ocr_mean (one value per sentence) ===")
-    sentence_means = train_df.drop_duplicates(["document_id", "sentence_id"])["sentence_ocr_mean"].dropna()
+    sentence_means = data_df.drop_duplicates(["document_id", "sentence_id"])["sentence_ocr_mean"].dropna()
     print(sentence_means.describe())
     plot_ocr_mean_distribution(
         sentence_means, figures_dir / "sentence_ocr_mean_distribution.png",
