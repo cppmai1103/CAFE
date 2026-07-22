@@ -94,7 +94,6 @@ MUTED_INK = "#898781"
 GRIDLINE = "#e1e0d9"
 
 KEY_COLS = ["document_id", "sentence_id", "start_token_id", "end_token_id"]
-DATASET_NAME = "hipe2020_fr"  # the only dataset this project's pipeline runs on
 
 # (CLI arg attr, column name to give it after merging, display color, legend label)
 RAW_LABEL = "raw"
@@ -235,7 +234,7 @@ def plot_reliability_diagram(series: list[tuple[pd.DataFrame, str, str]], out_pa
         ax.plot(valid["avg_confidence"], valid["accuracy"], color=color, linewidth=1, alpha=0.6)
         ax.scatter(
             valid["avg_confidence"], valid["accuracy"], s=valid["count"] / valid["count"].max() * 300 + 20,
-            color=color, alpha=0.85, label=label,
+            color=color, alpha=0.85, label=DISPLAY_LABELS.get(label, label),
         )
 
     ax.set_xlim(0, 1)
@@ -392,6 +391,7 @@ def main():
         "For comparing ablation variants (phase2/train.py --no-*) that don't have their own fixed flag.",
     )
     parser.add_argument("--load-data", default=str(DEFAULT_LOAD_DATA), help="Token-level data CSV (for the --split filter)")
+    parser.add_argument("--dataset-name", default=None, help="Name shown in plot titles, e.g. \"hipe2020_fr\" (default: --load-data's filename stem, so hipe2020_fr.csv/letemps_fr.csv name themselves automatically)")
     parser.add_argument("--split", default="test", help="Filter to this document-level split before plotting; pass \"\" to use every candidate (default: test)")
     parser.add_argument("--out", default=None, help="Output PNG path (default: figures/reliability_diagram_<labels>.png)")
     parser.add_argument("--figures-dir", default=str(DEFAULT_FIGURES_DIR), help="Directory to save the plot into (ignored if --out is given)")
@@ -484,7 +484,8 @@ def main():
     all_labels = list(score_columns)
     figures_dir = Path(args.figures_dir)
     figures_dir.mkdir(parents=True, exist_ok=True)
-    title_suffix = f" on {DATASET_NAME} {args.split} set" if args.split else f" on {DATASET_NAME} (all splits)"
+    dataset_name = args.dataset_name if args.dataset_name else Path(args.load_data).stem
+    title_suffix = f" on {dataset_name} {args.split} set" if args.split else f" on {dataset_name} (all splits)"
 
     print("=== Step 4: Plot reliability diagram ===")
     reliability_out_path = Path(args.out) if args.out is not None else default_out_path(figures_dir, all_labels)

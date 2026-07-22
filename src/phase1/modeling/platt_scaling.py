@@ -166,6 +166,13 @@ def main():
     parser.add_argument("--out", default=str(DEFAULT_OUT), help="Output CSV path (calibrated_score for every candidate)")
     parser.add_argument("--figures-dir", default=str(DEFAULT_FIGURES_DIR), help="Directory to save the fit plot into")
     parser.add_argument("--checkpoint-out", default=str(DEFAULT_CHECKPOINT_OUT), help="Checkpoint output path (see save_checkpoint())")
+    parser.add_argument(
+        "--checkpoint-in", default=None,
+        help="Score-only mode: load an already-fitted checkpoint (e.g. from a different dataset's train split) "
+        "instead of fitting one here. Skips Steps 2-4 (train/val split, fit, save) and Step 8's train/val curve "
+        "plot (there's no fit to plot) -- everything else runs the same, scoring --label-reliability/--load-data "
+        "with the loaded model.",
+    )
     args = parser.parse_args()
 
     print("=== Step 1: Load label_reliability and attach document-level split ===")
@@ -187,26 +194,32 @@ def main():
     candidates_df["split"] = candidates_df["document_id"].map(doc_to_split)
     print(candidates_df["split"].value_counts().to_string())
 
-    print("=== Step 2: Split train / val ===")
-    train_df = candidates_df[candidates_df["split"] == "train"]
-    train_scores = train_df["ner_score"].to_numpy()
-    train_labels = train_df["reliability_score"].to_numpy().astype(int)
-    val_df = candidates_df[candidates_df["split"] == "val"]
-    val_scores = val_df["ner_score"].to_numpy()
-    val_labels = val_df["reliability_score"].to_numpy().astype(int)
-    print(f"{len(train_df)} train candidates, {len(val_df)} val candidates")
+    train_losses = val_losses = best_epoch = None
+    if args.checkpoint_in:
+        print(f"=== Steps 2-4 skipped: loading already-fitted checkpoint {args.checkpoint_in} ===")
+        b0, b1, model = load_model(args.checkpoint_in)
+        print(f"calibrated_score = sigmoid({b0:.4f} + {b1:.4f} * ner_score)")
+    else:
+        print("=== Step 2: Split train / val ===")
+        train_df = candidates_df[candidates_df["split"] == "train"]
+        train_scores = train_df["ner_score"].to_numpy()
+        train_labels = train_df["reliability_score"].to_numpy().astype(int)
+        val_df = candidates_df[candidates_df["split"] == "val"]
+        val_scores = val_df["ner_score"].to_numpy()
+        val_labels = val_df["reliability_score"].to_numpy().astype(int)
+        print(f"{len(train_df)} train candidates, {len(val_df)} val candidates")
 
-    print("=== Step 3: Fit Platt scaling on train, early-stop on val ===")
-    b0, b1, model, train_losses, val_losses, best_epoch = fit_platt_scaling(
-        train_scores, train_labels, val_scores, val_labels,
-    )
-    print(f"calibrated_score = sigmoid({b0:.4f} + {b1:.4f} * ner_score)")
+        print("=== Step 3: Fit Platt scaling on train, early-stop on val ===")
+        b0, b1, model, train_losses, val_losses, best_epoch = fit_platt_scaling(
+            train_scores, train_labels, val_scores, val_labels,
+        )
+        print(f"calibrated_score = sigmoid({b0:.4f} + {b1:.4f} * ner_score)")
 
-    print("=== Step 4: Save checkpoint ===")
-    checkpoint_out_path = Path(args.checkpoint_out)
-    checkpoint_out_path.parent.mkdir(parents=True, exist_ok=True)
-    save_checkpoint(b0, b1, model, checkpoint_out_path)
-    print(f"Saved {checkpoint_out_path}")
+        print("=== Step 4: Save checkpoint ===")
+        checkpoint_out_path = Path(args.checkpoint_out)
+        checkpoint_out_path.parent.mkdir(parents=True, exist_ok=True)
+        save_checkpoint(b0, b1, model, checkpoint_out_path)
+        print(f"Saved {checkpoint_out_path}")
 
     print("=== Step 5: Score every candidate (all splits) ===")
     candidates_df["calibrated_score"] = model.predict_proba(candidates_df[["ner_score"]].to_numpy())[:, 1]
@@ -229,13 +242,16 @@ def main():
     plot_sigmoid_fit(b0, b1, test_bins, fit_out_path)
     print(f"Saved {fit_out_path}")
 
-    print("=== Step 8: Plot train/val training curve ===")
-    curve_out_path = figures_dir / "platt_scaling_track_training.png"
-    plot_training_curve(
-        train_losses, val_losses, best_epoch,
-        "Platt scaling: train vs val loss", curve_out_path,
-    )
-    print(f"Saved {curve_out_path}")
+    if train_losses is not None:
+        print("=== Step 8: Plot train/val training curve ===")
+        curve_out_path = figures_dir / "platt_scaling_track_training.png"
+        plot_training_curve(
+            train_losses, val_losses, best_epoch,
+            "Platt scaling: train vs val loss", curve_out_path,
+        )
+        print(f"Saved {curve_out_path}")
+    else:
+        print("=== Step 8 skipped: no fit was run (--checkpoint-in), no train/val curve to plot ===")
 
     print("=== Done ===")
 

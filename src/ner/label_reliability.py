@@ -1,6 +1,6 @@
 """Compute label_reliable, the ground-truth target for Phase 1 baselines B0/B1/B3: per
 docs/phase1_manual_features.md SS3, a candidate (a predicted span + type from ner_features.csv) is
-"reliable" (label_reliable = 1) iff it matches a gold entity's type. Two modes for what
+"reliable" (label_reliable = 1) iff it matches a gold entity's type. Three modes for what
 "matches" means (--mode):
 
     span_type (default): the candidate's exact start_token_id/end_token_id must equal a
@@ -16,6 +16,13 @@ docs/phase1_manual_features.md SS3, a candidate (a predicted span + type from ne
         line up with a whole gold entity's. See label_reliability_type_only /
         build_gold_token_types.
 
+    fuzzy: reliable iff AT LEAST ONE token the candidate covers has the same gold type as
+        its predicted_entity_type -- unlike type_only (which requires every covered token
+        to match), a candidate that over-extends into a leading/trailing non-entity token
+        (e.g. "De Bruxelles" instead of gold "Bruxelles") is still reliable here, as long
+        as it captures at least one gold token of the right type. See
+        label_reliability_fuzzy / build_gold_token_types (same gold lookup as type_only).
+
 Run standalone (python -m / python src/ner/label_reliability.py) to compute this over
 deduplicate_ner_features.csv and save one row per candidate: document_id, sentence_id,
 start_token_id, end_token_id, entity_text, predicted_entity_type, ner_score,
@@ -24,10 +31,11 @@ reliability_score (0/1, per whichever --mode was chosen).
 Usage:
     python src/ner/label_reliability.py
     python src/ner/label_reliability.py --mode type_only
+    python src/ner/label_reliability.py --mode fuzzy
     python src/ner/label_reliability.py --ner-features data/deduplicate_ner_features.csv --out data/label_reliability.csv
 
 Output filename bakes in --mode (e.g. label_reliability_span_type.csv,
-label_reliability_type_only.csv) unless --out is given explicitly, so the two modes'
+label_reliability_type_only.csv, label_reliability_fuzzy.csv) unless --out is given explicitly, so the modes'
 outputs never overwrite each other.
 """
 
@@ -155,6 +163,24 @@ def label_reliability_type_only(candidates_df: pd.DataFrame, gold_token_types: d
     return candidates_df.progress_apply(is_reliable, axis=1)
 
 
+def label_reliability_fuzzy(candidates_df: pd.DataFrame, gold_token_types: dict[tuple, str | None]) -> pd.Series:
+    """label_reliable per candidate row, fuzzy mode: True iff AT LEAST ONE token in
+    [start_token_id, end_token_id] has the same gold type as predicted_entity_type.
+    Same gold_token_types lookup as type_only, just any() instead of all() -- a candidate
+    that over-extends its span into a leading/trailing non-entity or wrong-type token is
+    still reliable here as long as it overlaps at least one gold token of the right type."""
+    tqdm.pandas(desc="Matching candidates against gold token types (fuzzy)", unit="candidate")
+
+    def is_reliable(row) -> bool:
+        if pd.isna(row["start_token_id"]) or pd.isna(row["end_token_id"]):
+            return False
+        start, end = int(row["start_token_id"]), int(row["end_token_id"])
+        document_id, predicted_type = row["document_id"], row["predicted_entity_type"]
+        return any(gold_token_types.get((document_id, token_id)) == predicted_type for token_id in range(start, end + 1))
+
+    return candidates_df.progress_apply(is_reliable, axis=1)
+
+
 OUTPUT_COLUMNS = [
     "document_id",
     "sentence_id",
@@ -167,7 +193,7 @@ OUTPUT_COLUMNS = [
 ]
 
 
-MODES = ["span_type", "type_only"]
+MODES = ["span_type", "type_only", "fuzzy"]
 
 
 def main():
@@ -182,7 +208,8 @@ def main():
         choices=MODES,
         default="type_only",
         help="span_type: exact span boundaries + type must match (default). type_only: every token the "
-        "candidate covers must have the matching gold type, span boundaries ignored.",
+        "candidate covers must have the matching gold type, span boundaries ignored. fuzzy: at least one "
+        "token the candidate covers must have the matching gold type.",
     )
     args = parser.parse_args()
     out_path = Path(args.out) if args.out is not None else default_out_path(args.mode)
@@ -214,8 +241,10 @@ def main():
     print(f"=== Step 3: Compute reliability_score against gold (mode={args.mode}) ===")
     if args.mode == "span_type":
         candidates_df["reliability_score"] = label_reliability(candidates_df, gold_lookup).astype(int)
-    else:
+    elif args.mode == "type_only":
         candidates_df["reliability_score"] = label_reliability_type_only(candidates_df, gold_lookup).astype(int)
+    else:
+        candidates_df["reliability_score"] = label_reliability_fuzzy(candidates_df, gold_lookup).astype(int)
     n_reliable = int(candidates_df["reliability_score"].sum())
     print(f"{n_reliable} / {len(candidates_df)} candidates reliable ({n_reliable / len(candidates_df):.4%})")
 

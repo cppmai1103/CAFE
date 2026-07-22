@@ -205,6 +205,13 @@ def main():
     parser.add_argument("--patience", type=int, default=10, help="Stop early after this many epochs with no val-loss improvement")
     parser.add_argument("--seed", type=int, default=42, help="torch random seed (weight init, dropout masks)")
     parser.add_argument("--checkpoint-out", default=str(DEFAULT_CHECKPOINT_OUT), help="Checkpoint output path (see save_checkpoint())")
+    parser.add_argument(
+        "--checkpoint-in", default=None,
+        help="Score-only mode: load an already-fitted checkpoint (e.g. from a different dataset's train split) "
+        "instead of fitting one here. Skips Steps 2-5 (feature matrix on train/val, standardize, fit, save) and "
+        "Step 8's train/val curve plot (there's no fit to plot) -- everything else runs the same, scoring --data "
+        "with the loaded model/scaler/fit_stats/feature_names.",
+    )
     args = parser.parse_args()
 
     torch.manual_seed(args.seed)
@@ -217,36 +224,43 @@ def main():
     print(f"{len(candidates_df)} candidates")
     print(candidates_df["split"].value_counts().to_string())
 
-    print("=== Step 2: Build feature matrix (train medians + missing-indicator set) ===")
-    train_mask = candidates_df["split"] == "train"
-    val_mask = candidates_df["split"] == "val"
-    X_train_df, fit_stats = build_feature_matrix(candidates_df[train_mask])
-    y_train = candidates_df.loc[train_mask, "reliability_score"].astype(int)
-    X_val_df, _ = build_feature_matrix(candidates_df[val_mask], fit_stats=fit_stats)
-    y_val = candidates_df.loc[val_mask, "reliability_score"].astype(int)
-    print(f"{X_train_df.shape[1]} features, {len(X_train_df)} train candidates, {len(X_val_df)} val candidates")
+    train_losses = val_losses = best_epoch = None
+    if args.checkpoint_in:
+        print(f"=== Steps 2-5 skipped: loading already-fitted checkpoint {args.checkpoint_in} ===")
+        model, scaler, fit_stats, feature_names = load_model(args.checkpoint_in, device=device)
+    else:
+        print("=== Step 2: Build feature matrix (train medians + missing-indicator set) ===")
+        train_mask = candidates_df["split"] == "train"
+        val_mask = candidates_df["split"] == "val"
+        X_train_df, fit_stats = build_feature_matrix(candidates_df[train_mask])
+        y_train = candidates_df.loc[train_mask, "reliability_score"].astype(int)
+        X_val_df, _ = build_feature_matrix(candidates_df[val_mask], fit_stats=fit_stats)
+        y_val = candidates_df.loc[val_mask, "reliability_score"].astype(int)
+        print(f"{X_train_df.shape[1]} features, {len(X_train_df)} train candidates, {len(X_val_df)} val candidates")
 
-    print("=== Step 3: Standardize features (fit on train only) ===")
-    scaler = StandardScaler()
-    X_train = scaler.fit_transform(X_train_df).astype("float32")
-    X_val = scaler.transform(X_val_df).astype("float32")
+        print("=== Step 3: Standardize features (fit on train only) ===")
+        scaler = StandardScaler()
+        X_train = scaler.fit_transform(X_train_df).astype("float32")
+        X_val = scaler.transform(X_val_df).astype("float32")
 
-    print("=== Step 4: Fit MLP on train, early-stop on val ===")
-    model = MLPBaseline(input_dim=X_train.shape[1], hidden_dim=args.hidden_dim, dropout=args.dropout)
-    model, train_losses, val_losses, best_epoch = fit_mlp_with_curve(
-        model, X_train, y_train.to_numpy(), X_val, y_val.to_numpy(),
-        max_epochs=args.max_epochs, patience=args.patience, lr=args.lr, weight_decay=args.weight_decay,
-        device=device,
-    )
+        print("=== Step 4: Fit MLP on train, early-stop on val ===")
+        model = MLPBaseline(input_dim=X_train.shape[1], hidden_dim=args.hidden_dim, dropout=args.dropout)
+        model, train_losses, val_losses, best_epoch = fit_mlp_with_curve(
+            model, X_train, y_train.to_numpy(), X_val, y_val.to_numpy(),
+            max_epochs=args.max_epochs, patience=args.patience, lr=args.lr, weight_decay=args.weight_decay,
+            device=device,
+        )
+        feature_names = list(X_train_df.columns)
 
-    print("=== Step 5: Save checkpoint ===")
-    checkpoint_out_path = Path(args.checkpoint_out)
-    checkpoint_out_path.parent.mkdir(parents=True, exist_ok=True)
-    save_checkpoint(model, scaler, fit_stats, list(X_train_df.columns), checkpoint_out_path)
-    print(f"Saved {checkpoint_out_path}")
+        print("=== Step 5: Save checkpoint ===")
+        checkpoint_out_path = Path(args.checkpoint_out)
+        checkpoint_out_path.parent.mkdir(parents=True, exist_ok=True)
+        save_checkpoint(model, scaler, fit_stats, feature_names, checkpoint_out_path)
+        print(f"Saved {checkpoint_out_path}")
 
     print("=== Step 6: Score every candidate (all splits) ===")
     X_all_df, _ = build_feature_matrix(candidates_df, fit_stats=fit_stats)
+    X_all_df = X_all_df.reindex(columns=feature_names, fill_value=0.0)  # match the checkpoint's fitted column order, esp. important in --checkpoint-in mode on a different dataset
     X_all = scaler.transform(X_all_df).astype("float32")
     with torch.no_grad():
         logits = model(torch.tensor(X_all, dtype=torch.float32, device=device))
@@ -261,15 +275,18 @@ def main():
     out_df.to_csv(out_path, index=False)
     print(f"Saved {out_path}")
 
-    print("=== Step 8: Plot train/val training curve ===")
-    figures_dir = Path(args.figures_dir)
-    figures_dir.mkdir(parents=True, exist_ok=True)
-    curve_out_path = figures_dir / "mlp_baseline_track_training.png"
-    plot_training_curve(
-        train_losses, val_losses, best_epoch,
-        "MLP baseline: train vs val loss", curve_out_path,
-    )
-    print(f"Saved {curve_out_path}")
+    if train_losses is not None:
+        print("=== Step 8: Plot train/val training curve ===")
+        figures_dir = Path(args.figures_dir)
+        figures_dir.mkdir(parents=True, exist_ok=True)
+        curve_out_path = figures_dir / "mlp_baseline_track_training.png"
+        plot_training_curve(
+            train_losses, val_losses, best_epoch,
+            "MLP baseline: train vs val loss", curve_out_path,
+        )
+        print(f"Saved {curve_out_path}")
+    else:
+        print("=== Step 8 skipped: no fit was run (--checkpoint-in), no train/val curve to plot ===")
 
     print("=== Done ===")
 

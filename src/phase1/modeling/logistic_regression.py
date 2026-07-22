@@ -208,6 +208,13 @@ def main():
     parser.add_argument("--max-epochs", type=int, default=200, help="Max training epochs before stopping regardless of val loss")
     parser.add_argument("--patience", type=int, default=15, help="Stop early after this many epochs with no val-loss improvement")
     parser.add_argument("--checkpoint-out", default=str(DEFAULT_CHECKPOINT_OUT), help="Checkpoint output path (see save_checkpoint())")
+    parser.add_argument(
+        "--checkpoint-in", default=None,
+        help="Score-only mode: load an already-fitted checkpoint (e.g. from a different dataset's train split) "
+        "instead of fitting one here. Skips Steps 2-4 (feature matrix on train/val, fit, save) and Step 8's "
+        "train/val curve plot (there's no fit to plot) -- everything else runs the same, scoring --data with the "
+        "loaded model/scaler/fit_stats/feature_names.",
+    )
     args = parser.parse_args()
 
     print("=== Step 1: Load logistic_regression_data.csv ===")
@@ -216,31 +223,41 @@ def main():
     print(f"{len(candidates_df)} candidates")
     print(candidates_df["split"].value_counts().to_string())
 
-    print("=== Step 2: Build B3 feature matrix (train medians + missing-indicator set) ===")
-    train_mask = candidates_df["split"] == "train"
-    val_mask = candidates_df["split"] == "val"
-    X_train, fit_stats = build_feature_matrix(candidates_df[train_mask])
-    y_train = candidates_df.loc[train_mask, "reliability_score"].astype(int)
-    X_val, _ = build_feature_matrix(candidates_df[val_mask], fit_stats=fit_stats)
-    y_val = candidates_df.loc[val_mask, "reliability_score"].astype(int)
-    print(f"{X_train.shape[1]} features, {len(X_train)} train candidates, {len(X_val)} val candidates")
+    train_losses = val_losses = best_epoch = None
+    if args.checkpoint_in:
+        print(f"=== Steps 2-4 skipped: loading already-fitted checkpoint {args.checkpoint_in} ===")
+        model, scaler, fit_stats, feature_names = load_model(args.checkpoint_in)
+        coefs = pd.Series(model.coef_[0], index=feature_names)
+        print("Top coefficients (standardized scale, sorted by |coefficient|):")
+        print(coefs.reindex(coefs.abs().sort_values(ascending=False).index).head(15).to_string())
+    else:
+        print("=== Step 2: Build B3 feature matrix (train medians + missing-indicator set) ===")
+        train_mask = candidates_df["split"] == "train"
+        val_mask = candidates_df["split"] == "val"
+        X_train, fit_stats = build_feature_matrix(candidates_df[train_mask])
+        y_train = candidates_df.loc[train_mask, "reliability_score"].astype(int)
+        X_val, _ = build_feature_matrix(candidates_df[val_mask], fit_stats=fit_stats)
+        y_val = candidates_df.loc[val_mask, "reliability_score"].astype(int)
+        print(f"{X_train.shape[1]} features, {len(X_train)} train candidates, {len(X_val)} val candidates")
 
-    print("=== Step 3: Fit B3 logistic regression on train, early-stop on val ===")
-    scaler, model, train_losses, val_losses, best_epoch = fit_b3_model(
-        X_train, y_train, X_val, y_val, max_epochs=args.max_epochs, patience=args.patience,
-    )
-    coefs = pd.Series(model.coef_[0], index=X_train.columns)
-    print("Top coefficients (standardized scale, sorted by |coefficient|):")
-    print(coefs.reindex(coefs.abs().sort_values(ascending=False).index).head(15).to_string())
+        print("=== Step 3: Fit B3 logistic regression on train, early-stop on val ===")
+        scaler, model, train_losses, val_losses, best_epoch = fit_b3_model(
+            X_train, y_train, X_val, y_val, max_epochs=args.max_epochs, patience=args.patience,
+        )
+        feature_names = list(X_train.columns)
+        coefs = pd.Series(model.coef_[0], index=feature_names)
+        print("Top coefficients (standardized scale, sorted by |coefficient|):")
+        print(coefs.reindex(coefs.abs().sort_values(ascending=False).index).head(15).to_string())
 
-    print("=== Step 4: Save checkpoint ===")
-    checkpoint_out_path = Path(args.checkpoint_out)
-    checkpoint_out_path.parent.mkdir(parents=True, exist_ok=True)
-    save_checkpoint(model, scaler, fit_stats, list(X_train.columns), checkpoint_out_path)
-    print(f"Saved {checkpoint_out_path}")
+        print("=== Step 4: Save checkpoint ===")
+        checkpoint_out_path = Path(args.checkpoint_out)
+        checkpoint_out_path.parent.mkdir(parents=True, exist_ok=True)
+        save_checkpoint(model, scaler, fit_stats, feature_names, checkpoint_out_path)
+        print(f"Saved {checkpoint_out_path}")
 
     print("=== Step 5: Score every candidate (all splits) ===")
     X_all, _ = build_feature_matrix(candidates_df, fit_stats=fit_stats)
+    X_all = X_all.reindex(columns=feature_names, fill_value=0.0)  # match the checkpoint's fitted column order, esp. important in --checkpoint-in mode on a different dataset
     candidates_df["calibrated_score"] = model.predict_proba(scaler.transform(X_all))[:, 1]
     for split, group in candidates_df.groupby("split"):
         print(f"{split}: {len(group)} candidates, mean calibrated_score {group['calibrated_score'].mean():.4f}")
@@ -259,13 +276,16 @@ def main():
     plot_weights(coefs, weights_path, top_n=args.top_n)
     print(f"Saved {weights_path}")
 
-    print("=== Step 8: Plot train/val training curve ===")
-    curve_out_path = figures_dir / "logistic_regression_track_training.png"
-    plot_training_curve(
-        train_losses, val_losses, best_epoch,
-        "B3 logistic regression: train vs val loss", curve_out_path,
-    )
-    print(f"Saved {curve_out_path}")
+    if train_losses is not None:
+        print("=== Step 8: Plot train/val training curve ===")
+        curve_out_path = figures_dir / "logistic_regression_track_training.png"
+        plot_training_curve(
+            train_losses, val_losses, best_epoch,
+            "B3 logistic regression: train vs val loss", curve_out_path,
+        )
+        print(f"Saved {curve_out_path}")
+    else:
+        print("=== Step 8 skipped: no fit was run (--checkpoint-in), no train/val curve to plot ===")
 
     print("=== Done ===")
 
