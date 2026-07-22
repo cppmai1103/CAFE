@@ -7,5 +7,6 @@ old_results/
 data/data_source/
 data/**/*.json
 data/**/*.jsonl
-*.sh 
-
+data/**/*.csv
+figures/**/*.csv
+*.sh
