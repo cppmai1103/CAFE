@@ -1,10 +1,11 @@
-"""Back up data/, checkpoints/, and figures/ to private Hugging Face Hub repos --
-this server is rented (see CLAUDE.md), so nothing under those directories (all
-git-ignored, see .gitignore) survives if the instance is torn down.
+"""Back up data/, checkpoints/, figures/, and CLAUDE.md to private Hugging Face Hub
+repos -- this server is rented (see CLAUDE.md), so nothing under those directories
+(all git-ignored, see .gitignore) survives if the instance is torn down.
 
 Splits the backup across two repos, matching Hub conventions: a dataset repo for
-data/, a model repo for checkpoints/ (figures/ rides along in the model repo since
-it's small and tied to those checkpoints' training runs).
+data/, a model repo for checkpoints/ (figures/ and CLAUDE.md ride along in the model
+repo since they're small and tied to those checkpoints' training runs -- CLAUDE.md is
+itself git-ignored, so this backup is its only copy off the rented server).
 
 Auth: uses whatever token `hf auth login` already cached (~/.cache/huggingface/token),
 or HF_TOKEN if set. Run `hf auth login` first (needs a token with Write access) --
@@ -32,6 +33,7 @@ REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 DEFAULT_DATA_DIR = REPO_ROOT / "data"
 DEFAULT_CHECKPOINTS_DIR = REPO_ROOT / "checkpoints"
 DEFAULT_FIGURES_DIR = REPO_ROOT / "figures"
+DEFAULT_CLAUDE_MD = REPO_ROOT / "CLAUDE.md"
 
 
 def dir_size_human(path: Path) -> str:
@@ -48,6 +50,7 @@ def main():
     parser.add_argument("--data-dir", default=str(DEFAULT_DATA_DIR), help="Directory to upload as the dataset repo")
     parser.add_argument("--checkpoints-dir", default=str(DEFAULT_CHECKPOINTS_DIR), help="Directory to upload into the model repo, under checkpoints/")
     parser.add_argument("--figures-dir", default=str(DEFAULT_FIGURES_DIR), help="Directory to upload into the model repo, under figures/")
+    parser.add_argument("--claude-md", default=str(DEFAULT_CLAUDE_MD), help="CLAUDE.md path to upload alongside checkpoints (it's git-ignored, so this is its only backup)")
     parser.add_argument("--dataset-repo", default=None, help="Dataset repo id, e.g. myuser/cafe-tei-data (default: <your-username>/cafe-tei-data)")
     parser.add_argument("--model-repo", default=None, help="Model repo id, e.g. myuser/cafe-tei-checkpoints (default: <your-username>/cafe-tei-checkpoints)")
     parser.add_argument("--public", action="store_true", help="Create the repos as public (default: private)")
@@ -99,9 +102,21 @@ def main():
             folder_path=str(figures_dir), path_in_repo="figures",
             commit_message="Backup figures/",
         )
+
+        claude_md = Path(args.claude_md)
+        if claude_md.is_file():
+            print(f"=== Step 7: Upload {claude_md} -> {model_repo}/CLAUDE.md ===")
+            api.upload_file(
+                repo_id=model_repo, repo_type="model",
+                path_or_fileobj=str(claude_md), path_in_repo="CLAUDE.md",
+                commit_message="Backup CLAUDE.md",
+            )
+        else:
+            print(f"=== Step 7: Skipped CLAUDE.md upload ({claude_md} not found) ===")
+
         print(f"Done: https://huggingface.co/{model_repo}")
     else:
-        print("\n=== Step 4-6: Skipped checkpoints/+figures/ upload (--skip-checkpoints) ===")
+        print("\n=== Step 4-7: Skipped checkpoints/+figures/+CLAUDE.md upload (--skip-checkpoints) ===")
 
     print("\n=== Done ===")
 

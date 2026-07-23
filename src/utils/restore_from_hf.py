@@ -1,11 +1,11 @@
-"""Restore data/, checkpoints/, and figures/ from the private Hugging Face Hub repos
-written by backup_to_hf.py -- for setting up a fresh rented server (see CLAUDE.md)
-without redoing every pipeline stage from scratch.
+"""Restore data/, checkpoints/, figures/, and CLAUDE.md from the private Hugging Face
+Hub repos written by backup_to_hf.py -- for setting up a fresh rented server (see
+CLAUDE.md) without redoing every pipeline stage from scratch.
 
 Mirrors backup_to_hf.py's repo layout exactly: the dataset repo's root maps straight
-onto data/, and the model repo's checkpoints/ and figures/ subfolders map straight onto
-this repo's own checkpoints/ and figures/ -- so restoring is just downloading each repo
-into REPO_ROOT, no path remapping needed.
+onto data/, and the model repo's checkpoints/, figures/, and CLAUDE.md map straight
+onto this repo's own checkpoints/, figures/, and CLAUDE.md -- so restoring is just
+downloading each repo into REPO_ROOT, no path remapping needed.
 
 Auth: uses whatever token `hf auth login` already cached (~/.cache/huggingface/token),
 or HF_TOKEN if set -- a read-only token is enough here, unlike backup_to_hf.py.
@@ -56,11 +56,11 @@ def main():
         print("\n=== Step 2: Skipped data/ restore (--skip-data) ===")
 
     if not args.skip_checkpoints:
-        print(f"\n=== Step 3: Download {model_repo} -> {REPO_ROOT} (checkpoints/, figures/) ===")
+        print(f"\n=== Step 3: Download {model_repo} -> {REPO_ROOT} (checkpoints/, figures/, CLAUDE.md) ===")
         snapshot_download(repo_id=model_repo, repo_type="model", local_dir=str(REPO_ROOT))
-        print(f"Restored {REPO_ROOT / 'checkpoints'} and {REPO_ROOT / 'figures'}")
+        print(f"Restored {REPO_ROOT / 'checkpoints'}, {REPO_ROOT / 'figures'}, and {REPO_ROOT / 'CLAUDE.md'}")
     else:
-        print("\n=== Step 3: Skipped checkpoints/+figures/ restore (--skip-checkpoints) ===")
+        print("\n=== Step 3: Skipped checkpoints/+figures/+CLAUDE.md restore (--skip-checkpoints) ===")
 
     print("\n=== Done ===")
 
