@@ -4,7 +4,7 @@ set -euo pipefail
 PYTHON_VERSION=3.11
 ENVIRONMENT_NAME="cafe"
 
-cd "$(dirname "${BASH_SOURCE[0]}")"
+cd "$(dirname "${BASH_SOURCE[0]}")/.."
 echo "Working directory: $(pwd)"
 
 source "$(conda info --base)/etc/profile.d/conda.sh"
@@ -183,6 +183,65 @@ python -c "import torch; print('torch', torch.__version__, '| cuda available:', 
 #   --label-reliability data/hipe2020_de/gliner/data_baseline/label_reliability_span_level_fuzzy.csv \
 #   --figures-dir figures/ner_analysis/hipe2020_de/gliner/all_set
 
+################ hipe2020/de -- historical NER baseline
+## Not run before (no ner_features.csv on disk yet for this dataset/extractor pair), so
+## unlike the hipe2020_fr/historical_ner block above this one starts from extraction, not
+## dedup. Reuses the same emanuelaboros/historical-ner-baseline checkpoint used for
+## hipe2020_fr/letemps_fr above (there's no German-specific historical-NER model in this
+## codebase) -- its training-language coverage isn't documented in this repo, so treat
+## hipe2020_de's ner_score/mismatch numbers here as a check worth eyeballing, not an
+## assumed-valid baseline the way the French runs are.
+python src/ner/historical_ner/extract_ner_features.py \
+  --load-data data/data_source/hipe2020/hipe2020_de.csv \
+  --out data/hipe2020_de/historical_ner/data_baseline/ner_features.csv
+
+## Uses historical_ner's own dedup (merges overlapping fragments) rather than GLiNER2's
+## discard-the-loser dedup -- see the hipe2020_fr/historical_ner block above for why.
+python src/ner/historical_ner/deduplicate_ner_features.py \
+  --ner-features data/hipe2020_de/historical_ner/data_baseline/ner_features.csv \
+  --out data/hipe2020_de/historical_ner/data_baseline/deduplicate_ner_features.csv \
+  --conflicts-out data/hipe2020_de/historical_ner/data_baseline/ner_overlap_conflicts.json
+
+python src/ner/ner_features_to_token_format.py \
+  --load-data data/data_source/hipe2020/hipe2020_de.csv \
+  --ner-features data/hipe2020_de/historical_ner/data_baseline/deduplicate_ner_features.csv \
+  --out data/hipe2020_de/historical_ner/data_baseline/token_format_threshold0.5.csv
+
+python src/ner/label_reliability.py \
+  --load-data data/data_source/hipe2020/hipe2020_de.csv \
+  --ner-features data/hipe2020_de/historical_ner/data_baseline/deduplicate_ner_features.csv \
+  --out data/hipe2020_de/historical_ner/data_baseline/label_reliability_span_level_fuzzy.csv \
+  --mode fuzzy
+
+for split_arg in "" train test; do
+  split_dir="${split_arg:-all_set}"
+  figures_dir="figures/ner_analysis/hipe2020_de/historical_ner/${split_dir}"
+
+  python src/analysis/analyze_ner_mismatches.py \
+    --token-format data/hipe2020_de/historical_ner/data_baseline/token_format_threshold0.5.csv \
+    --load-data data/data_source/hipe2020/hipe2020_de.csv --split "${split_arg}" \
+    --figures-dir "${figures_dir}"
+
+  python src/analysis/plot_ner_score_distribution.py \
+    --label-reliability data/hipe2020_de/historical_ner/data_baseline/label_reliability_span_level_fuzzy.csv \
+    --load-data data/data_source/hipe2020/hipe2020_de.csv --split "${split_arg}" \
+    --figures-dir "${figures_dir}"
+
+  python src/analysis/plot_confusion_matrix_by_dictionary_score.py \
+    --token-format data/hipe2020_de/historical_ner/data_baseline/token_format_threshold0.5.csv \
+    --load-data data/data_source/hipe2020/hipe2020_de.csv --split "${split_arg}" \
+    --figures-dir "${figures_dir}"
+
+  python src/analysis/plot_alignability_by_type.py \
+    --token-format data/hipe2020_de/historical_ner/data_baseline/token_format_threshold0.5.csv \
+    --load-data data/data_source/hipe2020/hipe2020_de.csv --split "${split_arg}" \
+    --figures-dir "${figures_dir}"
+done
+
+python src/analysis/plot_reliability_accuracy_by_type.py \
+  --label-reliability data/hipe2020_de/historical_ner/data_baseline/label_reliability_span_level_fuzzy.csv \
+  --figures-dir figures/ner_analysis/hipe2020_de/historical_ner/all_set
+
 # ################ letemps/fr -- GLiNER2 baseline
 # ## Gold tag set differs from hipe2020's default (src/ner/gliner/labels.json), so the 3
 # ## analysis scripts that support --labels-file need it pointed at letemps_fr's own file.
@@ -293,20 +352,21 @@ python -c "import torch; print('torch', torch.__version__, '| cuda available:', 
 #   --label-reliability data/letemps_fr/historical_ner/data_baseline/label_reliability_span_level_fuzzy.csv \
 #   --figures-dir figures/ner_analysis/letemps_fr/historical_ner/all_set
 
-################ Reliability accuracy by type -- all 5 datasets
+################ Reliability accuracy by type -- all 6 datasets
 ## Every label_reliability_span_level_fuzzy.csv above already exists on disk, so this just (re-)runs
-## plot_reliability_accuracy_by_type.py across all 5 dataset/extractor pairs without
+## plot_reliability_accuracy_by_type.py across all 6 dataset/extractor pairs without
 ## touching dedup/token_format/label_reliability again.
-for pair in \
-  "hipe2020_fr:historical_ner" \
-  "hipe2020_fr:gliner" \
-  "hipe2020_de:gliner" \
-  "letemps_fr:gliner" \
-  "letemps_fr:historical_ner" \
-; do
-  dataset_dir="${pair%%:*}"
-  extractor="${pair##*:}"
-  python src/analysis/plot_reliability_accuracy_by_type.py \
-    --label-reliability "data/${dataset_dir}/${extractor}/data_baseline/label_reliability_span_level_fuzzy.csv" \
-    --figures-dir "figures/ner_analysis/${dataset_dir}/${extractor}/all_set"
-done
+# for pair in \
+#   "hipe2020_fr:historical_ner" \
+#   "hipe2020_fr:gliner" \
+#   "hipe2020_de:gliner" \
+#   "hipe2020_de:historical_ner" \
+#   "letemps_fr:gliner" \
+#   "letemps_fr:historical_ner" \
+# ; do
+#   dataset_dir="${pair%%:*}"
+#   extractor="${pair##*:}"
+#   python src/analysis/plot_reliability_accuracy_by_type.py \
+#     --label-reliability "data/${dataset_dir}/${extractor}/data_baseline/label_reliability_span_level_fuzzy.csv" \
+#     --figures-dir "figures/ner_analysis/${dataset_dir}/${extractor}/all_set"
+# done

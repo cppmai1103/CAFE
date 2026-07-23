@@ -91,7 +91,7 @@ def main():
     parser.add_argument("--head-dropout", type=float, default=DEFAULT_HEAD_DROPOUT, help="Classifier dropout")
     parser.add_argument("--type-confidence-pool", default=DEFAULT_TYPE_CONFIDENCE_POOL, choices=TYPE_CONFIDENCE_POOL_CHOICES, help="How h_type/h_confidence are pooled: 'one' (marker token, default) or 'average' (mean over the value's own subwords, e.g. 'Location'/'0.87' -- see model.py)")
     parser.add_argument("--batch-size", type=int, default=128)
-    parser.add_argument("--lr", type=float, default=1e-3)
+    parser.add_argument("--lr", type=float, default=2e-3)
     parser.add_argument("--weight-decay", type=float, default=0.0, help="Adam L2 weight decay")
     parser.add_argument("--max-epochs", type=int, default=20)
     parser.add_argument("--patience", type=int, default=3, help="Stop early after this many epochs with no val-loss improvement")

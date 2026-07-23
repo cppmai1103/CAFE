@@ -1,0 +1,165 @@
+Logging stdout to logs/20260723_001930.out, stderr to logs/20260723_001930.err
+Env 'cafe' already exists, skipping creation
+Thu Jul 23 00:19:31 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 580.159.03             Driver Version: 580.159.03     CUDA Version: 13.0     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA A100-SXM4-40GB          On  |   00000000:AF:00.0 Off |                    0 |
+| N/A   35C    P0             29W /  250W |       0MiB /  40960MiB |      0%      Default |
+|                                         |                        |             Disabled |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|  No running processes found                                                             |
++-----------------------------------------------------------------------------------------+
+torch 2.6.0+cu124 | cuda available: True
+Variant: mbert_simple_mlp
+Using device: cuda
+=== Step 1: Load tokenizer and build train/val datasets ===
+Loading bert-base-multilingual-cased
+111965 train candidates, 25521 val candidates
+=== Step 2: Build model ===
+Trainable parameters:
+  classifier (MLP head)                                   Linear(4608,512)->ReLU->Dropout->Linear(512,1)    2,360,321
+  TOTAL TRAINABLE                                                                                          2,360,321
+Frozen:
+  encoder (frozen bert-base-multilingual-cased: full transformer, no side embeddings) hidden_size=768                                177,853,440
+  TOTAL FROZEN                                                                                           177,853,440
+=== Step 3: Train (train), early-stop on val ===
+Epoch 1: train_loss=0.0909 val_loss=0.0723
+Epoch 2: train_loss=0.0751 val_loss=0.0708
+Epoch 3: train_loss=0.0714 val_loss=0.0679
+Epoch 4: train_loss=0.0685 val_loss=0.0658
+Epoch 5: train_loss=0.0661 val_loss=0.0636
+Epoch 6: train_loss=0.0655 val_loss=0.0619
+Epoch 7: train_loss=0.0637 val_loss=0.0612
+Epoch 8: train_loss=0.0632 val_loss=0.0617
+Epoch 9: train_loss=0.0618 val_loss=0.0649
+Epoch 10: train_loss=0.0610 val_loss=0.0601
+Epoch 11: train_loss=0.0601 val_loss=0.0620
+Epoch 12: train_loss=0.0609 val_loss=0.0631
+Epoch 13: train_loss=0.0583 val_loss=0.0616
+Early stopping at epoch 13: no val-loss improvement for 3 epochs
+Best epoch: 10 (train_loss=0.0610, val_loss=0.0601)
+=== Step 4: Save checkpoint ===
+Saved checkpoints/hipe2020_fr/gliner/phase2/variants_ablation/train_hipe_test_hipe/mbert_simple_mlp.pt
+=== Step 5: Plot train/val training curve ===
+Saved figures/hipe2020_fr/gliner/phase2/variants_ablation/train_hipe_test_hipe/train_tracking/mbert_simple_mlp_track_training.png
+=== Done ===
+Using device: cuda
+=== Step 1: Load checkpoint ===
+Loading checkpoints/hipe2020_fr/gliner/phase2/variants_ablation/train_hipe_test_hipe/mbert_simple_mlp.pt
+encoder_name=bert-base-multilingual-cased variant=mbert_simple_mlp
+=== Step 2: Load tokenizer and dataset ===
+27290 candidates (split='test')
+=== Step 3: Score every candidate ===
+=== Step 4: Save scores CSV ===
+Saved data/hipe2020_fr/gliner/data_phase2/variants_ablation/train_hipe_test_hipe/mbert_simple_mlp_scores.csv
+=== Step 5: Compute metrics ===
+27290 candidates -- Brier=0.0161 ECE=0.0082 MCE=0.2053 AUROC=0.9865 E-AURC=0.0088
+=== Done ===
+
+To compare against phase2's without_dict_flag ablation (the fair baseline -- see compare.py's module docstring for why), run (or just python src/phase2/simple/compare.py if this is the default path/variant name):
+  python src/phase2/simple/compare.py --simple-one-score data/hipe2020_fr/gliner/data_phase2/variants_ablation/train_hipe_test_hipe/mbert_simple_mlp_scores.csv --simple-one-label mbert_simple_mlp
+Variant: mbert_experts
+Using device: cuda
+=== Step 1: Load tokenizer and build train/val datasets (reused from phase2) ===
+Loading bert-base-multilingual-cased
+111965 train candidates, 25521 val candidates
+=== Step 2: Build model ===
+Trainable parameters:
+  dict_flag_embedding (DictFlagEmb)                       Embedding(5, 768)                                    3,840
+  lambda_dict                                             scalar                                                   1
+  target_flag_embedding (TargetFlagEmb)                   Embedding(4, 768)                                    3,072
+  lambda_target                                           scalar                                                   1
+  type_embedding (TypeEmb)                                Embedding(5, 32)                                       160
+  score_mlp (ScoreMLP, full)                              Linear(3,32)->ReLU->Linear(32,32)                    1,184
+  experts[0] (latent Expert_0)                            Linear(3136,64)->ReLU->Dropout->Linear(64,1)       200,833
+  experts[1] (latent Expert_1)                            Linear(3136,64)->ReLU->Dropout->Linear(64,1)       200,833
+  experts[2] (latent Expert_2)                            Linear(3136,64)->ReLU->Dropout->Linear(64,1)       200,833
+  experts[3] (latent Expert_3)                            Linear(3136,64)->ReLU->Dropout->Linear(64,1)       200,833
+  gate (softmax over K experts)                           Linear(3136,128)->ReLU->Linear(128,4)              402,052
+  TOTAL TRAINABLE                                                                                          1,213,642
+Frozen:
+  encoder (frozen bert-base-multilingual-cased: token/position/token-type text embeddings + transformer layers) hidden_size=768                                177,853,440
+  TOTAL FROZEN                                                                                           177,853,440
+=== Step 3: Train (train), early-stop on val (lambda_balance=0.01) ===
+Epoch 1: train_loss=0.0968 (balance=0.1961) val_loss=0.0608 (balance=0.0298)
+Epoch 2: train_loss=0.0522 (balance=0.0124) val_loss=0.0413 (balance=0.0133)
+Epoch 3: train_loss=0.0421 (balance=0.0060) val_loss=0.0435 (balance=0.1049)
+Epoch 4: train_loss=0.0362 (balance=0.0040) val_loss=0.0445 (balance=0.0126)
+Epoch 5: train_loss=0.0309 (balance=0.0046) val_loss=0.0376 (balance=0.0081)
+Epoch 6: train_loss=0.0287 (balance=0.0049) val_loss=0.0394 (balance=0.0151)
+Epoch 7: train_loss=0.0259 (balance=0.0042) val_loss=0.0376 (balance=0.0103)
+Epoch 8: train_loss=0.0242 (balance=0.0052) val_loss=0.0396 (balance=0.0189)
+Epoch 9: train_loss=0.0205 (balance=0.0031) val_loss=0.0401 (balance=0.0159)
+Epoch 10: train_loss=0.0196 (balance=0.0034) val_loss=0.0462 (balance=0.0136)
+Early stopping at epoch 10: no val-loss improvement for 3 epochs
+Best epoch: 7 (train_loss=0.0259, val_loss=0.0376)
+=== Step 4: Save checkpoint ===
+Saved checkpoints/hipe2020_fr/gliner/phase2/variants_ablation/train_hipe_test_hipe/mbert_experts.pt
+=== Step 5: Plot train/val training curve ===
+Saved figures/hipe2020_fr/gliner/phase2/variants_ablation/train_hipe_test_hipe/train_tracking/mbert_experts_track_training.png
+=== Done ===
+Using device: cuda
+=== Step 1: Load checkpoint ===
+Loading checkpoints/hipe2020_fr/gliner/phase2/variants_ablation/train_hipe_test_hipe/mbert_experts.pt
+encoder_name=bert-base-multilingual-cased variant=mbert_experts
+=== Step 2: Load tokenizer and dataset (reused from phase2) ===
+27290 candidates (split='test')
+=== Step 3: Score every candidate (also recording the gate's per-expert alpha weights) ===
+=== Step 4: Save scores CSV ===
+Saved data/hipe2020_fr/gliner/data_phase2/variants_ablation/train_hipe_test_hipe/mbert_experts_scores.csv
+=== Step 5: Compute metrics ===
+27290 candidates -- Brier=0.0113 ECE=0.0048 MCE=0.1565 AUROC=0.9943 E-AURC=0.0051
+=== Done ===
+
+To compare against phase2's full model, run:
+  python src/phase2/expert/compare.py --experts-score data/hipe2020_fr/gliner/data_phase2/variants_ablation/train_hipe_test_hipe/mbert_experts_scores.csv
+
+To see which expert(s) actually drove these scores (usage distribution + pairwise similarity), run:
+  python src/phase2/expert/analyze_experts.py --scores data/hipe2020_fr/gliner/data_phase2/variants_ablation/train_hipe_test_hipe/mbert_experts_scores.csv
+=== Step 1: Load data/hipe2020_fr/gliner/data_baseline/label_reliability_span_level_fuzzy.csv and merge in ['platt_scaling', 'logistic', 'mlp', 'mbert_mlp_base', 'mbert_simple_mlp', 'mbert_experts'] ===
+164776 candidates joined; scores present: ['raw', 'platt_scaling', 'logistic', 'mlp', 'mbert_mlp_base', 'mbert_simple_mlp', 'mbert_experts']
+=== Step 2: Filter to split='test' ===
+Loading data/data_source/hipe2020/hipe2020_fr.csv
+27290 candidates remain
+=== Step 3: Compute ECE bins and Brier score / ECE / MCE per score ===
+  raw (ner_score): 27290 candidates across 10 bins -- Brier=0.0531 ECE=0.0616 MCE=0.5671 AUROC=0.9407 E-AURC=0.0310
+  platt_scaling (platt_scaling_calibrated_score): 27290 candidates across 10 bins -- Brier=0.0297 ECE=0.0112 MCE=0.1870 AUROC=0.9407 E-AURC=0.0310
+  logistic (logistic_calibrated_score): 27290 candidates across 10 bins -- Brier=0.0223 ECE=0.0096 MCE=0.2136 AUROC=0.9609 E-AURC=0.0202
+  mlp (mlp_calibrated_score): 27290 candidates across 10 bins -- Brier=0.0217 ECE=0.0091 MCE=0.1714 AUROC=0.9626 E-AURC=0.0185
+  mbert_mlp_base (mbert_mlp_base_calibrated_score): 27290 candidates across 10 bins -- Brier=0.0109 ECE=0.0039 MCE=0.0830 AUROC=0.9942 E-AURC=0.0048
+  mbert_simple_mlp (mbert_simple_mlp_calibrated_score): 27290 candidates across 10 bins -- Brier=0.0161 ECE=0.0082 MCE=0.2053 AUROC=0.9865 E-AURC=0.0088
+  mbert_experts (mbert_experts_calibrated_score): 27290 candidates across 10 bins -- Brier=0.0113 ECE=0.0048 MCE=0.1565 AUROC=0.9943 E-AURC=0.0051
+=== Step 4: Plot reliability diagram ===
+Saved figures/hipe2020_fr/gliner/phase2/variants_ablation/train_hipe_test_hipe/reliability_diagram_raw_platt_scaling_logistic_mlp_mbert_mlp_base_mbert_simple_mlp_mbert_experts.png
+=== Step 5: Plot metrics bar chart (Brier score, ECE, MCE, AUROC, E-AURC) ===
+Saved figures/hipe2020_fr/gliner/phase2/variants_ablation/train_hipe_test_hipe/metrics_bar_raw_platt_scaling_logistic_mlp_mbert_mlp_base_mbert_simple_mlp_mbert_experts.png
+=== Step 6: Plot ROC curve ===
+Saved figures/hipe2020_fr/gliner/phase2/variants_ablation/train_hipe_test_hipe/roc_curve_raw_platt_scaling_logistic_mlp_mbert_mlp_base_mbert_simple_mlp_mbert_experts.png
+=== Step 7: Plot risk-coverage curve ===
+Saved figures/hipe2020_fr/gliner/phase2/variants_ablation/train_hipe_test_hipe/risk_coverage_raw_platt_scaling_logistic_mlp_mbert_mlp_base_mbert_simple_mlp_mbert_experts.png
+=== Step 8: Save bins table (bin, true, raw, platt_scaling, logistic, mlp, mbert_mlp_base, mbert_simple_mlp, mbert_experts) ===
+    bin  count     true      raw  delta_raw  platt_scaling  delta_platt_scaling  logistic  delta_logistic      mlp  delta_mlp  mbert_mlp_base  delta_mbert_mlp_base  mbert_simple_mlp  delta_mbert_simple_mlp  mbert_experts  delta_mbert_experts
+0.0-0.1  23070 0.007846 0.002703  -0.005143       0.008536             0.000691  0.008365        0.000519 0.009221   0.001376        0.006934             -0.000912          0.009636                0.001791       0.007888             0.000042
+0.1-0.2    462 0.023810 0.145033   0.121224       0.018297            -0.005512  0.017970       -0.005840 0.022066  -0.001744        0.030208              0.006399          0.054973                0.031163       0.030238             0.006429
+0.2-0.3    321 0.034268 0.248302   0.214034       0.031376            -0.002892  0.037660        0.003392 0.043659   0.009391        0.044754              0.010486          0.079863                0.045595       0.040917             0.006649
+0.3-0.4    259 0.042471 0.351578   0.309107       0.053300             0.010829  0.056613        0.014142 0.063510   0.021039        0.058266              0.015795          0.081587                0.039116       0.047029             0.004558
+0.4-0.5    267 0.059925 0.451384   0.391459       0.087492             0.027567  0.084967        0.025041 0.091359   0.031434        0.076442              0.016517          0.121140                0.061215       0.064466             0.004541
+0.5-0.6    298 0.110738 0.551531   0.440793       0.140853             0.030115  0.147109        0.036371 0.155240   0.044502        0.120744              0.010006          0.159465                0.048727       0.131664             0.020926
+0.6-0.7    288 0.142361 0.653611   0.511250       0.220336             0.077975  0.215858        0.073497 0.234309   0.091948        0.167191              0.024830          0.218837                0.076476       0.150196             0.007835
+0.7-0.8    341 0.260997 0.755377   0.494380       0.327144             0.066147  0.327723        0.066725 0.335903   0.074905        0.295196              0.034199          0.329822                0.068825       0.277406             0.016409
+0.8-0.9    499 0.286573 0.853663   0.567090       0.450791             0.164218  0.385476        0.098903 0.391119   0.104546        0.306050              0.019477          0.347143                0.060569       0.295101             0.008527
+0.9-1.0   1485 0.620202 0.971928   0.351726       0.606528            -0.013674  0.617462       -0.002740 0.615954  -0.004248        0.626735              0.006533          0.632285                0.012083       0.625145             0.004943
+Saved figures/hipe2020_fr/gliner/phase2/variants_ablation/train_hipe_test_hipe/bins_raw_platt_scaling_logistic_mlp_mbert_mlp_base_mbert_simple_mlp_mbert_experts.csv
+=== Done ===
+UNREACHED: guard should have exited before this

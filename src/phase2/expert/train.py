@@ -122,7 +122,7 @@ def main():
         "of gradient. 0 disables it (recovers the original no-balancing behavior).",
     )
     parser.add_argument("--batch-size", type=int, default=128)
-    parser.add_argument("--lr", type=float, default=1e-3)
+    parser.add_argument("--lr", type=float, default=2e-3)
     parser.add_argument("--weight-decay", type=float, default=0.0, help="Adam L2 weight decay")
     parser.add_argument("--max-epochs", type=int, default=20)
     parser.add_argument("--patience", type=int, default=3, help="Stop early after this many epochs with no val-loss improvement")

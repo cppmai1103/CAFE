@@ -1,0 +1,379 @@
+=== Step 1: Load train data ===
+Load data from data/data_source/hipe2020/hipe2020_de.csv
+149853 tokens across 185 documents
+=== Step 2: Build sentence text ===
+5891 sentences across 185 documents
+=== Step 3: Load historical-ner-baseline model ===
+Loading emanuelaboros/historical-ner-baseline (device: cuda)
+=== Step 4: Run entity extraction ===
+10 sentence(s) exceeded the chunk word limit and were split into non-overlapping chunks -- entities whose words fall on both sides of a split below may be missed or truncated:
+  NZZ-1838-11-23-a-p0002 sentence 15: split into 2 chunks
+    split 1/1: last token of chunk 0 = 'Generationen', first token of chunk 1 = 'die'
+  NZZ-1948-05-03-a-p0001 sentence 0: split into 3 chunks
+    split 1/2: last token of chunk 0 = 'von', first token of chunk 1 = 'Prussel'
+    split 2/2: last token of chunk 1 = 'und', first token of chunk 2 = 'die'
+  luxwort-1848-06-29-a-i0001 sentence 8: split into 2 chunks
+    split 1/1: last token of chunk 0 = '.', first token of chunk 1 = 'Metz'
+  NZZ-1838-06-04-a-p0004 sentence 6: split into 3 chunks
+    split 1/2: last token of chunk 0 = 'daß', first token of chunk 1 = 'die'
+    split 2/2: last token of chunk 1 = 'nicht', first token of chunk 2 = 'ohne'
+  NZZ-1878-08-12-b-p0002 sentence 11: split into 2 chunks
+    split 1/1: last token of chunk 0 = 'welcher', first token of chunk 1 = 'der'
+  NZZ-1928-07-06-a-p0001 sentence 6: split into 2 chunks
+    split 1/1: last token of chunk 0 = '.', first token of chunk 1 = 'Glückauf'
+  NZZ-1928-07-06-a-p0001 sentence 18: split into 2 chunks
+    split 1/1: last token of chunk 0 = 'Mann', first token of chunk 1 = 'einer'
+  NZZ-1938-12-01-g-p0002 sentence 4: split into 3 chunks
+    split 1/2: last token of chunk 0 = ',', first token of chunk 1 = 'um'
+    split 2/2: last token of chunk 1 = 'sie', first token of chunk 2 = 'damals'
+  NZZ-1928-06-05-a-p0002 sentence 3: split into 2 chunks
+    split 1/1: last token of chunk 0 = 'durch', first token of chunk 1 = 'vornehme'
+  luxwort-1878-05-14-a-i0001 sentence 39: split into 2 chunks
+    split 1/1: last token of chunk 0 = 'Meisterwerk', first token of chunk 1 = 'lernt'
+Skipped 2 entity(ies) with a label outside ['loc', 'org', 'pers', 'prod', 'time']
+5907 candidates extracted
+=== Step 5: Save NER features ===
+Saved NER features to data/hipe2020_de/historical_ner/data_baseline/ner_features.csv
+=== Done ===
+=== Step 1: Load ner_features.csv ===
+Loading data/hipe2020_de/historical_ner/data_baseline/ner_features.csv
+5907 candidates loaded
+=== Step 2: Merge overlapping span fragments sentence by sentence (highest ner_score wins type/score, text is concatenated) ===
+5773 candidates remain after merging (134 fewer rows)
+116 sentence(s) had at least one merge: 125 final span(s) were built from overlapping fragments, 134 extra fragment(s) absorbed into a final span's text
+=== Step 3: Verify no token is covered by more than one surviving candidate ===
+OK: every token is covered by at most one surviving candidate.
+=== Step 4: Save deduplicated candidates ===
+Saved data/hipe2020_de/historical_ner/data_baseline/deduplicate_ner_features.csv
+=== Step 5: Save merge report ===
+Saved data/hipe2020_de/historical_ner/data_baseline/ner_overlap_conflicts.json
+5773 entities left after deduplication
+=== Done ===
+=== Step 1: Load train data (gold labels) ===
+Load data from data/data_source/hipe2020/hipe2020_de.csv
+149853 tokens across 185 documents
+=== Step 2: Load NER features (predicted candidates) ===
+Loading NER features from data/hipe2020_de/historical_ner/data_baseline/deduplicate_ner_features.csv
+5773 candidates across 185 documents
+=== Step 3: Filter by threshold and build NER tags ===
+5773 candidates before threshold filtering
+5671 candidates remain with ner_score >= 0.5
+10566 tokens covered by at least one surviving candidate
+10566 tokens tagged with a NER entity type
+=== Step 4: Assemble output columns ===
+=== Step 5: Save token-format output ===
+Saved token-format output to data/hipe2020_de/historical_ner/data_baseline/token_format_threshold0.5.csv
+=== Done ===
+=== Step 1: Load train data and build gold lookup (level=span, mode=fuzzy) ===
+Load data from data/data_source/hipe2020/hipe2020_de.csv
+149853 gold token types
+=== Step 2: Load deduplicated NER candidates ===
+Loading data/hipe2020_de/historical_ner/data_baseline/deduplicate_ner_features.csv
+5773 candidates loaded
+=== Step 3: Compute reliability_score against gold (level=span, mode=fuzzy) ===
+5450 / 5773 span-level rows reliable (94.4050%)
+=== Step 4: Save output ===
+Saved data/hipe2020_de/historical_ner/data_baseline/label_reliability_span_level_fuzzy.csv
+=== Done ===
+Labels (from /workspace/CAFE/src/ner/gliner/labels.json): ['PERS', 'LOC', 'ORG', 'TIME', 'PROD']
+=== Step 1: Load and normalize token-format data ===
+Loading data/hipe2020_de/historical_ner/data_baseline/token_format_threshold0.5.csv
+149853 tokens loaded
+=== Step 2: Confusion matrix (gold vs NER) ===
+pred_type  PERS   LOC   ORG  TIME  PROD       O
+gold_type                                      
+PERS       4535    17    11     0     2     822
+LOC          15  3598    11     2     2     384
+ORG           9    13  1060     0    20     447
+TIME          0     0     0   506     0     191
+PROD          1     1     0     0   417     118
+O            91   116    91    27    21  137325
+Saved figures/ner_analysis/hipe2020_de/historical_ner/all_set/confusion_matrix_threshold0.5.png
+=== Step 3: Precision / recall / F1 per type ===
+type  precision   recall       f1  support
+PERS   0.975059 0.841841 0.903566     5387
+ LOC   0.960748 0.896810 0.927678     4012
+ ORG   0.903666 0.684312 0.778839     1549
+TIME   0.945794 0.725968 0.821429      697
+PROD   0.902597 0.776536 0.834835      537
+Saved figures/ner_analysis/hipe2020_de/historical_ner/all_set/precision_recall_f1_threshold0.5.png
+=== Step 4: TP / FN / FP / type-confusion breakdown per type ===
+        TP  FN_missed  FP_spurious  type_confused
+PERS  4535        822           91             30
+LOC   3598        384          116             30
+ORG   1060        447           91             42
+TIME   506        191           27              0
+PROD   417        118           21              2
+=== Step 5: Of each gold column's tagged tokens, how many match NER? ===
+        column  n_tagged  n_matched  match_rate
+ NE-COARSE-LIT     12182      10116    0.830406
+NE-COARSE-METO       680         40    0.058824
+   NE-FINE-LIT     12182      10116    0.830406
+  NE-FINE-METO       680         40    0.058824
+  NE-FINE-COMP      3926          0    0.000000
+     NE-NESTED       452        133    0.294248
+Total entities NER found: 10,566
+Saved figures/ner_analysis/hipe2020_de/historical_ner/all_set/alignability_threshold0.5.png
+=== Done ===
+=== Step 1: Load label_reliability.csv ===
+Loading data/hipe2020_de/historical_ner/data_baseline/label_reliability_span_level_fuzzy.csv
+5773 candidates loaded
+=== Step 2: Plot ner_score distribution (reliable vs not) ===
+Saved figures/ner_analysis/hipe2020_de/historical_ner/all_set/ner_score_distribution.png
+=== Done ===
+Labels (from /workspace/CAFE/src/ner/gliner/labels.json): ['PERS', 'LOC', 'ORG', 'TIME', 'PROD']
+=== Step 1: Load and normalize token-format data ===
+Loading data/hipe2020_de/historical_ner/data_baseline/token_format_threshold0.5.csv
+149853 tokens loaded
+=== Step 2: Split by dictionary_score (NaN/punctuation counted as known) ===
+143325 known tokens (True + punctuation/NaN), 6528 unknown tokens -- 149853 total
+=== Step 3: Compute confusion matrices ===
+--- Unknown (dictionary_score=False) ---
+pred_type  PERS  LOC  ORG  TIME  PROD     O
+gold_type                                  
+PERS        358    3    6     0     0    58
+LOC           1  336    3     0     0    51
+ORG           0    2  112     0     4    78
+TIME          0    0    0     8     0     3
+PROD          0    0    0     0    36    10
+O             6   18    9     3     4  5419
+--- Known (dictionary_score=True or N/A) ---
+pred_type  PERS   LOC  ORG  TIME  PROD       O
+gold_type                                     
+PERS       4177    14    5     0     2     764
+LOC          14  3262    8     2     2     333
+ORG           9    11  948     0    16     369
+TIME          0     0    0   498     0     188
+PROD          1     1    0     0   381     108
+O            85    98   82    24    17  131906
+=== Step 4: Plot side by side ===
+Saved figures/ner_analysis/hipe2020_de/historical_ner/all_set/confusion_matrix_by_dictionary_score.png
+=== Done ===
+Labels (from /workspace/CAFE/src/ner/gliner/labels.json): ['PERS', 'LOC', 'ORG', 'TIME', 'PROD']
+=== Step 1: Load and normalize token-format data ===
+Loading data/hipe2020_de/historical_ner/data_baseline/token_format_threshold0.5.csv
+149853 tokens loaded
+=== Step 2: Compute alignability by entity type ===
+type  n_tagged  n_matched  match_rate
+PERS      5387       4535    0.841841
+ LOC      4012       3598    0.896810
+ ORG      1549       1060    0.684312
+TIME       697        506    0.725968
+PROD       537        417    0.776536
+=== Step 3: Plot ===
+Saved figures/ner_analysis/hipe2020_de/historical_ner/all_set/alignability_by_type_threshold0.5.png
+=== Done ===
+Labels (from /workspace/CAFE/src/ner/gliner/labels.json): ['PERS', 'LOC', 'ORG', 'TIME', 'PROD']
+=== Step 1: Load and normalize token-format data ===
+Loading data/hipe2020_de/historical_ner/data_baseline/token_format_threshold0.5.csv
+149853 tokens loaded
+=== Step 1b: Filter to split='train' ===
+Loading data/data_source/hipe2020/hipe2020_de.csv
+86445 tokens remain
+=== Step 2: Confusion matrix (gold vs NER) ===
+pred_type  PERS   LOC  ORG  TIME  PROD      O
+gold_type                                    
+PERS       2836     7    2     0     2    485
+LOC          10  2219    7     0     0    250
+ORG           2     7  583     0    17    234
+TIME          0     0    0   286     0     96
+PROD          0     1    0     0   216     65
+O            59    69   50    11     9  78922
+Saved figures/ner_analysis/hipe2020_de/historical_ner/train/confusion_matrix_threshold0.5.png
+=== Step 3: Precision / recall / F1 per type ===
+type  precision   recall       f1  support
+PERS   0.975576 0.851140 0.909120     3332
+ LOC   0.963526 0.892599 0.926707     2486
+ ORG   0.908100 0.691578 0.785185      843
+TIME   0.962963 0.748691 0.842415      382
+PROD   0.885246 0.765957 0.821293      282
+Saved figures/ner_analysis/hipe2020_de/historical_ner/train/precision_recall_f1_threshold0.5.png
+=== Step 4: TP / FN / FP / type-confusion breakdown per type ===
+        TP  FN_missed  FP_spurious  type_confused
+PERS  2836        485           59             11
+LOC   2219        250           69             17
+ORG    583        234           50             26
+TIME   286         96           11              0
+PROD   216         65            9              1
+=== Step 5: Of each gold column's tagged tokens, how many match NER? ===
+        column  n_tagged  n_matched  match_rate
+ NE-COARSE-LIT      7325       6140    0.838225
+NE-COARSE-METO       412         22    0.053398
+   NE-FINE-LIT      7325       6140    0.838225
+  NE-FINE-METO       412         22    0.053398
+  NE-FINE-COMP      2458          0    0.000000
+     NE-NESTED       260         91    0.350000
+Total entities NER found: 6,393
+Saved figures/ner_analysis/hipe2020_de/historical_ner/train/alignability_threshold0.5.png
+=== Done ===
+=== Step 1: Load label_reliability.csv ===
+Loading data/hipe2020_de/historical_ner/data_baseline/label_reliability_span_level_fuzzy.csv
+5773 candidates loaded
+=== Step 1b: Filter to split='train' ===
+Loading data/data_source/hipe2020/hipe2020_de.csv
+3471 candidates remain
+=== Step 2: Plot ner_score distribution (reliable vs not) ===
+Saved figures/ner_analysis/hipe2020_de/historical_ner/train/ner_score_distribution.png
+=== Done ===
+Labels (from /workspace/CAFE/src/ner/gliner/labels.json): ['PERS', 'LOC', 'ORG', 'TIME', 'PROD']
+=== Step 1: Load and normalize token-format data ===
+Loading data/hipe2020_de/historical_ner/data_baseline/token_format_threshold0.5.csv
+149853 tokens loaded
+=== Step 1b: Filter to split='train' ===
+Loading data/data_source/hipe2020/hipe2020_de.csv
+86445 tokens remain
+=== Step 2: Split by dictionary_score (NaN/punctuation counted as known) ===
+82910 known tokens (True + punctuation/NaN), 3535 unknown tokens -- 86445 total
+=== Step 3: Compute confusion matrices ===
+--- Unknown (dictionary_score=False) ---
+pred_type  PERS  LOC  ORG  TIME  PROD     O
+gold_type                                  
+PERS        196    0    2     0     0    29
+LOC           0  167    2     0     0    32
+ORG           0    1   71     0     4    35
+TIME          0    0    0     3     0     1
+PROD          0    0    0     0    20     5
+O             5   11    5     1     1  2944
+--- Known (dictionary_score=True or N/A) ---
+pred_type  PERS   LOC  ORG  TIME  PROD      O
+gold_type                                    
+PERS       2640     7    0     0     2    456
+LOC          10  2052    5     0     0    218
+ORG           2     6  512     0    13    199
+TIME          0     0    0   283     0     95
+PROD          0     1    0     0   196     60
+O            54    58   45    10     8  75978
+=== Step 4: Plot side by side ===
+Saved figures/ner_analysis/hipe2020_de/historical_ner/train/confusion_matrix_by_dictionary_score.png
+=== Done ===
+Labels (from /workspace/CAFE/src/ner/gliner/labels.json): ['PERS', 'LOC', 'ORG', 'TIME', 'PROD']
+=== Step 1: Load and normalize token-format data ===
+Loading data/hipe2020_de/historical_ner/data_baseline/token_format_threshold0.5.csv
+149853 tokens loaded
+=== Step 1b: Filter to split='train' ===
+Loading data/data_source/hipe2020/hipe2020_de.csv
+86445 tokens remain
+=== Step 2: Compute alignability by entity type ===
+type  n_tagged  n_matched  match_rate
+PERS      3332       2836    0.851140
+ LOC      2486       2219    0.892599
+ ORG       843        583    0.691578
+TIME       382        286    0.748691
+PROD       282        216    0.765957
+=== Step 3: Plot ===
+Saved figures/ner_analysis/hipe2020_de/historical_ner/train/alignability_by_type_threshold0.5.png
+=== Done ===
+Labels (from /workspace/CAFE/src/ner/gliner/labels.json): ['PERS', 'LOC', 'ORG', 'TIME', 'PROD']
+=== Step 1: Load and normalize token-format data ===
+Loading data/hipe2020_de/historical_ner/data_baseline/token_format_threshold0.5.csv
+149853 tokens loaded
+=== Step 1b: Filter to split='test' ===
+Loading data/data_source/hipe2020/hipe2020_de.csv
+30737 tokens remain
+=== Step 2: Confusion matrix (gold vs NER) ===
+pred_type  PERS  LOC  ORG  TIME  PROD      O
+gold_type                                   
+PERS        893    2    2     0     0     88
+LOC           3  727    4     0     1     61
+ORG           7    4  220     0     3     82
+TIME          0    0    0   103     0     28
+PROD          1    0    0     0   116     24
+O            24   29   20    12     9  28274
+Saved figures/ner_analysis/hipe2020_de/historical_ner/test/confusion_matrix_threshold0.5.png
+=== Step 3: Precision / recall / F1 per type ===
+type  precision   recall       f1  support
+PERS   0.962284 0.906599 0.933612      985
+ LOC   0.954068 0.913317 0.933248      796
+ ORG   0.894309 0.696203 0.782918      316
+TIME   0.895652 0.786260 0.837398      131
+PROD   0.899225 0.822695 0.859259      141
+Saved figures/ner_analysis/hipe2020_de/historical_ner/test/precision_recall_f1_threshold0.5.png
+=== Step 4: TP / FN / FP / type-confusion breakdown per type ===
+       TP  FN_missed  FP_spurious  type_confused
+PERS  893         88           24              4
+LOC   727         61           29              8
+ORG   220         82           20             14
+TIME  103         28           12              0
+PROD  116         24            9              1
+=== Step 5: Of each gold column's tagged tokens, how many match NER? ===
+        column  n_tagged  n_matched  match_rate
+ NE-COARSE-LIT      2369       2059    0.869143
+NE-COARSE-METO       154          5    0.032468
+   NE-FINE-LIT      2369       2059    0.869143
+  NE-FINE-METO       154          5    0.032468
+  NE-FINE-COMP       684          0    0.000000
+     NE-NESTED        95         24    0.252632
+Total entities NER found: 2,180
+Saved figures/ner_analysis/hipe2020_de/historical_ner/test/alignability_threshold0.5.png
+=== Done ===
+=== Step 1: Load label_reliability.csv ===
+Loading data/hipe2020_de/historical_ner/data_baseline/label_reliability_span_level_fuzzy.csv
+5773 candidates loaded
+=== Step 1b: Filter to split='test' ===
+Loading data/data_source/hipe2020/hipe2020_de.csv
+1154 candidates remain
+=== Step 2: Plot ner_score distribution (reliable vs not) ===
+Saved figures/ner_analysis/hipe2020_de/historical_ner/test/ner_score_distribution.png
+=== Done ===
+Labels (from /workspace/CAFE/src/ner/gliner/labels.json): ['PERS', 'LOC', 'ORG', 'TIME', 'PROD']
+=== Step 1: Load and normalize token-format data ===
+Loading data/hipe2020_de/historical_ner/data_baseline/token_format_threshold0.5.csv
+149853 tokens loaded
+=== Step 1b: Filter to split='test' ===
+Loading data/data_source/hipe2020/hipe2020_de.csv
+30737 tokens remain
+=== Step 2: Split by dictionary_score (NaN/punctuation counted as known) ===
+29176 known tokens (True + punctuation/NaN), 1561 unknown tokens -- 30737 total
+=== Step 3: Compute confusion matrices ===
+--- Unknown (dictionary_score=False) ---
+pred_type  PERS  LOC  ORG  TIME  PROD     O
+gold_type                                  
+PERS         77    1    0     0     0     4
+LOC           0   88    1     0     0     5
+ORG           0    1   13     0     0    11
+TIME          0    0    0     4     0     0
+PROD          0    0    0     0    14     3
+O             0    5    2     1     3  1328
+--- Known (dictionary_score=True or N/A) ---
+pred_type  PERS  LOC  ORG  TIME  PROD      O
+gold_type                                   
+PERS        816    1    2     0     0     84
+LOC           3  639    3     0     1     56
+ORG           7    3  207     0     3     71
+TIME          0    0    0    99     0     28
+PROD          1    0    0     0   102     21
+O            24   24   18    11     6  26946
+=== Step 4: Plot side by side ===
+Saved figures/ner_analysis/hipe2020_de/historical_ner/test/confusion_matrix_by_dictionary_score.png
+=== Done ===
+Labels (from /workspace/CAFE/src/ner/gliner/labels.json): ['PERS', 'LOC', 'ORG', 'TIME', 'PROD']
+=== Step 1: Load and normalize token-format data ===
+Loading data/hipe2020_de/historical_ner/data_baseline/token_format_threshold0.5.csv
+149853 tokens loaded
+=== Step 1b: Filter to split='test' ===
+Loading data/data_source/hipe2020/hipe2020_de.csv
+30737 tokens remain
+=== Step 2: Compute alignability by entity type ===
+type  n_tagged  n_matched  match_rate
+PERS       985        893    0.906599
+ LOC       796        727    0.913317
+ ORG       316        220    0.696203
+TIME       131        103    0.786260
+PROD       141        116    0.822695
+=== Step 3: Plot ===
+Saved figures/ner_analysis/hipe2020_de/historical_ner/test/alignability_by_type_threshold0.5.png
+=== Done ===
+=== Step 1: Load label_reliability.csv ===
+Loading data/hipe2020_de/historical_ner/data_baseline/label_reliability_span_level_fuzzy.csv
+5773 candidates loaded
+=== Step 2: Compute reliability accuracy per type ===
+      reliable  total  fraction
+LOC       2724   2837  0.960169
+PERS      1865   1932  0.965321
+ORG        479    572  0.837413
+PROD       191    227  0.841410
+TIME       191    205  0.931707
+ALL       5450   5773  0.944050
+=== Step 3: Plot reliability accuracy per type ===
+Saved figures/ner_analysis/hipe2020_de/historical_ner/all_set/reliability_accuracy_by_type.png
+=== Done ===

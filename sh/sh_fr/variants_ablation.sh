@@ -4,7 +4,7 @@ set -euo pipefail
 PYTHON_VERSION=3.11
 ENVIRONMENT_NAME="cafe"
 
-cd "$(dirname "${BASH_SOURCE[0]}")"
+cd "$(dirname "${BASH_SOURCE[0]}")/../.."
 echo "Working directory: $(pwd)"
 
 # SLURM auto-saves a job's stdout/stderr to job-%j.out/job-%j.err; running locally instead

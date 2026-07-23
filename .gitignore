@@ -2,9 +2,9 @@ CLAUDE.md
 .claude/
 docs/
 __pycache__/
+.ipynb_checkpoints/
 old_results/
 *.err
 data/
 figures/
-script.sh
 checkpoints/
