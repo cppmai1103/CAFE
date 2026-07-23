@@ -134,3 +134,59 @@ Epoch 1: train_loss=0.0579 val_loss=0.0499
 Epoch 2: train_loss=0.0417 val_loss=0.0464
 Epoch 3: train_loss=0.0373 val_loss=0.0492
 Epoch 4: train_loss=0.0343 val_loss=0.0479
+Epoch 5: train_loss=0.0318 val_loss=0.0474
+Early stopping at epoch 5: no val-loss improvement for 3 epochs
+Best epoch: 2 (train_loss=0.0417, val_loss=0.0464)
+=== Step 4: Save checkpoint ===
+Saved checkpoints/letemps_fr/gliner/phase2/level_ablation/span_level_fuzzy/mbert_mlp.pt
+=== Step 5: Plot train/val training curve ===
+Saved figures/letemps_fr/gliner/phase2/level_ablation/span_level_fuzzy/train_letemps_test_letemps/train_tracking/mbert_mlp_track_training.png
+=== Done ===
+Using device: cuda
+=== Step 1: Load checkpoint ===
+Loading checkpoints/letemps_fr/gliner/phase2/level_ablation/span_level_fuzzy/mbert_mlp.pt
+encoder_name=bert-base-multilingual-cased variant=mbert_mlp
+=== Step 2: Load tokenizer and dataset ===
+33672 candidates (split='test')
+=== Step 3: Score every candidate ===
+=== Step 4: Save scores CSV ===
+Saved data/letemps_fr/gliner/data_phase2/level_ablation/span_level_fuzzy/test_results/train_letemps_test_letemps/mbert_mlp_scores.csv
+=== Step 5: Compute metrics ===
+33672 candidates -- Brier=0.0111 ECE=0.0041 MCE=0.1662 AUROC=0.9913 E-AURC=0.0084
+=== Done ===
+
+To compare against B0/B1/B3/MLP and produce the standard plots, run:
+  python src/phase1/modeling/plot_reliability_diagram.py --platt-scaling-score data/data_baseline/test_results/platt_scaling.csv --logistic-score data/data_baseline/test_results/logistic_regression.csv --mlp-score data/data_baseline/test_results/mlp_baseline.csv --camembert-mlp-score data/letemps_fr/gliner/data_phase2/level_ablation/span_level_fuzzy/test_results/train_letemps_test_letemps/mbert_mlp_scores.csv --camembert-mlp-label mbert_mlp
+=== Step 1: Load data/letemps_fr/gliner/data_baseline/label_reliability_span_level_fuzzy.csv and merge in ['platt_scaling', 'logistic', 'mlp', 'mbert_mlp'] ===
+318728 candidates joined; scores present: ['raw', 'platt_scaling', 'logistic', 'mlp', 'mbert_mlp']
+=== Step 2: Filter to split='test' ===
+Loading data/data_source/letemps/letemps_fr.csv
+33672 candidates remain
+=== Step 3: Compute ECE bins and Brier score / ECE / MCE per score ===
+  raw (ner_score): 33672 candidates across 10 bins -- Brier=0.0494 ECE=0.0625 MCE=0.6708 AUROC=0.9692 E-AURC=0.0212
+  platt_scaling (platt_scaling_calibrated_score): 33672 candidates across 10 bins -- Brier=0.0171 ECE=0.0077 MCE=0.1418 AUROC=0.9692 E-AURC=0.0212
+  logistic (logistic_calibrated_score): 33672 candidates across 10 bins -- Brier=0.0147 ECE=0.0054 MCE=0.1646 AUROC=0.9664 E-AURC=0.0169
+  mlp (mlp_calibrated_score): 33672 candidates across 10 bins -- Brier=0.0150 ECE=0.0069 MCE=0.3154 AUROC=0.9649 E-AURC=0.0182
+  mbert_mlp (mbert_mlp_calibrated_score): 33672 candidates across 10 bins -- Brier=0.0111 ECE=0.0041 MCE=0.1662 AUROC=0.9913 E-AURC=0.0084
+=== Step 4: Plot reliability diagram ===
+Saved figures/letemps_fr/gliner/phase2/level_ablation/span_level_fuzzy/train_letemps_test_letemps/reliability_diagram_raw_platt_scaling_logistic_mlp_mbert_mlp.png
+=== Step 5: Plot metrics bar chart (Brier score, ECE, MCE, AUROC, E-AURC) ===
+Saved figures/letemps_fr/gliner/phase2/level_ablation/span_level_fuzzy/train_letemps_test_letemps/metrics_bar_raw_platt_scaling_logistic_mlp_mbert_mlp.png
+=== Step 6: Plot ROC curve ===
+Saved figures/letemps_fr/gliner/phase2/level_ablation/span_level_fuzzy/train_letemps_test_letemps/roc_curve_raw_platt_scaling_logistic_mlp_mbert_mlp.png
+=== Step 7: Plot risk-coverage curve ===
+Saved figures/letemps_fr/gliner/phase2/level_ablation/span_level_fuzzy/train_letemps_test_letemps/risk_coverage_raw_platt_scaling_logistic_mlp_mbert_mlp.png
+=== Step 8: Save bins table (bin, true, raw, platt_scaling, logistic, mlp, mbert_mlp) ===
+    bin  count     true      raw  delta_raw  platt_scaling  delta_platt_scaling  logistic  delta_logistic      mlp  delta_mlp  mbert_mlp  delta_mbert_mlp
+0.0-0.1  29229 0.001334 0.002888   0.001554       0.002803             0.001469  0.003189        0.001854 0.002994   0.001659   0.001491         0.000157
+0.1-0.2    620 0.006452 0.141093   0.134642       0.006412            -0.000040  0.006471        0.000019 0.012439   0.005988   0.007876         0.001425
+0.2-0.3    404 0.012376 0.246683   0.234307       0.011916            -0.000460  0.011912       -0.000464 0.018225   0.005849   0.018205         0.005829
+0.3-0.4    292 0.006849 0.351574   0.344725       0.021989             0.015139  0.021014        0.014164 0.031203   0.024353   0.031799         0.024950
+0.4-0.5    242 0.033058 0.450812   0.417754       0.038902             0.005844  0.041439        0.008381 0.058760   0.025703   0.051379         0.018321
+0.5-0.6    252 0.047619 0.551275   0.503656       0.068373             0.020754  0.067375        0.019756 0.086639   0.039020   0.068328         0.020709
+0.6-0.7    281 0.064057 0.647608   0.583551       0.114823             0.050766  0.112183        0.048126 0.142677   0.078621   0.110834         0.046777
+0.7-0.8    330 0.136364 0.750582   0.614218       0.192577             0.056213  0.177297        0.040934 0.201397   0.065033   0.157647         0.021284
+0.8-0.9    451 0.179601 0.850444   0.670843       0.300806             0.121205  0.260342        0.080741 0.277600   0.098000   0.230159         0.050558
+0.9-1.0   1571 0.411840 0.973931   0.562091       0.471056             0.059216  0.446224        0.034384 0.450513   0.038673   0.449279         0.037439
+Saved figures/letemps_fr/gliner/phase2/level_ablation/span_level_fuzzy/train_letemps_test_letemps/bins_raw_platt_scaling_logistic_mlp_mbert_mlp.csv
+=== Done ===

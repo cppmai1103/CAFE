@@ -279,6 +279,14 @@ python src/phase2/expert/evaluate.py \
   --out $VARIANTS_OUT_LT/mbert_experts_scores.csv
 
 # --- Compare all 6 scores (pooled) on letemps_fr's test split (generalization check) ---
+# --exclude-types-not-in-gold: letemps_fr's own gold annotation has NO time/prod entities
+# at all (only pers/loc/org, confirmed against NE-COARSE-LIT directly) -- unlike hipe2020_fr,
+# where historical_ner's TIME/PROD predictions are a genuine, scoreable model-quality
+# question. On letemps a predicted TIME/PROD candidate can never be correct by
+# construction (there's no matching gold category to be right against), so scoring them
+# here isn't measuring calibration failure, it's measuring an unanswerable question --
+# AUROC comes back undefined (all-negative) and Brier/ECE would unfairly drag down an
+# otherwise-reasonable model on the 3 types letemps_fr actually judges.
 python src/phase1/modeling/plot_reliability_diagram.py --raw-score \
   --label-reliability $LABEL_RELIABILITY_LT \
   --load-data $DATA_SRC_LT \
@@ -289,9 +297,11 @@ python src/phase1/modeling/plot_reliability_diagram.py --raw-score \
   --camembert-mlp-label mbert_mlp_base \
   --extra-score mbert_simple_mlp=$VARIANTS_OUT_LT/mbert_simple_mlp_scores.csv \
   --extra-score mbert_experts=$VARIANTS_OUT_LT/mbert_experts_scores.csv \
+  --exclude-types-not-in-gold \
   --figures-dir $VARIANTS_FIGS_LT
 
-# --- Same, faceted (full 5-type tagset -- historical_ner used it for letemps_fr too) ---
+# --- Same, faceted -- PERS/LOC/ORG only (letemps_fr's actual gold scheme, see above; a
+# TIME/PROD panel here would be 0 candidates after --exclude-types-not-in-gold) ---
 python src/phase1/modeling/plot_reliability_diagram.py --raw-score \
   --label-reliability $LABEL_RELIABILITY_LT \
   --load-data $DATA_SRC_LT \
@@ -302,5 +312,6 @@ python src/phase1/modeling/plot_reliability_diagram.py --raw-score \
   --camembert-mlp-label mbert_mlp_base \
   --extra-score mbert_simple_mlp=$VARIANTS_OUT_LT/mbert_simple_mlp_scores.csv \
   --extra-score mbert_experts=$VARIANTS_OUT_LT/mbert_experts_scores.csv \
-  --facet-by-type PERS LOC ORG TIME PROD \
+  --exclude-types-not-in-gold \
+  --facet-by-type PERS LOC ORG \
   --figures-dir "$VARIANTS_FIGS_LT/by_type"

@@ -72,6 +72,7 @@ import pandas as pd
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
 
 from ner.label_reliability import default_out_path as default_label_reliability_path
+from ner.label_reliability import gold_type
 from preprocessing.preprocessing_data import DEFAULT_OUT as DEFAULT_LOAD_DATA
 from phase1.modeling.metrics import auroc, brier_score_loss, excess_aurc, expected_calibration_error, maximum_calibration_error_from_bins, risk_coverage_curve, roc_curve
 
@@ -474,6 +475,16 @@ def main():
     parser.add_argument("--dataset-name", default=None, help="Name shown in plot titles, e.g. \"hipe2020_fr\" (default: --load-data's filename stem, so hipe2020_fr.csv/letemps_fr.csv name themselves automatically)")
     parser.add_argument("--split", default="test", help="Filter to this document-level split before plotting; pass \"\" to use every candidate (default: test)")
     parser.add_argument(
+        "--exclude-types-not-in-gold", action="store_true",
+        help="Drop any candidate whose predicted_entity_type never appears in --load-data's own gold NE-COARSE-LIT "
+        "column (using the same bare-type normalization as ner/label_reliability.py's gold_type()) -- for "
+        "datasets whose gold annotation scheme doesn't cover every type the NER model can predict (e.g. "
+        "letemps_fr's gold has no TIME/PROD at all, so historical_ner's TIME/PROD predictions there can never "
+        "be correct by construction, not because of a real calibration failure -- AUROC is undefined and "
+        "Brier/ECE are measuring an unanswerable question). Off by default -- only turn this on where you've "
+        "confirmed the gap is a genuine gold-scheme mismatch, not a fixable model/label problem.",
+    )
+    parser.add_argument(
         "--entity-type", default=None,
         help="Filter to only this predicted_entity_type (e.g. PERS/LOC/ORG/TIME/PROD) before plotting -- default: "
         "every type pooled together. Ignored if --facet-by-type is given.",
@@ -523,8 +534,8 @@ def main():
     included = ([RAW_LABEL] if args.raw_score else []) + labels_present
     print(f"{len(candidates_df)} candidates joined; scores present: {included}")
 
-    if args.split:
-        print(f"=== Step 2: Filter to split={args.split!r} ===")
+    data_df = None
+    if args.split or args.exclude_types_not_in_gold:
         print(f"Loading {args.load_data}")
         data_df = pd.read_csv(args.load_data, dtype={"TOKEN": str, "MISC": str},
         # pandas' default NA-string sentinels ("NA", "null", "nan", ...) would otherwise
@@ -535,11 +546,30 @@ def main():
         # entirely, and na_values restores it only for the two genuinely-numeric columns
         # that still need a blank cell to become NaN.
         keep_default_na=False, na_values={"sentence_ocr_mean": [""], "document_ocr_mean": [""], "dictionary_score": [""]})
+
+    if args.split:
+        print(f"=== Step 2: Filter to split={args.split!r} ===")
         doc_to_split = data_df.drop_duplicates("document_id").set_index("document_id")["split"].to_dict()
         candidates_df = candidates_df[candidates_df["document_id"].map(doc_to_split) == args.split]
         print(f"{len(candidates_df)} candidates remain")
     else:
         print("=== Step 2: No --split given, using every candidate ===")
+
+    if args.exclude_types_not_in_gold:
+        print("=== Step 2b: Exclude predicted types absent from gold ===")
+        # pd.notna, not "is not None" -- Series.map() silently turns a function's
+        # returned None back into float nan (pandas' own missing-value normalization),
+        # so "is not None" alone leaves a stray nan in the set (confirmed the hard way).
+        gold_types_present = {t for t in data_df["NE-COARSE-LIT"].map(gold_type) if pd.notna(t)}
+        predicted_types_present = set(candidates_df["predicted_entity_type"].unique())
+        excluded = sorted(predicted_types_present - gold_types_present)
+        if excluded:
+            before = len(candidates_df)
+            candidates_df = candidates_df[candidates_df["predicted_entity_type"].isin(gold_types_present)]
+            print(f"Gold types present: {sorted(gold_types_present)} -- excluding predicted types absent from gold: "
+                  f"{excluded} ({before - len(candidates_df)} candidates dropped, {len(candidates_df)} remain)")
+        else:
+            print(f"Gold types present: {sorted(gold_types_present)} -- nothing to exclude, every predicted type already appears in gold")
 
     validate_scores_present(candidates_df, labels_present, score_paths)
 

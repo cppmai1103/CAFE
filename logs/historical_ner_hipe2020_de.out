@@ -1,0 +1,415 @@
+Logging stdout to logs/20260723_040140.out, stderr to logs/20260723_040140.err
+Env 'cafe' already exists, skipping creation
+Thu Jul 23 04:01:42 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 580.159.03             Driver Version: 580.159.03     CUDA Version: 13.0     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA A100-SXM4-40GB          On  |   00000000:AF:00.0 Off |                    0 |
+| N/A   44C    P0             31W /  250W |       0MiB /  40960MiB |      0%      Default |
+|                                         |                        |             Disabled |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|  No running processes found                                                             |
++-----------------------------------------------------------------------------------------+
+torch 2.6.0+cu124 | cuda available: True
+=== Step 1: Load train data and NER features ===
+149853 tokens, 5773 candidates
+=== Step 2: Compute span OCR features ===
+=== Step 3: Save OCR features ===
+Saved OCR features to data/hipe2020_de/historical_ner/data_baseline/ocr_features.csv
+=== Done ===
+=== Step 1: Load train data and NER features ===
+149853 tokens, 5773 candidates
+=== Step 2: Compute context features ===
+=== Step 3: Save context features ===
+Saved context features to data/hipe2020_de/historical_ner/data_baseline/context_features.csv
+=== Done ===
+=== Step 1: Load train data and build the document->split map ===
+Loading data/data_source/hipe2020/hipe2020_de.csv
+185 documents
+=== Step 2: Load and join deduplicated NER + OCR + context features ===
+Loading data/hipe2020_de/historical_ner/data_baseline/deduplicate_ner_features.csv, data/hipe2020_de/historical_ner/data_baseline/ocr_features.csv, data/hipe2020_de/historical_ner/data_baseline/context_features.csv
+5773 candidates joined
+=== Step 3: Merge in reliability_score ===
+Loading data/hipe2020_de/historical_ner/data_baseline/label_reliability_span_level_fuzzy.csv
+5450 / 5773 candidates reliable (94.4050%)
+=== Step 4: Attach document-level split ===
+split
+train    3471
+test     1154
+val      1148
+=== Step 5: Drop sentence_chunked (kept in ner_features.csv upstream, but not used as a B3/MLP feature) ===
+=== Step 6: Save prepared logistic-regression data ===
+Saved data/hipe2020_de/historical_ner/data_baseline/level_ablation/span_level_fuzzy/logistic_regression_data.csv
+=== Done ===
+=== Step 1: Load label_reliability and attach document-level split ===
+Loading data/hipe2020_de/historical_ner/data_baseline/label_reliability_span_level_fuzzy.csv
+5773 candidates loaded
+Loading data/data_source/hipe2020/hipe2020_de.csv
+split
+train    3471
+test     1154
+val      1148
+=== Step 2: Split train / val ===
+3471 train candidates, 1148 val candidates
+=== Step 3: Fit Platt scaling on train, early-stop on val ===
+Early stopping at epoch 68: no val-loss improvement for 15 epochs
+Best epoch: 53 (train_loss=0.1721, val_loss=0.1640)
+calibrated_score = sigmoid(-1.9289 + 6.0328 * ner_score)
+=== Step 4: Save checkpoint ===
+Saved checkpoints/hipe2020_de/historical_ner/phase1/level_ablation/span_level_fuzzy/platt_scaling.pt
+=== Step 5: Score every candidate (all splits) ===
+=== Step 6: Save platt_scaling.csv to test_results/ (test split only) ===
+Saved data/hipe2020_de/historical_ner/data_baseline/level_ablation/span_level_fuzzy/test_results/train_hipe2020de_test_hipe2020de/platt_scaling.csv
+=== Step 7: Plot fit vs held-out test-split accuracy ===
+Saved figures/hipe2020_de/historical_ner/modeling/level_ablation/span_level_fuzzy/train_hipe2020de_test_hipe2020de/platt_scaling_fit.png
+=== Step 8: Plot train/val training curve ===
+Saved figures/hipe2020_de/historical_ner/modeling/level_ablation/span_level_fuzzy/train_hipe2020de_test_hipe2020de/platt_scaling_track_training.png
+=== Done ===
+=== Step 1: Load logistic_regression_data.csv ===
+Loading data/hipe2020_de/historical_ner/data_baseline/level_ablation/span_level_fuzzy/logistic_regression_data.csv
+5773 candidates
+split
+train    3471
+test     1154
+val      1148
+=== Step 2: Build B3 feature matrix (train medians + missing-indicator set) ===
+29 features, 3471 train candidates, 1148 val candidates
+=== Step 3: Fit B3 logistic regression on train, early-stop on val ===
+Early stopping at epoch 33: no val-loss improvement for 15 epochs
+Best epoch: 18 (train_loss=0.1578, val_loss=0.1607)
+Top coefficients (standardized scale, sorted by |coefficient|):
+ner_score                            0.798155
+span_length_characters               0.437136
+predicted_entity_type_PROD          -0.255863
+span_length_tokens                   0.225433
+left_context_ocr_mean_10_missing     0.210872
+predicted_entity_type_ORG           -0.210832
+span_first_word_ocr                  0.168594
+predicted_entity_type_LOC            0.149310
+span_last_word_ocr                  -0.115315
+right_context_ocr_mean_10           -0.106841
+left_context_ocr_mean_10            -0.099001
+right_context_ocr_mean_10_missing    0.097338
+sentence_length                      0.091076
+predicted_entity_type_PERS           0.078814
+context_ocr_min_10                   0.071670
+=== Step 4: Save checkpoint ===
+Saved checkpoints/hipe2020_de/historical_ner/phase1/level_ablation/span_level_fuzzy/logistic_regression.pt
+=== Step 5: Score every candidate (all splits) ===
+test: 1154 candidates, mean calibrated_score 0.9391
+train: 3471 candidates, mean calibrated_score 0.9403
+val: 1148 candidates, mean calibrated_score 0.9355
+=== Step 6: Save logistic_regression.csv to test_results/ (test split only) ===
+Saved data/hipe2020_de/historical_ner/data_baseline/level_ablation/span_level_fuzzy/test_results/train_hipe2020de_test_hipe2020de/logistic_regression.csv
+=== Step 7: Plot weights ===
+Saved figures/hipe2020_de/historical_ner/modeling/level_ablation/span_level_fuzzy/train_hipe2020de_test_hipe2020de/logistic_regression_weights.png
+=== Step 8: Plot train/val training curve ===
+Saved figures/hipe2020_de/historical_ner/modeling/level_ablation/span_level_fuzzy/train_hipe2020de_test_hipe2020de/logistic_regression_track_training.png
+=== Done ===
+Using device: cuda
+=== Step 1: Load logistic_regression_data.csv ===
+Loading data/hipe2020_de/historical_ner/data_baseline/level_ablation/span_level_fuzzy/logistic_regression_data.csv
+5773 candidates
+split
+train    3471
+test     1154
+val      1148
+=== Step 2: Build feature matrix (train medians + missing-indicator set) ===
+29 features, 3471 train candidates, 1148 val candidates
+=== Step 3: Standardize features (fit on train only) ===
+=== Step 4: Fit MLP on train, early-stop on val ===
+Early stopping at epoch 405: no val-loss improvement for 10 epochs
+Best epoch: 395 (train_loss=0.1510, val_loss=0.1734)
+=== Step 5: Save checkpoint ===
+Saved checkpoints/hipe2020_de/historical_ner/phase1/level_ablation/span_level_fuzzy/mlp_baseline.pt
+=== Step 6: Score every candidate (all splits) ===
+test: 1154 candidates, mean calibrated_score 0.9402
+train: 3471 candidates, mean calibrated_score 0.9452
+val: 1148 candidates, mean calibrated_score 0.9433
+=== Step 7: Save mlp_baseline.csv to test_results/ (test split only) ===
+Saved data/hipe2020_de/historical_ner/data_baseline/level_ablation/span_level_fuzzy/test_results/train_hipe2020de_test_hipe2020de/mlp_baseline.csv
+=== Step 8: Plot train/val training curve ===
+Saved figures/hipe2020_de/historical_ner/modeling/level_ablation/span_level_fuzzy/train_hipe2020de_test_hipe2020de/mlp_baseline_track_training.png
+=== Done ===
+=== Step 1: Load train data and build per-document token/dict-flag tables ===
+Loading data/data_source/hipe2020/hipe2020_de.csv
+185 documents
+=== Step 2: Load candidates (entity_text, predicted_type, ner_score, reliability_score) ===
+Loading data/hipe2020_de/historical_ner/data_baseline/label_reliability_span_level_fuzzy.csv
+5773 candidates
+=== Step 3: Build candidate-specific windows ===
+Wrote 5773 candidate windows to data/hipe2020_de/historical_ner/data_phase2/level_ablation/span_level_fuzzy/phase2_candidate_windows.jsonl
+=== Step 4: Sanity check -- reconstruct target span from 20 random windows ===
+[MISMATCH] candidate=luxwort-1938-08-10-a-i0029__s2__83-85 span_text='Hanka-Wege' reconstructed='Hanka-Weges'
+[OK] candidate=NZZ-1858-04-20-a-p0003__s4__35-35 span_text='Polytechnikum' reconstructed='Polytechnikum'
+[OK] candidate=NZZ-1808-05-24-a-p0004__s6__120-121 span_text='Gemeine Trochtelfingen' reconstructed='Gemeine Trochtelfingen'
+[OK] candidate=NZZ-1898-06-10-c-p0001__s32__1047-1048 span_text='Buenos Aires' reconstructed='Buenos Aires'
+[OK] candidate=NZZ-1888-12-19-b-p0002__s112__2040-2040 span_text='Bern' reconstructed='Bern'
+[MISMATCH] candidate=NZZ-1888-06-07-a-p0001__s3__140-140 span_text='Winter' reconstructed='Winterthur'
+[OK] candidate=NZZ-1868-02-17-a-p0001__s2__24-24 span_text='Nordamerika' reconstructed='Nordamerika'
+[OK] candidate=NZZ-1848-10-04-a-p0004__s33__476-478 span_text='Zam¬ pieri' reconstructed='Zam¬ pieri'
+[OK] candidate=luxwort-1948-12-27-a-i0030__s0__1-2 span_text='General Patton' reconstructed='General Patton'
+[OK] candidate=luxwort-1848-07-16-a-i0001__s29__558-562 span_text='Hr. Insp. Andre' reconstructed='Hr. Insp. Andre'
+[OK] candidate=NZZ-1838-08-01-a-p0003__s2__104-104 span_text='Pompeiis' reconstructed='Pompeiis'
+[OK] candidate=luxwort-1858-10-07-a-i0008__s6__114-114 span_text='Orient' reconstructed='Orient'
+[OK] candidate=NZZ-1938-08-09-d-p0002__s44__896-896 span_text='Mersch' reconstructed='Mersch'
+[OK] candidate=NZZ-1808-10-18-a-p0002__s13__420-420 span_text='Erfurt' reconstructed='Erfurt'
+[OK] candidate=NZZ-1808-10-18-a-p0002__s5__109-109 span_text='Weimar' reconstructed='Weimar'
+[OK] candidate=NZZ-1848-02-20-a-p0002__s1__3-3 span_text='Paris' reconstructed='Paris'
+[OK] candidate=NZZ-1888-03-08-b-p0002__s3__38-39 span_text='Grauen Kloster' reconstructed='Grauen Kloster'
+[OK] candidate=NZZ-1888-09-26-b-p0002__s23__608-609 span_text='Friedrich Wilhelm' reconstructed='Friedrich Wilhelm'
+[OK] candidate=NZZ-1948-07-18-a-p0001__s5__211-211 span_text='Westmüchte' reconstructed='Westmüchte'
+[OK] candidate=luxwort-1868-06-16-a-i0001__s27__786-787 span_text='von 1843' reconstructed='von 1843'
+WARNING: 2/20 sampled windows' reconstructed target span didn't match span_text
+=== Done ===
+Variant: mbert_mlp
+Using device: cuda
+=== Step 1: Load tokenizer and build train/val datasets ===
+Loading bert-base-multilingual-cased
+3471 train candidates, 1148 val candidates
+=== Step 2: Build model ===
+Trainable parameters:
+  dict_flag_embedding (DictFlagEmb)                       Embedding(5, 768)                                    3,840
+  lambda_dict                                             scalar                                                   1
+  target_flag_embedding (TargetFlagEmb)                   Embedding(4, 768)                                    3,072
+  lambda_target                                           scalar                                                   1
+  type_embedding (TypeEmb)                                Embedding(5, 32)                                       160
+  score_mlp (ScoreMLP, score_features=full)               Linear(3,32)->ReLU->Linear(32,32)                    1,184
+  classifier (MLP head)                                   Linear(3136,512)->ReLU->Dropout->Linear(512,1)    1,606,657
+  TOTAL TRAINABLE                                                                                          1,614,915
+Frozen:
+  encoder (frozen bert-base-multilingual-cased: token/position/token-type text embeddings + transformer layers) hidden_size=768                                177,853,440
+  TOTAL FROZEN                                                                                           177,853,440
+=== Step 3: Train (train), early-stop on val ===
+Epoch 1: train_loss=0.2883 val_loss=0.1912
+Epoch 2: train_loss=0.1950 val_loss=0.1766
+Epoch 3: train_loss=0.1744 val_loss=0.1646
+Epoch 4: train_loss=0.1669 val_loss=0.1662
+Epoch 5: train_loss=0.1635 val_loss=0.1641
+Epoch 6: train_loss=0.1642 val_loss=0.1599
+Epoch 7: train_loss=0.1646 val_loss=0.1649
+Epoch 8: train_loss=0.1656 val_loss=0.1627
+Epoch 9: train_loss=0.1647 val_loss=0.1615
+Early stopping at epoch 9: no val-loss improvement for 3 epochs
+Best epoch: 6 (train_loss=0.1642, val_loss=0.1599)
+=== Step 4: Save checkpoint ===
+Saved checkpoints/hipe2020_de/historical_ner/phase2/level_ablation/span_level_fuzzy/mbert_mlp.pt
+=== Step 5: Plot train/val training curve ===
+Saved figures/hipe2020_de/historical_ner/phase2/level_ablation/span_level_fuzzy/train_hipe2020de_test_hipe2020de/train_tracking/mbert_mlp_track_training.png
+=== Done ===
+Using device: cuda
+=== Step 1: Load checkpoint ===
+Loading checkpoints/hipe2020_de/historical_ner/phase2/level_ablation/span_level_fuzzy/mbert_mlp.pt
+encoder_name=bert-base-multilingual-cased variant=mbert_mlp
+=== Step 2: Load tokenizer and dataset ===
+1154 candidates (split='test')
+=== Step 3: Score every candidate ===
+=== Step 4: Save scores CSV ===
+Saved data/hipe2020_de/historical_ner/data_phase2/level_ablation/span_level_fuzzy/test_results/train_hipe2020de_test_hipe2020de/mbert_mlp_scores.csv
+=== Step 5: Compute metrics ===
+1154 candidates -- Brier=0.0540 ECE=0.0263 MCE=0.3612 AUROC=0.8241 E-AURC=0.0169
+=== Done ===
+
+To compare against B0/B1/B3/MLP and produce the standard plots, run:
+  python src/phase1/modeling/plot_reliability_diagram.py --platt-scaling-score data/data_baseline/test_results/platt_scaling.csv --logistic-score data/data_baseline/test_results/logistic_regression.csv --mlp-score data/data_baseline/test_results/mlp_baseline.csv --camembert-mlp-score data/hipe2020_de/historical_ner/data_phase2/level_ablation/span_level_fuzzy/test_results/train_hipe2020de_test_hipe2020de/mbert_mlp_scores.csv --camembert-mlp-label mbert_mlp
+Variant: mbert_simple_mlp
+Using device: cuda
+=== Step 1: Load tokenizer and build train/val datasets ===
+Loading bert-base-multilingual-cased
+3471 train candidates, 1148 val candidates
+=== Step 2: Build model ===
+Trainable parameters:
+  classifier (MLP head)                                   Linear(4608,512)->ReLU->Dropout->Linear(512,1)    2,360,321
+  TOTAL TRAINABLE                                                                                          2,360,321
+Frozen:
+  encoder (frozen bert-base-multilingual-cased: full transformer, no side embeddings) hidden_size=768                                177,853,440
+  TOTAL FROZEN                                                                                           177,853,440
+=== Step 3: Train (train), early-stop on val ===
+Epoch 1: train_loss=0.4026 val_loss=0.1947
+Epoch 2: train_loss=0.2011 val_loss=0.1870
+Epoch 3: train_loss=0.1872 val_loss=0.1899
+Epoch 4: train_loss=0.1834 val_loss=0.2049
+Epoch 5: train_loss=0.1730 val_loss=0.1814
+Epoch 6: train_loss=0.1631 val_loss=0.1814
+Epoch 7: train_loss=0.1679 val_loss=0.1905
+Epoch 8: train_loss=0.1623 val_loss=0.1955
+Epoch 9: train_loss=0.1547 val_loss=0.2090
+Early stopping at epoch 9: no val-loss improvement for 3 epochs
+Best epoch: 6 (train_loss=0.1631, val_loss=0.1814)
+=== Step 4: Save checkpoint ===
+Saved checkpoints/hipe2020_de/historical_ner/phase2/variants_ablation/train_hipe2020de_test_hipe2020de/mbert_simple_mlp.pt
+=== Step 5: Plot train/val training curve ===
+Saved figures/hipe2020_de/historical_ner/phase2/variants_ablation/train_hipe2020de_test_hipe2020de/train_tracking/mbert_simple_mlp_track_training.png
+=== Done ===
+Using device: cuda
+=== Step 1: Load checkpoint ===
+Loading checkpoints/hipe2020_de/historical_ner/phase2/variants_ablation/train_hipe2020de_test_hipe2020de/mbert_simple_mlp.pt
+encoder_name=bert-base-multilingual-cased variant=mbert_simple_mlp
+=== Step 2: Load tokenizer and dataset ===
+1154 candidates (split='test')
+=== Step 3: Score every candidate ===
+=== Step 4: Save scores CSV ===
+Saved data/hipe2020_de/historical_ner/data_phase2/variants_ablation/train_hipe2020de_test_hipe2020de/mbert_simple_mlp_scores.csv
+=== Step 5: Compute metrics ===
+1154 candidates -- Brier=0.0563 ECE=0.0169 MCE=0.6085 AUROC=0.7737 E-AURC=0.0253
+=== Done ===
+
+To compare against phase2's without_dict_flag ablation (the fair baseline -- see compare.py's module docstring for why), run (or just python src/phase2/simple/compare.py if this is the default path/variant name):
+  python src/phase2/simple/compare.py --simple-one-score data/hipe2020_de/historical_ner/data_phase2/variants_ablation/train_hipe2020de_test_hipe2020de/mbert_simple_mlp_scores.csv --simple-one-label mbert_simple_mlp
+Variant: mbert_experts
+Using device: cuda
+=== Step 1: Load tokenizer and build train/val datasets (reused from phase2) ===
+Loading bert-base-multilingual-cased
+3471 train candidates, 1148 val candidates
+=== Step 2: Build model ===
+Trainable parameters:
+  dict_flag_embedding (DictFlagEmb)                       Embedding(5, 768)                                    3,840
+  lambda_dict                                             scalar                                                   1
+  target_flag_embedding (TargetFlagEmb)                   Embedding(4, 768)                                    3,072
+  lambda_target                                           scalar                                                   1
+  type_embedding (TypeEmb)                                Embedding(5, 32)                                       160
+  score_mlp (ScoreMLP, full)                              Linear(3,32)->ReLU->Linear(32,32)                    1,184
+  experts[0] (latent Expert_0)                            Linear(3136,64)->ReLU->Dropout->Linear(64,1)       200,833
+  experts[1] (latent Expert_1)                            Linear(3136,64)->ReLU->Dropout->Linear(64,1)       200,833
+  experts[2] (latent Expert_2)                            Linear(3136,64)->ReLU->Dropout->Linear(64,1)       200,833
+  experts[3] (latent Expert_3)                            Linear(3136,64)->ReLU->Dropout->Linear(64,1)       200,833
+  gate (softmax over K experts)                           Linear(3136,128)->ReLU->Linear(128,4)              402,052
+  TOTAL TRAINABLE                                                                                          1,213,642
+Frozen:
+  encoder (frozen bert-base-multilingual-cased: token/position/token-type text embeddings + transformer layers) hidden_size=768                                177,853,440
+  TOTAL FROZEN                                                                                           177,853,440
+=== Step 3: Train (train), early-stop on val (lambda_balance=0.01) ===
+Epoch 1: train_loss=0.2466 (balance=2.7746) val_loss=0.1816 (balance=2.9998)
+Epoch 2: train_loss=0.1792 (balance=2.9999) val_loss=0.1641 (balance=2.9999)
+Epoch 3: train_loss=0.1688 (balance=2.9999) val_loss=0.1603 (balance=2.9999)
+Epoch 4: train_loss=0.1695 (balance=3.0000) val_loss=0.2001 (balance=2.9998)
+Epoch 5: train_loss=0.1690 (balance=2.9997) val_loss=0.1601 (balance=2.9990)
+Epoch 6: train_loss=0.1666 (balance=2.9996) val_loss=0.1573 (balance=3.0000)
+Epoch 7: train_loss=0.1622 (balance=3.0000) val_loss=0.1812 (balance=3.0000)
+Epoch 8: train_loss=0.1638 (balance=3.0000) val_loss=0.1594 (balance=3.0000)
+Epoch 9: train_loss=0.1625 (balance=3.0000) val_loss=0.1595 (balance=3.0000)
+Early stopping at epoch 9: no val-loss improvement for 3 epochs
+Best epoch: 6 (train_loss=0.1666, val_loss=0.1573)
+=== Step 4: Save checkpoint ===
+Saved checkpoints/hipe2020_de/historical_ner/phase2/variants_ablation/train_hipe2020de_test_hipe2020de/mbert_experts.pt
+=== Step 5: Plot train/val training curve ===
+Saved figures/hipe2020_de/historical_ner/phase2/variants_ablation/train_hipe2020de_test_hipe2020de/train_tracking/mbert_experts_track_training.png
+=== Done ===
+Using device: cuda
+=== Step 1: Load checkpoint ===
+Loading checkpoints/hipe2020_de/historical_ner/phase2/variants_ablation/train_hipe2020de_test_hipe2020de/mbert_experts.pt
+encoder_name=bert-base-multilingual-cased variant=mbert_experts
+=== Step 2: Load tokenizer and dataset (reused from phase2) ===
+1154 candidates (split='test')
+=== Step 3: Score every candidate (also recording the gate's per-expert alpha weights) ===
+=== Step 4: Save scores CSV ===
+Saved data/hipe2020_de/historical_ner/data_phase2/variants_ablation/train_hipe2020de_test_hipe2020de/mbert_experts_scores.csv
+=== Step 5: Compute metrics ===
+1154 candidates -- Brier=0.0540 ECE=0.0285 MCE=0.5705 AUROC=0.8216 E-AURC=0.0175
+=== Done ===
+
+To compare against phase2's full model, run:
+  python src/phase2/expert/compare.py --experts-score data/hipe2020_de/historical_ner/data_phase2/variants_ablation/train_hipe2020de_test_hipe2020de/mbert_experts_scores.csv
+
+To see which expert(s) actually drove these scores (usage distribution + pairwise similarity), run:
+  python src/phase2/expert/analyze_experts.py --scores data/hipe2020_de/historical_ner/data_phase2/variants_ablation/train_hipe2020de_test_hipe2020de/mbert_experts_scores.csv
+=== Step 1: Load data/hipe2020_de/historical_ner/data_baseline/label_reliability_span_level_fuzzy.csv and merge in ['platt_scaling', 'logistic', 'mlp', 'mbert_mlp_base', 'mbert_simple_mlp', 'mbert_experts'] ===
+5773 candidates joined; scores present: ['raw', 'platt_scaling', 'logistic', 'mlp', 'mbert_mlp_base', 'mbert_simple_mlp', 'mbert_experts']
+=== Step 2: Filter to split='test' ===
+Loading data/data_source/hipe2020/hipe2020_de.csv
+1154 candidates remain
+=== Step 3: Compute ECE bins and Brier score / ECE / MCE per score ===
+  raw (ner_score): 1154 candidates across 10 bins -- Brier=0.0607 ECE=0.0614 MCE=0.1829 AUROC=0.8155 E-AURC=0.0189
+  platt_scaling (platt_scaling_calibrated_score): 1154 candidates across 10 bins -- Brier=0.0547 ECE=0.0165 MCE=0.2238 AUROC=0.8155 E-AURC=0.0189
+  logistic (logistic_calibrated_score): 1154 candidates across 10 bins -- Brier=0.0519 ECE=0.0081 MCE=0.2919 AUROC=0.8103 E-AURC=0.0195
+  mlp (mlp_calibrated_score): 1154 candidates across 10 bins -- Brier=0.0537 ECE=0.0081 MCE=0.2671 AUROC=0.7971 E-AURC=0.0206
+  mbert_mlp_base (mbert_mlp_base_calibrated_score): 1154 candidates across 10 bins -- Brier=0.0540 ECE=0.0263 MCE=0.3612 AUROC=0.8241 E-AURC=0.0169
+  mbert_simple_mlp (mbert_simple_mlp_calibrated_score): 1154 candidates across 10 bins -- Brier=0.0563 ECE=0.0169 MCE=0.6085 AUROC=0.7737 E-AURC=0.0253
+  mbert_experts (mbert_experts_calibrated_score): 1154 candidates across 10 bins -- Brier=0.0540 ECE=0.0285 MCE=0.5705 AUROC=0.8216 E-AURC=0.0175
+=== Step 4: Plot reliability diagram ===
+Saved figures/hipe2020_de/historical_ner/phase2/variants_ablation/train_hipe2020de_test_hipe2020de/reliability_diagram_raw_platt_scaling_logistic_mlp_mbert_mlp_base_mbert_simple_mlp_mbert_experts.png
+=== Step 5: Plot metrics bar chart (Brier score, ECE, MCE, AUROC, E-AURC) ===
+Saved figures/hipe2020_de/historical_ner/phase2/variants_ablation/train_hipe2020de_test_hipe2020de/metrics_bar_raw_platt_scaling_logistic_mlp_mbert_mlp_base_mbert_simple_mlp_mbert_experts.png
+=== Step 6: Plot ROC curve ===
+Saved figures/hipe2020_de/historical_ner/phase2/variants_ablation/train_hipe2020de_test_hipe2020de/roc_curve_raw_platt_scaling_logistic_mlp_mbert_mlp_base_mbert_simple_mlp_mbert_experts.png
+=== Step 7: Plot risk-coverage curve ===
+Saved figures/hipe2020_de/historical_ner/phase2/variants_ablation/train_hipe2020de_test_hipe2020de/risk_coverage_raw_platt_scaling_logistic_mlp_mbert_mlp_base_mbert_simple_mlp_mbert_experts.png
+=== Step 8: Save bins table (bin, true, raw, platt_scaling, logistic, mlp, mbert_mlp_base, mbert_simple_mlp, mbert_experts) ===
+    bin  count     true      raw  delta_raw  platt_scaling  delta_platt_scaling  logistic  delta_logistic      mlp  delta_mlp  mbert_mlp_base  delta_mbert_mlp_base  mbert_simple_mlp  delta_mbert_simple_mlp  mbert_experts  delta_mbert_experts
+0.0-0.1      0      NaN      NaN        NaN            NaN                  NaN       NaN             NaN      NaN        NaN             NaN                   NaN               NaN                     NaN            NaN                  NaN
+0.1-0.2      0      NaN      NaN        NaN            NaN                  NaN       NaN             NaN      NaN        NaN             NaN                   NaN               NaN                     NaN            NaN                  NaN
+0.2-0.3      0      NaN      NaN        NaN            NaN                  NaN       NaN             NaN      NaN        NaN             NaN                   NaN               NaN                     NaN            NaN                  NaN
+0.3-0.4      3 0.333333 0.372136   0.038803       0.578146             0.244813  0.478091        0.144758 0.644624   0.311291        0.630908              0.297574          0.845267                0.511933       0.653233             0.319900
+0.4-0.5     14 0.571429 0.462386  -0.109042       0.701260             0.129832  0.578768        0.007340 0.714266   0.142837        0.721202              0.149774          0.872357                0.300929       0.724628             0.153199
+0.5-0.6     66 0.681818 0.546385  -0.135433       0.795594             0.113776  0.731406        0.049588 0.783829   0.102011        0.810674              0.128856          0.884394                0.202576       0.823243             0.141425
+0.6-0.7     84 0.833333 0.650423  -0.182911       0.879021             0.045688  0.842259        0.008926 0.841233   0.007900        0.871679              0.038346          0.900374                0.067041       0.887020             0.053687
+0.7-0.8    115 0.895652 0.752200  -0.143452       0.930560             0.034908  0.919672        0.024020 0.910997   0.015345        0.932267              0.036615          0.937663                0.042011       0.940520             0.044868
+0.8-0.9    186 0.951613 0.857768  -0.093845       0.962021             0.010408  0.958395        0.006783 0.951527  -0.000086        0.969817              0.018204          0.945765               -0.005848       0.970087             0.018474
+0.9-1.0    686 0.981050 0.965007  -0.016042       0.979806            -0.001243  0.978391       -0.002659 0.975077  -0.005973        0.992844              0.011794          0.960735               -0.020315       0.991679             0.010629
+Saved figures/hipe2020_de/historical_ner/phase2/variants_ablation/train_hipe2020de_test_hipe2020de/bins_raw_platt_scaling_logistic_mlp_mbert_mlp_base_mbert_simple_mlp_mbert_experts.csv
+=== Done ===
+=== Step 1: Load data/hipe2020_de/historical_ner/data_baseline/label_reliability_span_level_fuzzy.csv and merge in ['platt_scaling', 'logistic', 'mlp', 'mbert_mlp_base', 'mbert_simple_mlp', 'mbert_experts'] ===
+5773 candidates joined; scores present: ['raw', 'platt_scaling', 'logistic', 'mlp', 'mbert_mlp_base', 'mbert_simple_mlp', 'mbert_experts']
+=== Step 2: Filter to split='test' ===
+Loading data/data_source/hipe2020/hipe2020_de.csv
+1154 candidates remain
+=== Step 3: Compute per-type series for ['PERS', 'LOC', 'ORG', 'TIME', 'PROD'] ===
+PERS: 336 candidates
+  raw (ner_score): 336 candidates across 10 bins -- Brier=0.0567 ECE=0.0563 MCE=0.6533 AUROC=0.7443 E-AURC=0.0249
+  platt_scaling (platt_scaling_calibrated_score): 336 candidates across 10 bins -- Brier=0.0492 ECE=0.0146 MCE=0.4594 AUROC=0.7443 E-AURC=0.0249
+  logistic (logistic_calibrated_score): 336 candidates across 10 bins -- Brier=0.0488 ECE=0.0189 MCE=0.0566 AUROC=0.7631 E-AURC=0.0193
+  mlp (mlp_calibrated_score): 336 candidates across 10 bins -- Brier=0.0490 ECE=0.0202 MCE=0.2698 AUROC=0.7397 E-AURC=0.0222
+  mbert_mlp_base (mbert_mlp_base_calibrated_score): 336 candidates across 10 bins -- Brier=0.0509 ECE=0.0326 MCE=0.1662 AUROC=0.7659 E-AURC=0.0190
+  mbert_simple_mlp (mbert_simple_mlp_calibrated_score): 336 candidates across 10 bins -- Brier=0.0481 ECE=0.0170 MCE=0.6302 AUROC=0.7694 E-AURC=0.0190
+  mbert_experts (mbert_experts_calibrated_score): 336 candidates across 10 bins -- Brier=0.0505 ECE=0.0324 MCE=0.1946 AUROC=0.7656 E-AURC=0.0195
+LOC: 591 candidates
+  raw (ner_score): 591 candidates across 10 bins -- Brier=0.0478 ECE=0.0738 MCE=0.2674 AUROC=0.7751 E-AURC=0.0132
+  platt_scaling (platt_scaling_calibrated_score): 591 candidates across 10 bins -- Brier=0.0361 ECE=0.0067 MCE=0.0248 AUROC=0.7751 E-AURC=0.0132
+  logistic (logistic_calibrated_score): 591 candidates across 10 bins -- Brier=0.0359 ECE=0.0073 MCE=0.6778 AUROC=0.7470 E-AURC=0.0166
+  mlp (mlp_calibrated_score): 591 candidates across 10 bins -- Brier=0.0360 ECE=0.0050 MCE=0.6894 AUROC=0.7498 E-AURC=0.0147
+  mbert_mlp_base (mbert_mlp_base_calibrated_score): 591 candidates across 10 bins -- Brier=0.0367 ECE=0.0141 MCE=0.1874 AUROC=0.7784 E-AURC=0.0121
+  mbert_simple_mlp (mbert_simple_mlp_calibrated_score): 591 candidates across 10 bins -- Brier=0.0372 ECE=0.0062 MCE=0.3296 AUROC=0.7715 E-AURC=0.0140
+  mbert_experts (mbert_experts_calibrated_score): 591 candidates across 10 bins -- Brier=0.0364 ECE=0.0155 MCE=0.2653 AUROC=0.7698 E-AURC=0.0131
+ORG: 116 candidates
+  raw (ner_score): 116 candidates across 10 bins -- Brier=0.1078 ECE=0.0977 MCE=0.3849 AUROC=0.8717 E-AURC=0.0266
+  platt_scaling (platt_scaling_calibrated_score): 116 candidates across 10 bins -- Brier=0.1272 ECE=0.0952 MCE=0.6362 AUROC=0.8717 E-AURC=0.0266
+  logistic (logistic_calibrated_score): 116 candidates across 10 bins -- Brier=0.1087 ECE=0.0518 MCE=0.3675 AUROC=0.8742 E-AURC=0.0273
+  mlp (mlp_calibrated_score): 116 candidates across 10 bins -- Brier=0.1198 ECE=0.0427 MCE=0.1590 AUROC=0.8421 E-AURC=0.0335
+  mbert_mlp_base (mbert_mlp_base_calibrated_score): 116 candidates across 10 bins -- Brier=0.1182 ECE=0.0715 MCE=0.5638 AUROC=0.8752 E-AURC=0.0259
+  mbert_simple_mlp (mbert_simple_mlp_calibrated_score): 116 candidates across 10 bins -- Brier=0.1453 ECE=0.0870 MCE=0.5638 AUROC=0.6787 E-AURC=0.1336
+  mbert_experts (mbert_experts_calibrated_score): 116 candidates across 10 bins -- Brier=0.1225 ECE=0.0804 MCE=0.5610 AUROC=0.8667 E-AURC=0.0275
+TIME: 42 candidates
+  raw (ner_score): 42 candidates across 10 bins -- Brier=0.0753 ECE=0.1086 MCE=0.7808 AUROC=0.8291 E-AURC=0.0142
+  platt_scaling (platt_scaling_calibrated_score): 42 candidates across 10 bins -- Brier=0.0642 ECE=0.0400 MCE=0.1397 AUROC=0.8291 E-AURC=0.0142
+  logistic (logistic_calibrated_score): 42 candidates across 10 bins -- Brier=0.0668 ECE=0.0431 MCE=0.3539 AUROC=0.8205 E-AURC=0.0148
+  mlp (mlp_calibrated_score): 42 candidates across 10 bins -- Brier=0.0724 ECE=0.0689 MCE=0.3255 AUROC=0.6410 E-AURC=0.0324
+  mbert_mlp_base (mbert_mlp_base_calibrated_score): 42 candidates across 10 bins -- Brier=0.0680 ECE=0.0725 MCE=0.3100 AUROC=0.7863 E-AURC=0.0173
+  mbert_simple_mlp (mbert_simple_mlp_calibrated_score): 42 candidates across 10 bins -- Brier=0.0501 ECE=0.0430 MCE=0.6442 AUROC=0.7436 E-AURC=0.0348
+  mbert_experts (mbert_experts_calibrated_score): 42 candidates across 10 bins -- Brier=0.0650 ECE=0.0507 MCE=0.2224 AUROC=0.8120 E-AURC=0.0154
+PROD: 69 candidates
+  raw (ner_score): 69 candidates across 10 bins -- Brier=0.1030 ECE=0.0612 MCE=0.2263 AUROC=0.8356 E-AURC=0.0287
+  platt_scaling (platt_scaling_calibrated_score): 69 candidates across 10 bins -- Brier=0.1125 ECE=0.0845 MCE=0.4969 AUROC=0.8356 E-AURC=0.0287
+  logistic (logistic_calibrated_score): 69 candidates across 10 bins -- Brier=0.1008 ECE=0.0934 MCE=0.4328 AUROC=0.8424 E-AURC=0.0275
+  mlp (mlp_calibrated_score): 69 candidates across 10 bins -- Brier=0.1065 ECE=0.0725 MCE=0.5226 AUROC=0.7508 E-AURC=0.0505
+  mbert_mlp_base (mbert_mlp_base_calibrated_score): 69 candidates across 10 bins -- Brier=0.1004 ECE=0.0446 MCE=0.2261 AUROC=0.8492 E-AURC=0.0262
+  mbert_simple_mlp (mbert_simple_mlp_calibrated_score): 69 candidates across 10 bins -- Brier=0.1144 ECE=0.0736 MCE=0.6085 AUROC=0.7271 E-AURC=0.0581
+  mbert_experts (mbert_experts_calibrated_score): 69 candidates across 10 bins -- Brier=0.1011 ECE=0.0818 MCE=0.5799 AUROC=0.8441 E-AURC=0.0270
+=== Plot Reliability diagram grid (2x3) ===
+Saved figures/hipe2020_de/historical_ner/phase2/variants_ablation/train_hipe2020de_test_hipe2020de/by_type/reliability_diagram_by_type_raw_platt_scaling_logistic_mlp_mbert_mlp_base_mbert_simple_mlp_mbert_experts.png
+=== Plot Metrics bar grid (2x3) ===
+Saved figures/hipe2020_de/historical_ner/phase2/variants_ablation/train_hipe2020de_test_hipe2020de/by_type/metrics_bar_by_type_raw_platt_scaling_logistic_mlp_mbert_mlp_base_mbert_simple_mlp_mbert_experts.png
+=== Plot ROC curve grid (2x3) ===
+Saved figures/hipe2020_de/historical_ner/phase2/variants_ablation/train_hipe2020de_test_hipe2020de/by_type/roc_curve_by_type_raw_platt_scaling_logistic_mlp_mbert_mlp_base_mbert_simple_mlp_mbert_experts.png
+=== Plot Risk-coverage curve grid (2x3) ===
+Saved figures/hipe2020_de/historical_ner/phase2/variants_ablation/train_hipe2020de_test_hipe2020de/by_type/risk-coverage_curve_by_type_raw_platt_scaling_logistic_mlp_mbert_mlp_base_mbert_simple_mlp_mbert_experts.png
+=== Done ===
