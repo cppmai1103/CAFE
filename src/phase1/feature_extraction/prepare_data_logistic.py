@@ -89,6 +89,13 @@ def main():
     print("=== Step 2: Load and join deduplicated NER + OCR + context features ===")
     print(f"Loading {args.ner_features}, {args.ocr_features}, {args.context_features}")
     ner_df = pd.read_csv(args.ner_features)
+    if "reliability_score" in ner_df.columns:
+        # --ner-features and --label-reliability can be the same file at word level (see
+        # ner/label_reliability.py --level word, whose reshaped output doubles as both a
+        # candidates table and a label file) -- drop it here so Step 3's merge doesn't
+        # collide two reliability_score columns and get silently suffixed _x/_y. Step 3's
+        # --label-reliability copy is always the authoritative source regardless.
+        ner_df = ner_df.drop(columns=["reliability_score"])
     ocr_df = pd.read_csv(args.ocr_features)
     context_df = pd.read_csv(args.context_features)
     candidates_df = join_candidate_features(ner_df, ocr_df, context_df)
@@ -111,7 +118,9 @@ def main():
     print(candidates_df["split"].value_counts().to_string())
 
     print("=== Step 5: Drop sentence_chunked (kept in ner_features.csv upstream, but not used as a B3/MLP feature) ===")
-    candidates_df = candidates_df.drop(columns=["sentence_chunked"])
+    # errors="ignore": absent entirely from ner/label_reliability.py --level word's reshaped
+    # output (it's span-extraction metadata, not something label_reliability computes).
+    candidates_df = candidates_df.drop(columns=["sentence_chunked"], errors="ignore")
 
     print("=== Step 6: Save prepared logistic-regression data ===")
     out_path = Path(args.out)

@@ -1,0 +1,45 @@
+Logging stdout to logs/20260723_001930.out, stderr to logs/20260723_001930.err
+Env 'cafe' already exists, skipping creation
+Thu Jul 23 00:19:31 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 580.159.03             Driver Version: 580.159.03     CUDA Version: 13.0     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA A100-SXM4-40GB          On  |   00000000:AF:00.0 Off |                    0 |
+| N/A   35C    P0             29W /  250W |       0MiB /  40960MiB |      0%      Default |
+|                                         |                        |             Disabled |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|  No running processes found                                                             |
++-----------------------------------------------------------------------------------------+
+torch 2.6.0+cu124 | cuda available: True
+Variant: mbert_simple_mlp
+Using device: cuda
+=== Step 1: Load tokenizer and build train/val datasets ===
+Loading bert-base-multilingual-cased
+111965 train candidates, 25521 val candidates
+=== Step 2: Build model ===
+Trainable parameters:
+  classifier (MLP head)                                   Linear(4608,512)->ReLU->Dropout->Linear(512,1)    2,360,321
+  TOTAL TRAINABLE                                                                                          2,360,321
+Frozen:
+  encoder (frozen bert-base-multilingual-cased: full transformer, no side embeddings) hidden_size=768                                177,853,440
+  TOTAL FROZEN                                                                                           177,853,440
+=== Step 3: Train (train), early-stop on val ===
+Epoch 1: train_loss=0.0909 val_loss=0.0723
+Epoch 2: train_loss=0.0751 val_loss=0.0708
+Epoch 3: train_loss=0.0714 val_loss=0.0679
+Epoch 4: train_loss=0.0685 val_loss=0.0658
+Epoch 5: train_loss=0.0661 val_loss=0.0636
+Epoch 6: train_loss=0.0655 val_loss=0.0619
+Epoch 7: train_loss=0.0637 val_loss=0.0612
+Epoch 8: train_loss=0.0632 val_loss=0.0617
+Epoch 9: train_loss=0.0618 val_loss=0.0649

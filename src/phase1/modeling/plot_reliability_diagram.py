@@ -220,11 +220,68 @@ def build_bins_table(
     return pd.DataFrame(rows)
 
 
-def plot_reliability_diagram(series: list[tuple[pd.DataFrame, str, str]], out_path: Path, title_suffix: str = "") -> None:
+def compute_scores_and_metrics(
+    candidates_df: pd.DataFrame, score_columns: dict[str, str], label_colors: dict[str, str]
+) -> tuple[list, list, list, pd.DataFrame]:
+    """Per-score series/metrics for one set of candidates (score_columns: label -> column
+    name in candidates_df, e.g. {"raw": "ner_score", "platt_scaling":
+    "platt_scaling_calibrated_score"}). Returns (series, roc_series, rc_series,
+    metrics_df) in exactly the shape plot_reliability_diagram/plot_roc_curve/
+    plot_risk_coverage_curve/plot_metrics_bar expect -- factored out of main() so
+    --facet-by-type can call this once per entity type instead of once for everything
+    pooled."""
+    labels_arr = candidates_df["reliability_score"].to_numpy().astype(int)
+    series, roc_series, rc_series = [], [], []
+    metrics_by_metric: dict[str, list[float]] = {"Brier score": [], "ECE": [], "MCE": [], "AUROC": [], "E-AURC": []}
+    for label, col in score_columns.items():
+        scores = candidates_df[col].to_numpy()
+        ece, bins_df = expected_calibration_error(scores, labels_arr)
+        mce = maximum_calibration_error_from_bins(bins_df)
+        brier = brier_score_loss(labels_arr, scores)
+        auc = auroc(scores, labels_arr)
+        e_aurc = excess_aurc(scores, labels_arr)
+        rc_df = risk_coverage_curve(scores, labels_arr)
+        series.append((bins_df, label_colors[label], label))
+        roc_series.append((labels_arr, scores, label_colors[label], label))
+        rc_series.append((rc_df, e_aurc, label_colors[label], label))
+        metrics_by_metric["Brier score"].append(brier)
+        metrics_by_metric["ECE"].append(ece)
+        metrics_by_metric["MCE"].append(mce)
+        metrics_by_metric["AUROC"].append(auc)
+        metrics_by_metric["E-AURC"].append(e_aurc)
+        print(f"  {label} ({col}): {bins_df['count'].sum()} candidates across {len(bins_df)} bins -- Brier={brier:.4f} ECE={ece:.4f} MCE={mce:.4f} AUROC={auc:.4f} E-AURC={e_aurc:.4f}")
+
+    metrics_df = pd.DataFrame({"metric": list(metrics_by_metric)})
+    for i, label in enumerate(score_columns):
+        metrics_df[label] = [metrics_by_metric[m][i] for m in metrics_by_metric]
+    return series, roc_series, rc_series, metrics_df
+
+
+def grid_shape(n: int) -> tuple[int, int]:
+    """(nrows, ncols) for n panels -- up to 3 across in one row, 2 rows beyond that (5
+    entity types = 2x3, with 1 empty slot hidden by main())."""
+    if n <= 3:
+        return 1, n
+    ncols = 3
+    return -(-n // ncols), ncols
+
+
+def default_by_type_out_path(figures_dir: Path, plot_kind: str, labels: list[str]) -> Path:
+    return figures_dir / f"{plot_kind}_by_type_{'_'.join(labels)}.png"
+
+
+def plot_reliability_diagram(series: list[tuple[pd.DataFrame, str, str]], out_path: Path = None, title_suffix: str = "", ax=None):
     """series: list of (bins_df, color, label) -- bins_df from
     metrics.expected_calibration_error, one per score being compared. Any number of
-    series is fine."""
-    fig, ax = plt.subplots(figsize=(11, 6.5), facecolor=CHART_SURFACE)
+    series is fine.
+
+    ax: pass an existing Axes to draw into it (one panel of a facet grid) instead of
+    creating+saving a standalone figure -- used by plot_reliability_diagram_grid. In that
+    mode this function draws everything except the legend (the grid draws one shared
+    legend for the whole figure) and returns the Axes; out_path is ignored."""
+    standalone = ax is None
+    if standalone:
+        fig, ax = plt.subplots(figsize=(11, 6.5), facecolor=CHART_SURFACE)
     ax.set_facecolor(CHART_SURFACE)
 
     ax.plot([0, 1], [0, 1], linestyle="--", color=MUTED_INK, label="Perfect calibration")
@@ -250,24 +307,30 @@ def plot_reliability_diagram(series: list[tuple[pd.DataFrame, str, str]], out_pa
     for spine in ("top", "right"):
         ax.spines[spine].set_visible(False)
     ax.tick_params(colors=MUTED_INK)
-    ax.legend(frameon=False, labelcolor=PRIMARY_INK, loc="upper center", bbox_to_anchor=(0.5, -0.15), ncol=1)
 
-    fig.tight_layout()
-    fig.savefig(out_path, dpi=150, facecolor=CHART_SURFACE, bbox_inches="tight")
-    plt.close(fig)
+    if standalone:
+        ax.legend(frameon=False, labelcolor=PRIMARY_INK, loc="upper center", bbox_to_anchor=(0.5, -0.15), ncol=1)
+        fig.tight_layout()
+        fig.savefig(out_path, dpi=150, facecolor=CHART_SURFACE, bbox_inches="tight")
+        plt.close(fig)
+    return ax
 
 
-def plot_metrics_bar(metrics_df: pd.DataFrame, label_colors: dict[str, str], out_path: Path, title_suffix: str = "") -> None:
+def plot_metrics_bar(metrics_df: pd.DataFrame, label_colors: dict[str, str], out_path: Path = None, title_suffix: str = "", ax=None):
     """Grouped bar chart: one group per metric (Brier score, ECE, MCE, AUROC, E-AURC),
     one bar per score present (raw, plus platt_scaling/logistic if given) within each
     group. Direction of "better" varies by metric: lower is better for Brier/ECE/MCE/
-    E-AURC, higher is better for AUROC -- see metrics.py's module docstring."""
+    E-AURC, higher is better for AUROC -- see metrics.py's module docstring.
+
+    ax: see plot_reliability_diagram's docstring -- same standalone-vs-grid-panel pattern."""
     labels = [c for c in metrics_df.columns if c != "metric"]
     metrics = metrics_df["metric"].tolist()
     x = np.arange(len(metrics))
     width = 0.8 / len(labels)
 
-    fig, ax = plt.subplots(figsize=(8, 5.5), facecolor=CHART_SURFACE)
+    standalone = ax is None
+    if standalone:
+        fig, ax = plt.subplots(figsize=(8, 5.5), facecolor=CHART_SURFACE)
     ax.set_facecolor(CHART_SURFACE)
 
     for i, label in enumerate(labels):
@@ -289,17 +352,25 @@ def plot_metrics_bar(metrics_df: pd.DataFrame, label_colors: dict[str, str], out
     for spine in ("top", "right"):
         ax.spines[spine].set_visible(False)
     ax.tick_params(colors=MUTED_INK)
-    ax.legend(frameon=False, labelcolor=PRIMARY_INK, loc="upper center", bbox_to_anchor=(0.5, -0.15), ncol=1)
 
-    fig.tight_layout()
-    fig.savefig(out_path, dpi=150, facecolor=CHART_SURFACE, bbox_inches="tight")
-    plt.close(fig)
+    if standalone:
+        ax.legend(frameon=False, labelcolor=PRIMARY_INK, loc="upper center", bbox_to_anchor=(0.5, -0.15), ncol=1)
+        fig.tight_layout()
+        fig.savefig(out_path, dpi=150, facecolor=CHART_SURFACE, bbox_inches="tight")
+        plt.close(fig)
+    return ax
 
 
-def plot_roc_curve(series: list[tuple[np.ndarray, np.ndarray, str, str]], out_path: Path, title_suffix: str = "") -> None:
+def plot_roc_curve(series: list[tuple[np.ndarray, np.ndarray, str, str]], out_path: Path = None, title_suffix: str = "", ax=None):
     """series: list of (labels_arr, scores, color, label) -- one ROC curve per score
-    being compared (metrics.roc_curve), annotated with its AUROC (metrics.auroc)."""
-    fig, ax = plt.subplots(figsize=(7, 6.5), facecolor=CHART_SURFACE)
+    being compared (metrics.roc_curve), annotated with its AUROC (metrics.auroc).
+
+    ax: see plot_reliability_diagram's docstring -- same standalone-vs-grid-panel pattern,
+    except each panel keeps its own legend here (the per-curve AUROC value is
+    panel-specific, unlike the shared color/label legend on the other 2 grids)."""
+    standalone = ax is None
+    if standalone:
+        fig, ax = plt.subplots(figsize=(7, 6.5), facecolor=CHART_SURFACE)
     ax.set_facecolor(CHART_SURFACE)
 
     ax.plot([0, 1], [0, 1], linestyle="--", color=MUTED_INK, label="Random (AUROC=0.500)")
@@ -319,18 +390,25 @@ def plot_roc_curve(series: list[tuple[np.ndarray, np.ndarray, str, str]], out_pa
     for spine in ("top", "right"):
         ax.spines[spine].set_visible(False)
     ax.tick_params(colors=MUTED_INK)
-    ax.legend(frameon=False, labelcolor=PRIMARY_INK, loc="lower right")
+    ax.legend(frameon=False, labelcolor=PRIMARY_INK, loc="lower right", fontsize=8 if not standalone else None)
 
-    fig.tight_layout()
-    fig.savefig(out_path, dpi=150, facecolor=CHART_SURFACE, bbox_inches="tight")
-    plt.close(fig)
+    if standalone:
+        fig.tight_layout()
+        fig.savefig(out_path, dpi=150, facecolor=CHART_SURFACE, bbox_inches="tight")
+        plt.close(fig)
+    return ax
 
 
-def plot_risk_coverage_curve(series: list[tuple[pd.DataFrame, float, str, str]], out_path: Path, title_suffix: str = "") -> None:
+def plot_risk_coverage_curve(series: list[tuple[pd.DataFrame, float, str, str]], out_path: Path = None, title_suffix: str = "", ax=None):
     """series: list of (rc_df, e_aurc, color, label) -- one risk-coverage curve per score
     being compared (metrics.risk_coverage_curve), annotated with its E-AURC
-    (metrics.excess_aurc)."""
-    fig, ax = plt.subplots(figsize=(9, 6), facecolor=CHART_SURFACE)
+    (metrics.excess_aurc).
+
+    ax: see plot_roc_curve's docstring -- same pattern, own legend per panel (E-AURC is
+    panel-specific)."""
+    standalone = ax is None
+    if standalone:
+        fig, ax = plt.subplots(figsize=(9, 6), facecolor=CHART_SURFACE)
     ax.set_facecolor(CHART_SURFACE)
 
     for rc_df, e_aurc, color, label in series:
@@ -346,11 +424,13 @@ def plot_risk_coverage_curve(series: list[tuple[pd.DataFrame, float, str, str]],
     for spine in ("top", "right"):
         ax.spines[spine].set_visible(False)
     ax.tick_params(colors=MUTED_INK)
-    ax.legend(frameon=False, labelcolor=PRIMARY_INK, loc="upper left")
+    ax.legend(frameon=False, labelcolor=PRIMARY_INK, loc="upper left", fontsize=8 if not standalone else None)
 
-    fig.tight_layout()
-    fig.savefig(out_path, dpi=150, facecolor=CHART_SURFACE, bbox_inches="tight")
-    plt.close(fig)
+    if standalone:
+        fig.tight_layout()
+        fig.savefig(out_path, dpi=150, facecolor=CHART_SURFACE, bbox_inches="tight")
+        plt.close(fig)
+    return ax
 
 
 def main():
@@ -393,6 +473,18 @@ def main():
     parser.add_argument("--load-data", default=str(DEFAULT_LOAD_DATA), help="Token-level data CSV (for the --split filter)")
     parser.add_argument("--dataset-name", default=None, help="Name shown in plot titles, e.g. \"hipe2020_fr\" (default: --load-data's filename stem, so hipe2020_fr.csv/letemps_fr.csv name themselves automatically)")
     parser.add_argument("--split", default="test", help="Filter to this document-level split before plotting; pass \"\" to use every candidate (default: test)")
+    parser.add_argument(
+        "--entity-type", default=None,
+        help="Filter to only this predicted_entity_type (e.g. PERS/LOC/ORG/TIME/PROD) before plotting -- default: "
+        "every type pooled together. Ignored if --facet-by-type is given.",
+    )
+    parser.add_argument(
+        "--facet-by-type", nargs="+", default=None, metavar="TYPE",
+        help="e.g. --facet-by-type PERS LOC ORG TIME PROD -- instead of one pooled chart (or one --entity-type "
+        "chart), produce ONE combined figure per plot kind (reliability diagram, metrics bar, ROC curve, "
+        "risk-coverage curve) with one subplot panel per listed type, all sharing --figures-dir/--out naming. "
+        "Overrides --entity-type.",
+    )
     parser.add_argument("--out", default=None, help="Output PNG path (default: figures/reliability_diagram_<labels>.png)")
     parser.add_argument("--figures-dir", default=str(DEFAULT_FIGURES_DIR), help="Directory to save the plot into (ignored if --out is given)")
     args = parser.parse_args()
@@ -404,9 +496,17 @@ def main():
         score_paths[LOGISTIC_LABEL] = Path(args.logistic_score)
     if args.mlp_score:
         score_paths[MLP_LABEL] = Path(args.mlp_score)
+    # Use args.camembert_mlp_label itself as the internal key/dict-lookup label, not the
+    # fixed CAMEMBERT_MLP_LABEL constant -- that constant is only this flag's DEFAULT
+    # label text (falls back to "camembert_mlp" if --camembert-mlp-label isn't passed);
+    # callers pass the actual current encoder's variant_name() (e.g. "mbert_mlp", see
+    # phase2/base/model.py), and that value needs to flow into score_columns/label_colors/
+    # output filenames too, not just the legend text -- otherwise every plot filename says
+    # "camembert_mlp" regardless of which encoder Phase 2 actually used.
+    phase2_label = args.camembert_mlp_label
     if args.camembert_mlp_score:
-        score_paths[CAMEMBERT_MLP_LABEL] = Path(args.camembert_mlp_score)
-        DISPLAY_LABELS[CAMEMBERT_MLP_LABEL] = args.camembert_mlp_label
+        score_paths[phase2_label] = Path(args.camembert_mlp_score)
+        DISPLAY_LABELS[phase2_label] = args.camembert_mlp_label
     extra_labels = []
     for item in args.extra_score or []:
         label, sep, path = item.partition("=")
@@ -443,49 +543,72 @@ def main():
 
     validate_scores_present(candidates_df, labels_present, score_paths)
 
-    labels_arr = candidates_df["reliability_score"].to_numpy().astype(int)
-
-    print("=== Step 3: Compute ECE bins and Brier score / ECE / MCE per score ===")
     label_colors = {
         RAW_LABEL: CATEGORICAL_RED, PLATT_LABEL: CATEGORICAL_BLUE, LOGISTIC_LABEL: STATUS_GOOD,
-        MLP_LABEL: CATEGORICAL_ORANGE, CAMEMBERT_MLP_LABEL: CATEGORICAL_PURPLE,
+        MLP_LABEL: CATEGORICAL_ORANGE, phase2_label: CATEGORICAL_PURPLE,
     }
     for i, label in enumerate(extra_labels):
         label_colors[label] = EXTRA_COLOR_PALETTE[i % len(EXTRA_COLOR_PALETTE)]
     score_columns = {RAW_LABEL: "ner_score"} if args.raw_score else {}
     score_columns.update({label: f"{label}_calibrated_score" for label in labels_present})
-
-    series = []
-    roc_series = []
-    rc_series = []
-    metrics_by_metric: dict[str, list[float]] = {"Brier score": [], "ECE": [], "MCE": [], "AUROC": [], "E-AURC": []}
-    for label, col in score_columns.items():
-        scores = candidates_df[col].to_numpy()
-        ece, bins_df = expected_calibration_error(scores, labels_arr)
-        mce = maximum_calibration_error_from_bins(bins_df)
-        brier = brier_score_loss(labels_arr, scores)
-        auc = auroc(scores, labels_arr)
-        e_aurc = excess_aurc(scores, labels_arr)
-        rc_df = risk_coverage_curve(scores, labels_arr)
-        series.append((bins_df, label_colors[label], label))
-        roc_series.append((labels_arr, scores, label_colors[label], label))
-        rc_series.append((rc_df, e_aurc, label_colors[label], label))
-        metrics_by_metric["Brier score"].append(brier)
-        metrics_by_metric["ECE"].append(ece)
-        metrics_by_metric["MCE"].append(mce)
-        metrics_by_metric["AUROC"].append(auc)
-        metrics_by_metric["E-AURC"].append(e_aurc)
-        print(f"{label} ({col}): {bins_df['count'].sum()} candidates across {len(bins_df)} bins -- Brier={brier:.4f} ECE={ece:.4f} MCE={mce:.4f} AUROC={auc:.4f} E-AURC={e_aurc:.4f}")
-
-    metrics_df = pd.DataFrame({"metric": list(metrics_by_metric)})
-    for i, label in enumerate(score_columns):
-        metrics_df[label] = [metrics_by_metric[m][i] for m in metrics_by_metric]
-
     all_labels = list(score_columns)
+
     figures_dir = Path(args.figures_dir)
     figures_dir.mkdir(parents=True, exist_ok=True)
     dataset_name = args.dataset_name if args.dataset_name else Path(args.load_data).stem
-    title_suffix = f" on {dataset_name} {args.split} set" if args.split else f" on {dataset_name} (all splits)"
+    base_title_suffix = f" on {dataset_name} {args.split} set" if args.split else f" on {dataset_name} (all splits)"
+
+    if args.facet_by_type:
+        print(f"=== Step 3: Compute per-type series for {args.facet_by_type} ===")
+        per_type = {}
+        for entity_type in args.facet_by_type:
+            type_df = candidates_df[candidates_df["predicted_entity_type"] == entity_type]
+            print(f"{entity_type}: {len(type_df)} candidates")
+            if len(type_df) == 0:
+                parser.error(f"--facet-by-type {entity_type!r} matches 0 candidates in this split -- typo, or wrong dataset for this type?")
+            per_type[entity_type] = compute_scores_and_metrics(type_df, score_columns, label_colors)
+
+        nrows, ncols = grid_shape(len(args.facet_by_type))
+        panel_w, panel_h = 4.2, 4.2
+
+        def make_grid(plot_kind: str, panel_fn, shared_legend: bool) -> None:
+            print(f"=== Plot {plot_kind} grid ({nrows}x{ncols}) ===")
+            fig, axes = plt.subplots(nrows, ncols, figsize=(panel_w * ncols, panel_h * nrows), facecolor=CHART_SURFACE, squeeze=False)
+            flat_axes = axes.flatten()
+            for ax, entity_type in zip(flat_axes, args.facet_by_type):
+                panel_fn(ax, entity_type)
+                ax.set_title(entity_type, color=PRIMARY_INK, fontsize=11)
+            for ax in flat_axes[len(args.facet_by_type):]:
+                ax.set_visible(False)
+            fig.suptitle(f"{plot_kind}{base_title_suffix}, by type", color=PRIMARY_INK)
+            if shared_legend:
+                handles, legend_labels = flat_axes[0].get_legend_handles_labels()
+                fig.legend(handles, legend_labels, frameon=False, labelcolor=PRIMARY_INK, loc="lower center", bbox_to_anchor=(0.5, -0.02), ncol=len(all_labels))
+            fig.tight_layout(rect=(0, 0.04, 1, 1) if shared_legend else None)
+            out_path = default_by_type_out_path(figures_dir, plot_kind.lower().replace(" ", "_"), all_labels)
+            fig.savefig(out_path, dpi=150, facecolor=CHART_SURFACE, bbox_inches="tight")
+            plt.close(fig)
+            print(f"Saved {out_path}")
+
+        make_grid("Reliability diagram", lambda ax, t: plot_reliability_diagram(per_type[t][0], ax=ax), shared_legend=True)
+        make_grid("Metrics bar", lambda ax, t: plot_metrics_bar(per_type[t][3], label_colors, ax=ax), shared_legend=True)
+        make_grid("ROC curve", lambda ax, t: plot_roc_curve(per_type[t][1], ax=ax), shared_legend=False)
+        make_grid("Risk-coverage curve", lambda ax, t: plot_risk_coverage_curve(per_type[t][2], ax=ax), shared_legend=False)
+
+        print("=== Done ===")
+        return
+
+    if args.entity_type:
+        print(f"=== Step 2b: Filter to predicted_entity_type={args.entity_type!r} ===")
+        candidates_df = candidates_df[candidates_df["predicted_entity_type"] == args.entity_type]
+        print(f"{len(candidates_df)} candidates remain")
+
+    labels_arr = candidates_df["reliability_score"].to_numpy().astype(int)
+
+    print("=== Step 3: Compute ECE bins and Brier score / ECE / MCE per score ===")
+    series, roc_series, rc_series, metrics_df = compute_scores_and_metrics(candidates_df, score_columns, label_colors)
+
+    title_suffix = base_title_suffix + (f", {args.entity_type} only" if args.entity_type else "")
 
     print("=== Step 4: Plot reliability diagram ===")
     reliability_out_path = Path(args.out) if args.out is not None else default_out_path(figures_dir, all_labels)

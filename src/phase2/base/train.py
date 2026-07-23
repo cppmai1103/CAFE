@@ -129,8 +129,8 @@ def main():
         "come from a different NER source's own tagset. Must list every distinct predicted_type value the "
         "windows file actually contains, or Phase2WindowDataset will KeyError.",
     )
-    parser.add_argument("--batch-size", type=int, default=32, help="SS29 default: 16 or 32")
-    parser.add_argument("--lr", type=float, default=3e-4, help="SS29 default: 1e-3 (try 3e-4 if unstable)")
+    parser.add_argument("--batch-size", type=int, default=128, help="SS29 default: 16 or 32")
+    parser.add_argument("--lr", type=float, default=1e-3, help="SS29 default: 1e-3 (try 3e-4 if unstable)")
     parser.add_argument("--weight-decay", type=float, default=0.0, help="Adam L2 weight decay")
     parser.add_argument("--max-epochs", type=int, default=20, help="SS29 default: 10-30 epochs")
     parser.add_argument("--patience", type=int, default=3, help="Stop early after this many epochs with no val-loss improvement")

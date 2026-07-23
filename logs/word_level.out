@@ -1,0 +1,457 @@
+Logging stdout to logs/20260722_220932.out, stderr to logs/20260722_220932.err
+Env 'cafe' already exists, skipping creation
+Wed Jul 22 22:09:34 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 580.159.03             Driver Version: 580.159.03     CUDA Version: 13.0     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA A100-SXM4-40GB          On  |   00000000:AF:00.0 Off |                    0 |
+| N/A   35C    P0             29W /  250W |       0MiB /  40960MiB |      0%      Default |
+|                                         |                        |             Disabled |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|  No running processes found                                                             |
++-----------------------------------------------------------------------------------------+
+torch 2.6.0+cu124 | cuda available: True
+=== Step 1: Load train data and build gold lookup (level=word, mode=type_only) ===
+Load data from data/data_source/hipe2020/hipe2020_fr.csv
+245023 gold token types
+=== Step 2: Load deduplicated NER candidates ===
+Loading data/hipe2020_fr/gliner/data_baseline/deduplicate_ner_features.csv
+164776 candidates loaded
+=== Step 3: Compute reliability_score against gold (level=word, mode=type_only) ===
+16839 / 223202 word-level rows reliable (7.5443%)
+=== Step 4: Save output ===
+Saved data/hipe2020_fr/gliner/data_baseline/label_reliability_word_level_type_only.csv
+=== Done ===
+=== Step 1: Load train data and NER features ===
+245023 tokens, 223202 candidates
+=== Step 2: Compute span OCR features ===
+=== Step 3: Save OCR features ===
+Saved OCR features to data/hipe2020_fr/gliner/data_baseline/word_level_type_only/ocr_features.csv
+=== Done ===
+=== Step 1: Load train data and NER features ===
+245023 tokens, 223202 candidates
+=== Step 2: Compute context features ===
+=== Step 3: Save context features ===
+Saved context features to data/hipe2020_fr/gliner/data_baseline/word_level_type_only/context_features.csv
+=== Done ===
+=== Step 1: Load train data and build the document->split map ===
+Loading data/data_source/hipe2020/hipe2020_fr.csv
+244 documents
+=== Step 2: Load and join deduplicated NER + OCR + context features ===
+Loading data/hipe2020_fr/gliner/data_baseline/label_reliability_word_level_type_only.csv, data/hipe2020_fr/gliner/data_baseline/word_level_type_only/ocr_features.csv, data/hipe2020_fr/gliner/data_baseline/word_level_type_only/context_features.csv
+223202 candidates joined
+=== Step 3: Merge in reliability_score ===
+Loading data/hipe2020_fr/gliner/data_baseline/label_reliability_word_level_type_only.csv
+16839 / 223202 candidates reliable (7.5443%)
+=== Step 4: Attach document-level split ===
+split
+train    151730
+test      37205
+val       34267
+=== Step 5: Drop sentence_chunked (kept in ner_features.csv upstream, but not used as a B3/MLP feature) ===
+=== Step 6: Save prepared logistic-regression data ===
+Saved data/hipe2020_fr/gliner/data_baseline/word_level_type_only/logistic_regression_data.csv
+=== Done ===
+=== Step 1: Load label_reliability and attach document-level split ===
+Loading data/hipe2020_fr/gliner/data_baseline/label_reliability_word_level_type_only.csv
+223202 candidates loaded
+Loading data/data_source/hipe2020/hipe2020_fr.csv
+split
+train    151730
+test      37205
+val       34267
+=== Step 2: Split train / val ===
+151730 train candidates, 34267 val candidates
+=== Step 3: Fit Platt scaling on train, early-stop on val ===
+Early stopping at epoch 30: no val-loss improvement for 15 epochs
+Best epoch: 15 (train_loss=0.1453, val_loss=0.1422)
+calibrated_score = sigmoid(-4.7358 + 5.1605 * ner_score)
+=== Step 4: Save checkpoint ===
+Saved checkpoints/hipe2020_fr/gliner/phase1/word_level_type_only/platt_scaling.pt
+=== Step 5: Score every candidate (all splits) ===
+=== Step 6: Save platt_scaling.csv to test_results/ (test split only) ===
+Saved data/hipe2020_fr/gliner/data_baseline/word_level_type_only/test_results/train_hipe_test_hipe/platt_scaling.csv
+=== Step 7: Plot fit vs held-out test-split accuracy ===
+Saved figures/hipe2020_fr/gliner/modeling/word_level_type_only/train_hipe_test_hipe/platt_scaling_fit.png
+=== Step 8: Plot train/val training curve ===
+Saved figures/hipe2020_fr/gliner/modeling/word_level_type_only/train_hipe_test_hipe/platt_scaling_track_training.png
+=== Done ===
+=== Step 1: Load logistic_regression_data.csv ===
+Loading data/hipe2020_fr/gliner/data_baseline/word_level_type_only/logistic_regression_data.csv
+223202 candidates
+split
+train    151730
+test      37205
+val       34267
+=== Step 2: Build B3 feature matrix (train medians + missing-indicator set) ===
+30 features, 151730 train candidates, 34267 val candidates
+=== Step 3: Fit B3 logistic regression on train, early-stop on val ===
+Early stopping at epoch 58: no val-loss improvement for 15 epochs
+Best epoch: 43 (train_loss=0.1176, val_loss=0.1074)
+Top coefficients (standardized scale, sorted by |coefficient|):
+ner_score                     1.600516
+predicted_entity_type_PROD   -1.097820
+predicted_entity_type_PERS    0.901337
+predicted_entity_type_LOC     0.582156
+sentence_length               0.216049
+predicted_entity_type_TIME   -0.090776
+predicted_entity_type_ORG     0.087176
+context_window_length        -0.067929
+context_ocr_min_10           -0.066640
+span_length_characters       -0.059438
+right_context_ocr_mean_10    -0.050092
+left_context_ocr_mean_10      0.042991
+document_ocr_mean             0.030743
+sentence_ocr_mean_missing     0.026776
+ocr_correct                  -0.020689
+=== Step 4: Save checkpoint ===
+Saved checkpoints/hipe2020_fr/gliner/phase1/word_level_type_only/logistic_regression.pt
+=== Step 5: Score every candidate (all splits) ===
+test: 37205 candidates, mean calibrated_score 0.0767
+train: 151730 candidates, mean calibrated_score 0.0759
+val: 34267 candidates, mean calibrated_score 0.0791
+=== Step 6: Save logistic_regression.csv to test_results/ (test split only) ===
+Saved data/hipe2020_fr/gliner/data_baseline/word_level_type_only/test_results/train_hipe_test_hipe/logistic_regression.csv
+=== Step 7: Plot weights ===
+Saved figures/hipe2020_fr/gliner/modeling/word_level_type_only/train_hipe_test_hipe/logistic_regression_weights.png
+=== Step 8: Plot train/val training curve ===
+Saved figures/hipe2020_fr/gliner/modeling/word_level_type_only/train_hipe_test_hipe/logistic_regression_track_training.png
+=== Done ===
+Using device: cuda
+=== Step 1: Load logistic_regression_data.csv ===
+Loading data/hipe2020_fr/gliner/data_baseline/word_level_type_only/logistic_regression_data.csv
+223202 candidates
+split
+train    151730
+test      37205
+val       34267
+=== Step 2: Build feature matrix (train medians + missing-indicator set) ===
+30 features, 151730 train candidates, 34267 val candidates
+=== Step 3: Standardize features (fit on train only) ===
+=== Step 4: Fit MLP on train, early-stop on val ===
+Early stopping at epoch 1145: no val-loss improvement for 10 epochs
+Best epoch: 1135 (train_loss=0.1120, val_loss=0.1033)
+=== Step 5: Save checkpoint ===
+Saved checkpoints/hipe2020_fr/gliner/phase1/word_level_type_only/mlp_baseline.pt
+=== Step 6: Score every candidate (all splits) ===
+test: 37205 candidates, mean calibrated_score 0.0788
+train: 151730 candidates, mean calibrated_score 0.0759
+val: 34267 candidates, mean calibrated_score 0.0792
+=== Step 7: Save mlp_baseline.csv to test_results/ (test split only) ===
+Saved data/hipe2020_fr/gliner/data_baseline/word_level_type_only/test_results/train_hipe_test_hipe/mlp_baseline.csv
+=== Step 8: Plot train/val training curve ===
+Saved figures/hipe2020_fr/gliner/modeling/word_level_type_only/train_hipe_test_hipe/mlp_baseline_track_training.png
+=== Done ===
+=== Step 1: Load train data and build per-document token/dict-flag tables ===
+Loading data/data_source/hipe2020/hipe2020_fr.csv
+244 documents
+=== Step 2: Load candidates (entity_text, predicted_type, ner_score, reliability_score) ===
+Loading data/hipe2020_fr/gliner/data_baseline/label_reliability_word_level_type_only.csv
+223202 candidates
+=== Step 3: Build candidate-specific windows ===
+Wrote 223202 candidate windows to data/hipe2020_fr/gliner/data_phase2/word_level_type_only/phase2_candidate_windows.jsonl
+=== Step 4: Sanity check -- reconstruct target span from 20 random windows ===
+[OK] candidate=GDL-1938-01-16-a-i0042__s4__831-831 span_text='suisse' reconstructed='suisse'
+[OK] candidate=EXP-1928-05-15-a-i0009__s4__209-209 span_text='cyclone' reconstructed='cyclone'
+[OK] candidate=EXP-1868-04-22-a-i0042__s8__274-274 span_text='Rhône' reconstructed='Rhône'
+[OK] candidate=GDL-1968-05-14-a-i0132__s37__1895-1895 span_text='de' reconstructed='de'
+[OK] candidate=EXP-1998-07-25-a-i0143__s32__797-797 span_text='1' reconstructed='1'
+[OK] candidate=EXP-1978-03-16-a-i0034__s62__2139-2139 span_text='apprécier' reconstructed='apprécier'
+[OK] candidate=EXP-1968-11-07-a-i0406__s0__31-31 span_text='WASHINGTON' reconstructed='WASHINGTON'
+[OK] candidate=EXP-1938-05-11-a-i0108__s35__1127-1127 span_text='le' reconstructed='le'
+[OK] candidate=GDL-1968-05-14-a-i0132__s9__378-378 span_text='institution' reconstructed='institution'
+[OK] candidate=EXP-1928-01-17-a-i0062__s33__1156-1156 span_text=',' reconstructed=','
+[OK] candidate=GDL-1948-02-10-a-i0122__s7__268-268 span_text='sont' reconstructed='sont'
+[OK] candidate=GDL-1968-05-14-a-i0132__s27__1655-1655 span_text=':' reconstructed=':'
+[OK] candidate=GDL-1888-12-15-a-i0002__s82__2060-2060 span_text='les' reconstructed='les'
+[OK] candidate=EXP-1918-09-10-a-i0035__s37__1469-1469 span_text='deux' reconstructed='deux'
+[OK] candidate=GDL-1908-09-11-a-i0017__s16__746-746 span_text='prochaine' reconstructed='prochaine'
+[OK] candidate=GDL-1848-07-04-a-i0001__s11__959-959 span_text='référendum' reconstructed='référendum'
+[OK] candidate=EXP-1888-01-09-a-i0035__s20__502-502 span_text='Fonctionneront' reconstructed='Fonctionneront'
+[OK] candidate=EXP-1878-02-14-a-i0050__s34__715-715 span_text='D' reconstructed='D'
+[OK] candidate=EXP-1918-11-18-a-i0067__s57__1325-1325 span_text='mesures' reconstructed='mesures'
+[OK] candidate=EXP-1968-04-08-a-i0340__s30__980-980 span_text='(' reconstructed='('
+All 20 sampled windows reconstructed their target span correctly
+=== Done ===
+Variant: mbert_mlp
+Using device: cuda
+=== Step 1: Load tokenizer and build train/val datasets ===
+Loading bert-base-multilingual-cased
+151730 train candidates, 34267 val candidates
+=== Step 2: Build model ===
+Trainable parameters:
+  dict_flag_embedding (DictFlagEmb)                       Embedding(5, 768)                                    3,840
+  lambda_dict                                             scalar                                                   1
+  target_flag_embedding (TargetFlagEmb)                   Embedding(4, 768)                                    3,072
+  lambda_target                                           scalar                                                   1
+  type_embedding (TypeEmb)                                Embedding(5, 32)                                       160
+  score_mlp (ScoreMLP, score_features=full)               Linear(3,32)->ReLU->Linear(32,32)                    1,184
+  classifier (MLP head)                                   Linear(3136,512)->ReLU->Dropout->Linear(512,1)    1,606,657
+  TOTAL TRAINABLE                                                                                          1,614,915
+Frozen:
+  encoder (frozen bert-base-multilingual-cased: token/position/token-type text embeddings + transformer layers) hidden_size=768                                177,853,440
+  TOTAL FROZEN                                                                                           177,853,440
+=== Step 3: Train (train), early-stop on val ===
+Epoch 1: train_loss=0.1044 val_loss=0.0617
+Epoch 2: train_loss=0.0635 val_loss=0.0515
+Epoch 3: train_loss=0.0530 val_loss=0.0490
+Epoch 4: train_loss=0.0466 val_loss=0.0481
+Epoch 5: train_loss=0.0423 val_loss=0.0495
+Epoch 6: train_loss=0.0380 val_loss=0.0488
+Epoch 7: train_loss=0.0360 val_loss=0.0478
+Epoch 8: train_loss=0.0318 val_loss=0.0524
+Epoch 9: train_loss=0.0310 val_loss=0.0523
+Epoch 10: train_loss=0.0283 val_loss=0.0543
+Early stopping at epoch 10: no val-loss improvement for 3 epochs
+Best epoch: 7 (train_loss=0.0360, val_loss=0.0478)
+=== Step 4: Save checkpoint ===
+Saved checkpoints/hipe2020_fr/gliner/phase2/word_level_type_only/mbert_mlp.pt
+=== Step 5: Plot train/val training curve ===
+Saved figures/hipe2020_fr/gliner/phase2/word_level_type_only/train_hipe_test_hipe/train_tracking/mbert_mlp_track_training.png
+=== Done ===
+Using device: cuda
+=== Step 1: Load checkpoint ===
+Loading checkpoints/hipe2020_fr/gliner/phase2/word_level_type_only/mbert_mlp.pt
+encoder_name=bert-base-multilingual-cased variant=mbert_mlp
+=== Step 2: Load tokenizer and dataset ===
+37205 candidates (split='test')
+=== Step 3: Score every candidate ===
+=== Step 4: Save scores CSV ===
+Saved data/hipe2020_fr/gliner/data_phase2/word_level_type_only/test_results/train_hipe_test_hipe/mbert_mlp_scores.csv
+=== Step 5: Compute metrics ===
+37205 candidates -- Brier=0.0152 ECE=0.0078 MCE=0.2170 AUROC=0.9929 E-AURC=0.0065
+=== Done ===
+
+To compare against B0/B1/B3/MLP and produce the standard plots, run:
+  python src/phase1/modeling/plot_reliability_diagram.py --platt-scaling-score data/data_baseline/test_results/platt_scaling.csv --logistic-score data/data_baseline/test_results/logistic_regression.csv --mlp-score data/data_baseline/test_results/mlp_baseline.csv --camembert-mlp-score data/hipe2020_fr/gliner/data_phase2/word_level_type_only/test_results/train_hipe_test_hipe/mbert_mlp_scores.csv --camembert-mlp-label mbert_mlp
+=== Step 1: Load data/hipe2020_fr/gliner/data_baseline/label_reliability_word_level_type_only.csv and merge in ['platt_scaling', 'logistic', 'mlp', 'mbert_mlp'] ===
+223202 candidates joined; scores present: ['raw', 'platt_scaling', 'logistic', 'mlp', 'mbert_mlp']
+=== Step 2: Filter to split='test' ===
+Loading data/data_source/hipe2020/hipe2020_fr.csv
+37205 candidates remain
+=== Step 3: Compute ECE bins and Brier score / ECE / MCE per score ===
+  raw (ner_score): 37205 candidates across 10 bins -- Brier=0.0815 ECE=0.0947 MCE=0.5851 AUROC=0.9346 E-AURC=0.0422
+  platt_scaling (platt_scaling_calibrated_score): 37205 candidates across 10 bins -- Brier=0.0414 ECE=0.0137 MCE=0.1893 AUROC=0.9346 E-AURC=0.0422
+  logistic (logistic_calibrated_score): 37205 candidates across 10 bins -- Brier=0.0296 ECE=0.0126 MCE=0.1897 AUROC=0.9602 E-AURC=0.0250
+  mlp (mlp_calibrated_score): 37205 candidates across 10 bins -- Brier=0.0289 ECE=0.0128 MCE=0.1337 AUROC=0.9606 E-AURC=0.0237
+  mbert_mlp (mbert_mlp_calibrated_score): 37205 candidates across 10 bins -- Brier=0.0152 ECE=0.0078 MCE=0.2170 AUROC=0.9929 E-AURC=0.0065
+=== Step 4: Plot reliability diagram ===
+Saved figures/hipe2020_fr/gliner/phase2/word_level_type_only/train_hipe_test_hipe/reliability_diagram_raw_platt_scaling_logistic_mlp_mbert_mlp.png
+=== Step 5: Plot metrics bar chart (Brier score, ECE, MCE, AUROC, E-AURC) ===
+Saved figures/hipe2020_fr/gliner/phase2/word_level_type_only/train_hipe_test_hipe/metrics_bar_raw_platt_scaling_logistic_mlp_mbert_mlp.png
+=== Step 6: Plot ROC curve ===
+Saved figures/hipe2020_fr/gliner/phase2/word_level_type_only/train_hipe_test_hipe/roc_curve_raw_platt_scaling_logistic_mlp_mbert_mlp.png
+=== Step 7: Plot risk-coverage curve ===
+Saved figures/hipe2020_fr/gliner/phase2/word_level_type_only/train_hipe_test_hipe/risk_coverage_raw_platt_scaling_logistic_mlp_mbert_mlp.png
+=== Step 8: Save bins table (bin, true, raw, platt_scaling, logistic, mlp, mbert_mlp) ===
+    bin  count     true      raw  delta_raw  platt_scaling  delta_platt_scaling  logistic  delta_logistic      mlp  delta_mlp  mbert_mlp  delta_mbert_mlp
+0.0-0.1  28753 0.008034 0.003766  -0.004268       0.008890             0.000856  0.008479        0.000445 0.009859   0.001825   0.009071         0.001037
+0.1-0.2    829 0.022919 0.146907   0.123988       0.018597            -0.004322  0.014908       -0.008011 0.019629  -0.003291   0.028701         0.005782
+0.2-0.3    583 0.034305 0.247888   0.213583       0.030882            -0.003424  0.034688        0.000382 0.039271   0.004965   0.036441         0.002136
+0.3-0.4    533 0.058161 0.351548   0.293386       0.051571            -0.006591  0.050743       -0.007418 0.055382  -0.002780   0.072529         0.014368
+0.4-0.5    525 0.059048 0.452164   0.393116       0.083606             0.024559  0.079838        0.020790 0.085655   0.026608   0.082360         0.023312
+0.5-0.6    633 0.127962 0.552452   0.424489       0.132763             0.004801  0.154392        0.026430 0.160389   0.032427   0.141317         0.013355
+0.6-0.7    631 0.129952 0.654952   0.524999       0.205870             0.075917  0.202985        0.073033 0.220214   0.090262   0.147054         0.017102
+0.7-0.8    756 0.247354 0.755947   0.508593       0.303513             0.056159  0.319790        0.072436 0.329529   0.082174   0.294935         0.047581
+0.8-0.9   1043 0.269415 0.854545   0.585130       0.419677             0.150262  0.363320        0.093905 0.366328   0.096913   0.294672         0.025257
+0.9-1.0   2919 0.553957 0.970441   0.416484       0.567331             0.013374  0.569392        0.015435 0.570064   0.016107   0.579363         0.025407
+Saved figures/hipe2020_fr/gliner/phase2/word_level_type_only/train_hipe_test_hipe/bins_raw_platt_scaling_logistic_mlp_mbert_mlp.csv
+=== Done ===
+=== Step 1: Load train data and build gold lookup (level=word, mode=type_only) ===
+Load data from data/data_source/letemps/letemps_fr.csv
+466597 gold token types
+=== Step 2: Load deduplicated NER candidates ===
+Loading data/letemps_fr/gliner/data_baseline/deduplicate_ner_features.csv
+318728 candidates loaded
+=== Step 3: Compute reliability_score against gold (level=word, mode=type_only) ===
+16336 / 421701 word-level rows reliable (3.8738%)
+=== Step 4: Save output ===
+Saved data/letemps_fr/gliner/data_baseline/label_reliability_word_level_type_only.csv
+=== Done ===
+=== Step 1: Load train data and NER features ===
+466597 tokens, 421701 candidates
+=== Step 2: Compute span OCR features ===
+=== Step 3: Save OCR features ===
+Saved OCR features to data/letemps_fr/gliner/data_baseline/word_level_type_only/ocr_features.csv
+=== Done ===
+=== Step 1: Load train data and NER features ===
+466597 tokens, 421701 candidates
+=== Step 2: Compute context features ===
+=== Step 3: Save context features ===
+Saved context features to data/letemps_fr/gliner/data_baseline/word_level_type_only/context_features.csv
+=== Done ===
+=== Step 1: Load train data and build the document->split map ===
+Loading data/data_source/letemps/letemps_fr.csv
+516 documents
+=== Step 2: Load and join deduplicated NER + OCR + context features ===
+Loading data/letemps_fr/gliner/data_baseline/label_reliability_word_level_type_only.csv, data/letemps_fr/gliner/data_baseline/word_level_type_only/ocr_features.csv, data/letemps_fr/gliner/data_baseline/word_level_type_only/context_features.csv
+421701 candidates joined
+=== Step 3: Merge in reliability_score ===
+Loading data/letemps_fr/gliner/data_baseline/label_reliability_word_level_type_only.csv
+16336 / 421701 candidates reliable (3.8738%)
+=== Step 4: Attach document-level split ===
+split
+train    342520
+test      44491
+val       34690
+=== Step 5: Drop sentence_chunked (kept in ner_features.csv upstream, but not used as a B3/MLP feature) ===
+=== Step 6: Save prepared logistic-regression data ===
+Saved data/letemps_fr/gliner/data_baseline/word_level_type_only/logistic_regression_data.csv
+=== Done ===
+=== Step 1: Load train data and build per-document token/dict-flag tables ===
+Loading data/data_source/letemps/letemps_fr.csv
+516 documents
+=== Step 2: Load candidates (entity_text, predicted_type, ner_score, reliability_score) ===
+Loading data/letemps_fr/gliner/data_baseline/label_reliability_word_level_type_only.csv
+421701 candidates
+=== Step 3: Build candidate-specific windows ===
+Wrote 421701 candidate windows to data/letemps_fr/gliner/data_phase2/word_level_type_only/phase2_candidate_windows.jsonl
+=== Step 4: Sanity check -- reconstruct target span from 20 random windows ===
+[OK] candidate=JDG-1881-10-12-37__s22__430-430 span_text='in' reconstructed='in'
+[OK] candidate=GDL-1826-05-23-4__s7__311-311 span_text='Les' reconstructed='Les'
+[OK] candidate=GDL-1804-07-20-8__s52__1699-1699 span_text='cercle' reconstructed='cercle'
+[OK] candidate=JDG-1961-12-01-10__s20__495-495 span_text='brillamment' reconstructed='brillamment'
+[OK] candidate=GDL-1881-06-15-2__s60__1607-1607 span_text='Nanine' reconstructed='Nanine'
+[OK] candidate=GDL-1881-01-12-10__s6__217-217 span_text=',' reconstructed=','
+[OK] candidate=GDL-1841-10-29-12__s0__20-20 span_text='chant' reconstructed='chant'
+[OK] candidate=GDL-1826-10-10-11__s96__2894-2894 span_text='avou' reconstructed='avou'
+[OK] candidate=JDG-1961-09-04-3__s23__647-647 span_text='pas' reconstructed='pas'
+[OK] candidate=GDL-1826-05-09-8__s92__2866-2866 span_text='fera' reconstructed='fera'
+[OK] candidate=JDG-1921-07-11-47__s12__318-318 span_text='critiqué' reconstructed='critiqué'
+[OK] candidate=JDG-1961-12-01-10__s0__13-13 span_text='deux' reconstructed='deux'
+[OK] candidate=JDG-1841-06-10-12__s5__263-263 span_text='trouve' reconstructed='trouve'
+[OK] candidate=GDL-1826-03-10-18__s31__979-979 span_text='existence' reconstructed='existence'
+[OK] candidate=JDG-1881-03-24-21__s62__545-545 span_text='.' reconstructed='.'
+[OK] candidate=GDL-1961-06-10-57__s6__125-125 span_text='.' reconstructed='.'
+[OK] candidate=GDL-1804-08-03-13__s6__210-210 span_text='à' reconstructed='à'
+[OK] candidate=GDL-1804-07-27-7__s26__728-728 span_text='gouffres' reconstructed='gouffres'
+[OK] candidate=GDL-1826-04-25-7__s29__1092-1092 span_text='autre' reconstructed='autre'
+[OK] candidate=GDL-1841-09-28-7__s35__863-863 span_text='au' reconstructed='au'
+All 20 sampled windows reconstructed their target span correctly
+=== Done ===
+=== Step 1: Load label_reliability and attach document-level split ===
+Loading data/letemps_fr/gliner/data_baseline/label_reliability_word_level_type_only.csv
+421701 candidates loaded
+Loading data/data_source/letemps/letemps_fr.csv
+split
+train    342520
+test      44491
+val       34690
+=== Steps 2-4 skipped: loading already-fitted checkpoint checkpoints/hipe2020_fr/gliner/phase1/word_level_type_only/platt_scaling.pt ===
+calibrated_score = sigmoid(-4.7358 + 5.1605 * ner_score)
+=== Step 5: Score every candidate (all splits) ===
+=== Step 6: Save platt_scaling.csv to test_results/ (test split only) ===
+Saved data/letemps_fr/gliner/data_baseline/word_level_type_only/test_results/train_hipe_test_letemps/platt_scaling.csv
+=== Step 7: Plot fit vs held-out test-split accuracy ===
+Saved figures/letemps_fr/gliner/modeling/word_level_type_only/train_hipe_test_letemps/platt_scaling_fit.png
+=== Step 8 skipped: no fit was run (--checkpoint-in), no train/val curve to plot ===
+=== Done ===
+=== Step 1: Load logistic_regression_data.csv ===
+Loading data/letemps_fr/gliner/data_baseline/word_level_type_only/logistic_regression_data.csv
+421701 candidates
+split
+train    342520
+test      44491
+val       34690
+=== Steps 2-4 skipped: loading already-fitted checkpoint checkpoints/hipe2020_fr/gliner/phase1/word_level_type_only/logistic_regression.pt ===
+Top coefficients (standardized scale, sorted by |coefficient|):
+ner_score                     1.600516
+predicted_entity_type_PROD   -1.097820
+predicted_entity_type_PERS    0.901337
+predicted_entity_type_LOC     0.582156
+sentence_length               0.216049
+predicted_entity_type_TIME   -0.090776
+predicted_entity_type_ORG     0.087176
+context_window_length        -0.067929
+context_ocr_min_10           -0.066640
+span_length_characters       -0.059438
+right_context_ocr_mean_10    -0.050092
+left_context_ocr_mean_10      0.042991
+document_ocr_mean             0.030743
+sentence_ocr_mean_missing     0.026776
+ocr_correct                  -0.020689
+=== Step 5: Score every candidate (all splits) ===
+test: 44491 candidates, mean calibrated_score 0.0841
+train: 342520 candidates, mean calibrated_score 0.0836
+val: 34690 candidates, mean calibrated_score 0.0870
+=== Step 6: Save logistic_regression.csv to test_results/ (test split only) ===
+Saved data/letemps_fr/gliner/data_baseline/word_level_type_only/test_results/train_hipe_test_letemps/logistic_regression.csv
+=== Step 7: Plot weights ===
+Saved figures/letemps_fr/gliner/modeling/word_level_type_only/train_hipe_test_letemps/logistic_regression_weights.png
+=== Step 8 skipped: no fit was run (--checkpoint-in), no train/val curve to plot ===
+=== Done ===
+Using device: cuda
+=== Step 1: Load logistic_regression_data.csv ===
+Loading data/letemps_fr/gliner/data_baseline/word_level_type_only/logistic_regression_data.csv
+421701 candidates
+split
+train    342520
+test      44491
+val       34690
+=== Steps 2-5 skipped: loading already-fitted checkpoint checkpoints/hipe2020_fr/gliner/phase1/word_level_type_only/mlp_baseline.pt ===
+=== Step 6: Score every candidate (all splits) ===
+test: 44491 candidates, mean calibrated_score 0.0835
+train: 342520 candidates, mean calibrated_score 0.0822
+val: 34690 candidates, mean calibrated_score 0.0846
+=== Step 7: Save mlp_baseline.csv to test_results/ (test split only) ===
+Saved data/letemps_fr/gliner/data_baseline/word_level_type_only/test_results/train_hipe_test_letemps/mlp_baseline.csv
+=== Step 8 skipped: no fit was run (--checkpoint-in), no train/val curve to plot ===
+=== Done ===
+Using device: cuda
+=== Step 1: Load checkpoint ===
+Loading checkpoints/hipe2020_fr/gliner/phase2/word_level_type_only/mbert_mlp.pt
+encoder_name=bert-base-multilingual-cased variant=mbert_mlp
+=== Step 2: Load tokenizer and dataset ===
+44491 candidates (split='test')
+=== Step 3: Score every candidate ===
+=== Step 4: Save scores CSV ===
+Saved data/letemps_fr/gliner/data_phase2/word_level_type_only/test_results/train_hipe_test_letemps/mbert_mlp_scores.csv
+=== Step 5: Compute metrics ===
+44491 candidates -- Brier=0.0386 ECE=0.0423 MCE=0.6186 AUROC=0.9791 E-AURC=0.0204
+=== Done ===
+
+To compare against B0/B1/B3/MLP and produce the standard plots, run:
+  python src/phase1/modeling/plot_reliability_diagram.py --platt-scaling-score data/data_baseline/test_results/platt_scaling.csv --logistic-score data/data_baseline/test_results/logistic_regression.csv --mlp-score data/data_baseline/test_results/mlp_baseline.csv --camembert-mlp-score data/letemps_fr/gliner/data_phase2/word_level_type_only/test_results/train_hipe_test_letemps/mbert_mlp_scores.csv --camembert-mlp-label mbert_mlp
+=== Step 1: Load data/letemps_fr/gliner/data_baseline/label_reliability_word_level_type_only.csv and merge in ['platt_scaling', 'logistic', 'mlp', 'mbert_mlp'] ===
+421701 candidates joined; scores present: ['raw', 'platt_scaling', 'logistic', 'mlp', 'mbert_mlp']
+=== Step 2: Filter to split='test' ===
+Loading data/data_source/letemps/letemps_fr.csv
+44491 candidates remain
+=== Step 3: Compute ECE bins and Brier score / ECE / MCE per score ===
+  raw (ner_score): 44491 candidates across 10 bins -- Brier=0.0730 ECE=0.0917 MCE=0.6900 AUROC=0.9601 E-AURC=0.0293
+  platt_scaling (platt_scaling_calibrated_score): 44491 candidates across 10 bins -- Brier=0.0272 ECE=0.0311 MCE=0.2919 AUROC=0.9601 E-AURC=0.0293
+  logistic (logistic_calibrated_score): 44491 candidates across 10 bins -- Brier=0.0303 ECE=0.0521 MCE=0.4991 AUROC=0.9560 E-AURC=0.0266
+  mlp (mlp_calibrated_score): 44491 candidates across 10 bins -- Brier=0.0306 ECE=0.0514 MCE=0.4381 AUROC=0.9572 E-AURC=0.0237
+  mbert_mlp (mbert_mlp_calibrated_score): 44491 candidates across 10 bins -- Brier=0.0386 ECE=0.0423 MCE=0.6186 AUROC=0.9791 E-AURC=0.0204
+=== Step 4: Plot reliability diagram ===
+Saved figures/letemps_fr/gliner/phase2/word_level_type_only/train_hipe_test_letemps/reliability_diagram_raw_platt_scaling_logistic_mlp_mbert_mlp.png
+=== Step 5: Plot metrics bar chart (Brier score, ECE, MCE, AUROC, E-AURC) ===
+Saved figures/letemps_fr/gliner/phase2/word_level_type_only/train_hipe_test_letemps/metrics_bar_raw_platt_scaling_logistic_mlp_mbert_mlp.png
+=== Step 6: Plot ROC curve ===
+Saved figures/letemps_fr/gliner/phase2/word_level_type_only/train_hipe_test_letemps/roc_curve_raw_platt_scaling_logistic_mlp_mbert_mlp.png
+=== Step 7: Plot risk-coverage curve ===
+Saved figures/letemps_fr/gliner/phase2/word_level_type_only/train_hipe_test_letemps/risk_coverage_raw_platt_scaling_logistic_mlp_mbert_mlp.png
+=== Step 8: Save bins table (bin, true, raw, platt_scaling, logistic, mlp, mbert_mlp) ===
+    bin  count     true      raw  delta_raw  platt_scaling  delta_platt_scaling  logistic  delta_logistic      mlp  delta_mlp  mbert_mlp  delta_mbert_mlp
+0.0-0.1  36247 0.001462 0.003490   0.002027       0.008878             0.007415  0.021360        0.019898 0.020626   0.019164   0.008059         0.006596
+0.1-0.2   1083 0.013850 0.143242   0.129391       0.018238             0.004387  0.040795        0.026944 0.055124   0.041273   0.040345         0.026494
+0.2-0.3    738 0.014905 0.246780   0.231875       0.030681             0.015776  0.064040        0.049135 0.070037   0.055132   0.039384         0.024479
+0.3-0.4    578 0.006920 0.351232   0.344312       0.051502             0.044582  0.095647        0.088727 0.103333   0.096412   0.100937         0.094016
+0.4-0.5    483 0.039337 0.450516   0.411179       0.083031             0.043693  0.153755        0.114418 0.160818   0.121481   0.128268         0.088930
+0.5-0.6    441 0.031746 0.551218   0.519472       0.132001             0.100255  0.224587        0.192841 0.228351   0.196604   0.195741         0.163995
+0.6-0.7    520 0.053846 0.646875   0.593029       0.199221             0.145374  0.283982        0.230136 0.284833   0.230987   0.204014         0.150168
+0.7-0.8    608 0.138158 0.751099   0.612941       0.298233             0.160075  0.395334        0.257176 0.390965   0.252808   0.321927         0.183770
+0.8-0.9    855 0.159064 0.849068   0.690004       0.412862             0.253797  0.468453        0.309389 0.459462   0.300398   0.386822         0.227758
+0.9-1.0   2938 0.361130 0.973482   0.612352       0.571170             0.210040  0.633381        0.272251 0.625324   0.264194   0.715223         0.354093
+Saved figures/letemps_fr/gliner/phase2/word_level_type_only/train_hipe_test_letemps/bins_raw_platt_scaling_logistic_mlp_mbert_mlp.csv
+=== Done ===
